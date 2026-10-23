@@ -1,0 +1,45 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ADMIN BLC</title><script src="https://cdn.tailwindcss.com"></script>
+<style>body{background:#0a0a0a;color:white}.foto-wrap{position:relative}.foto-wrap button{position:absolute;top:-5px;right:-5px;background:red;color:white;width:22px;height:22px;border-radius:50%;font-weight:900}</style>
+</head><body class="p-4">
+<div id="login" class="max-w-sm mx-auto mt-20 bg-zinc-900 border border-yellow-400 p-6">
+<h1 class="font-black text-yellow-400">ADMIN BLC</h1>
+<input id="user" placeholder="Usuario" class="w-full mt-4 bg-black border border-yellow-400 p-2 text-yellow-400">
+<input id="pass" type="password" placeholder="Contraseña" class="w-full mt-2 bg-black border border-yellow-400 p-2 text-yellow-400">
+<button onclick="login()" class="w-full mt-4 bg-yellow-400 text-black font-black py-2">ENTRAR</button>
+<p class="text-[10px] text-zinc-500 mt-2">admin / coronado8508</p>
+</div>
+<div id="panel" class="hidden max-w-3xl mx-auto">
+<h1 class="font-black text-yellow-400">PANEL ADMIN <button onclick="localStorage.removeItem('blc_admin');location.reload()" class="float-right bg-red-600 text-white text-xs px-2 py-1">SALIR</button></h1>
+<div class="mt-6 bg-zinc-900 border border-zinc-700 p-4"><h2 class="font-bold text-yellow-400">1. PORTADA</h2><input type="file" id="portadaFile" accept="image/*"><img id="prevPortada" class="w-full h-40 object-cover mt-2 hidden"><button onclick="guardarPortada()" class="mt-2 bg-yellow-400 text-black font-black px-4 py-1 text-sm">GUARDAR PORTADA</button></div>
+<div class="mt-6 bg-zinc-900 border border-zinc-700 p-4"><h2 class="font-bold text-yellow-400">2. PRODUCTO CON X PARA BORRAR FOTO</h2>
+<input id="pNombre" placeholder="Nombre" class="w-full mt-2 bg-black border border-zinc-600 p-2">
+<input id="pPrecio" type="number" placeholder="Precio" class="w-full mt-2 bg-black border border-zinc-600 p-2">
+<select id="pCat" class="w-full mt-2 bg-black border border-zinc-600 p-2"><option>HERRAMIENTA</option><option>MUEBLES</option><option>CUCHILLOS</option><option>BOCINAS</option><option>ELECTRONICA</option><option>HOGAR</option><option>OFERTAS</option><option>NOVEDADES</option></select>
+<textarea id="pDesc" placeholder="Desc" class="w-full mt-2 bg-black border border-zinc-600 p-2"></textarea>
+<label class="text-xs mt-2 block">FOTOS N (con X):</label><input type="file" id="pFotos" multiple accept="image/*">
+<div id="previewFotos" class="flex gap-2 flex-wrap mt-2"></div>
+<button onclick="agregarProducto()" class="mt-3 bg-yellow-400 text-black font-black px-4 py-2 w-full">AGREGAR PRODUCTO</button>
+</div>
+<div id="listaProductos" class="mt-4 grid gap-2"></div>
+<div class="mt-8 bg-zinc-900 border border-zinc-700 p-4"><h2 class="font-bold text-yellow-400">3. BANNERS</h2>
+<label class="text-xs">Precio editable:</label><div class="flex gap-2 mt-1"><input id="precioBanner" type="number" value="200" class="bg-black border border-yellow-400 p-2 w-24"><button onclick="localStorage.setItem('bazar_precio',document.getElementById('precioBanner').value);alert('Guardado $'+document.getElementById('precioBanner').value)" class="bg-yellow-400 text-black font-black px-2 text-xs">GUARDAR</button></div>
+<input id="bNombre" placeholder="Negocio" class="w-full mt-3 bg-black border border-zinc-600 p-2"><input id="bWhatsapp" placeholder="4491234567" class="w-full mt-2 bg-black border border-zinc-600 p-2"><input type="file" id="bFoto" accept="image/*" class="mt-2"><div id="prevBanner" class="mt-2"></div>
+<button onclick="agregarBanner()" class="mt-2 bg-yellow-400 text-black font-black px-4 py-2 w-full">AGREGAR BANNER</button>
+<div id="listaBanners" class="mt-4 grid gap-2"></div>
+</div>
+</div>
+<script>
+let productos=JSON.parse(localStorage.getItem('bazar_productos')||'[]');let banners=JSON.parse(localStorage.getItem('bazar_banners')||'[]');let tempFotos=[];
+function login(){if(document.getElementById('user').value=='admin'&&document.getElementById('pass').value=='coronado8508'){localStorage.setItem('blc_admin','1');document.getElementById('login').classList.add('hidden');document.getElementById('panel').classList.remove('hidden');render();}else alert('Mal');}
+if(localStorage.getItem('blc_admin')){document.getElementById('login').classList.add('hidden');document.getElementById('panel').classList.remove('hidden');}
+document.getElementById('portadaFile').addEventListener('change',e=>{let r=new FileReader();r.onload=()=>{document.getElementById('prevPortada').src=r.result;document.getElementById('prevPortada').classList.remove('hidden');document.getElementById('prevPortada').dataset.base=r.result;};r.readAsDataURL(e.target.files[0]);});
+function guardarPortada(){let b=document.getElementById('prevPortada').dataset.base;if(b){localStorage.setItem('bazar_portada',b);alert('Portada guardada');}}
+document.getElementById('pFotos').addEventListener('change',async e=>{for(let f of e.target.files){let b=await new Promise(res=>{let r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(f);});tempFotos.push(b);}renderPreview();});
+function renderPreview(){document.getElementById('previewFotos').innerHTML=tempFotos.map((f,i)=>`<div class="foto-wrap"><img src="${f}" class="w-16 h-16 object-cover border"><button onclick="tempFotos.splice(${i},1);renderPreview()">X</button></div>`).join('');}
+function agregarProducto(){let p={id:Date.now(),nombre:document.getElementById('pNombre').value,precio:parseInt(document.getElementById('pPrecio').value),categoria:document.getElementById('pCat').value,fotos:[...tempFotos]};productos.unshift(p);localStorage.setItem('bazar_productos',JSON.stringify(productos));tempFotos=[];renderPreview();render();alert('Agregado');}
+function render(){document.getElementById('listaProductos').innerHTML=productos.map(p=>`<div class="bg-black border border-zinc-700 p-2 flex justify-between"><div class="flex gap-2"><img src="${p.fotos[0]}" class="w-12 h-12 object-cover"><div><div class="text-yellow-400 text-sm font-bold">${p.nombre}</div><div class="text-xs">$${p.precio}</div></div></div><button onclick="productos=productos.filter(x=>x.id!=${p.id});localStorage.setItem('bazar_productos',JSON.stringify(productos));render()" class="bg-red-600 px-2 text-xs font-black">BORRAR</button></div>`).join('');document.getElementById('listaBanners').innerHTML=banners.map((b,i)=>`<div class="bg-black border p-2 flex justify-between"><img src="${b.imagen}" class="w-12 h-12"><span>${b.nombre}</span><button onclick="banners.splice(${i},1);localStorage.setItem('bazar_banners',JSON.stringify(banners));render()" class="bg-red-600 px-2 text-xs">X</button></div>`).join('');}
+document.getElementById('bFoto').addEventListener('change',e=>{let r=new FileReader();r.onload=()=>{document.getElementById('prevBanner').innerHTML=`<img src="${r.result}" class="w-20 h-20">`;document.getElementById('prevBanner').dataset.base=r.result;};r.readAsDataURL(e.target.files[0]);});
+function agregarBanner(){let img=document.getElementById('prevBanner').dataset.base;let b={nombre:document.getElementById('bNombre').value,whatsapp:document.getElementById('bWhatsapp').value,imagen:img};banners.push(b);localStorage.setItem('bazar_banners',JSON.stringify(banners));render();}
+render();
+</script>
+</body></html>
