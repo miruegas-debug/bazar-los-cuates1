@@ -1,6 +1,18 @@
 <!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ADMIN BLC</title><script src="https://cdn.tailwindcss.com"></script>
 <style>body{background:#0a0a0a;color:white}.foto-wrap{position:relative}.foto-wrap button{position:absolute;top:-5px;right:-5px;background:red;color:white;width:22px;height:22px;border-radius:50%;font-weight:900}</style>
-</head><body class="p-4">
+</head><<script>
+// PROTECCIÓN ADMIN BLC
+const CLAVE_ADMIN = "cuates123"; // <-- Aquí cambia tu contraseña
+if (sessionStorage.getItem('blc_admin_ok') !== 'si') {
+  let pass = prompt("🔒 Contraseña de administrador:");
+  if (pass !== CLAVE_ADMIN) {
+    alert("Contraseña incorrecta");
+    window.location.href = "./"; // Lo manda al inicio
+  } else {
+    sessionStorage.setItem('blc_admin_ok', 'si');
+  }
+}
+</script>body class="p-4">
 <div id="login" class="max-w-sm mx-auto mt-20 bg-zinc-900 border border-yellow-400 p-6">
 <h1 class="font-black text-yellow-400">ADMIN BLC</h1>
 <input id="user" placeholder="Usuario" class="w-full mt-4 bg-black border border-yellow-400 p-2 text-yellow-400">
