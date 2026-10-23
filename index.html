@@ -2,88 +2,68 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BAZAR LOS CUATES</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#FFEB00">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BLC 2026 - Bazar Los Cuates</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<style>
-body{background:#0a0a0a;color:white}
-.bg-yellow{background:#FFEB00}
-@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.marquee{animation:marquee 20s linear infinite}
-</style>
 </head>
-<body>
-<div class="bg-yellow text-black text-[11px] font-bold text-center py-2">ENTREGA AV CONSTITUCION 216 JESUS MARIA</div>
-<div id="banner" class="w-full h-[90px] bg-zinc-900 flex items-center justify-center border-b border-zinc-800"></div>
-<header class="p-3 flex justify-between border-b border-zinc-800"><div class="flex gap-2"><div class="bg-yellow text-black font-black px-2">BLC</div><span class="font-black text-sm">BAZAR LOS CUATES</span></div><a href="https://wa.me/524491883244" class="bg-yellow text-black font-black text-xs px-3 py-1">WHATSAPP</a></header>
-<section class="p-4"><h1 class="text-4xl font-black">PIEZAS BUENAS,<br><span class="bg-yellow text-black">PRECIO CLARO</span><br>Y TRATO DIRECTO</h1>
-<img id="portada" src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800" class="w-full h-56 object-cover mt-4 border border-zinc-800">
-</section>
-<div class="bg-yellow text-black font-black py-2 overflow-hidden"><div class="marquee whitespace-nowrap flex gap-6"><span>◆ HERRAMIENTA ◆ MUEBLES ◆ CUCHILLOS ◆ BOCINAS ◆ ELECTRONICA ◆ HOGAR ◆ OFERTAS ◆ NOVEDADES ◆</span><span>◆ HERRAMIENTA ◆ MUEBLES ◆ CUCHILLOS ◆ BOCINAS ◆ ELECTRONICA ◆ HOGAR ◆ OFERTAS ◆ NOVEDADES ◆</span></div></div>
-<section id="catalogo" class="p-3"><input id="buscador" placeholder="Buscar..." class="w-full bg-zinc-900 border border-zinc-700 p-2 text-sm"><div id="grid" class="grid grid-cols-2 gap-3 mt-3"></div></section>
-<footer class="p-4 text-[10px] text-zinc-500 border-t border-zinc-800 flex justify-between"><span>BLC 2026</span><a href="admin.html">Admin</a></footer>
+<body class="bg-black text-white m-0">
 
-<div id="popupEntrada" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50"><div class="bg-zinc-900 border-2 border-yellow-400 p-5 max-w-sm w-full text-center"><h3 class="font-black">¿Quieres una app como esta para tu negocio?</h3><p class="text-sm text-zinc-400 mt-2">Te armo tu propia página / app, sin tanto rollo. Cotiza sin compromiso.</p><div class="flex gap-2 mt-4"><button onclick="document.getElementById('popupEntrada').classList.add('hidden')" class="flex-1 border border-zinc-700 py-2 text-sm">No</button><a href="https://wa.me/524491883244?text=Quiero%20cotizar%20app" class="flex-1 bg-yellow-400 text-black font-black py-2 text-sm text-center">Sí, quiero info</a></div></div></div>
-
-<!-- BOTON INSTALAR APP - AGREGADO SIN TOCAR NADA ARRIBA -->
-<div id="btnInstalar" class="fixed bottom-4 left-4 right-4 bg-yellow-400 text-black font-black py-3 text-center text-sm hidden z-50 border-2 border-black shadow-[4px_4px_0px_#000]">📲 INSTALAR BAZAR COMO APP</div>
-
-<script>
-let productos=JSON.parse(localStorage.getItem('bazar_productos')||'[{"id":1,"nombre":"Taladro Bosch","precio":1200,"categoria":"HERRAMIENTA","fotos":["https://images.unsplash.com/photo-1504148455328-c376907d081c"]}]');
-let banners=JSON.parse(localStorage.getItem('bazar_banners')||'[]');
-let precio=localStorage.getItem('bazar_precio')||'200';
-function renderBanner(){let b=document.getElementById('banner');if(banners.length==0){b.innerHTML=`<a href="https://wa.me/524491883244" class="bg-yellow text-black font-black text-sm w-full h-full flex items-center justify-center">ANUNCIATE AQUI $${precio} AL MES</a>`}else{b.innerHTML=`<a href="https://wa.me/52${banners[0].whatsapp}?text=Te%20vi%20en%20el%20Bazar" target="_blank"><img src="${banners[0].imagen}" class="w-full h-full object-cover"></a>`}}
-function renderGrid(){let g=document.getElementById('grid');let q=document.getElementById('buscador').value.toLowerCase();let list=productos.filter(p=>p.nombre.toLowerCase().includes(q));g.innerHTML=list.map(p=>`<div class="bg-zinc-900 border border-zinc-800"><img src="${p.fotos[0]}" class="w-full h-32 object-cover"><div class="p-2"><div class="text-yellow-400 text-xs font-bold">${p.categoria}</div><div class="text-sm font-bold">${p.nombre}</div><div class="font-black">$${p.precio}</div><a href="https://wa.me/524491883244?text=Me%20intereso%20este%20articulo:%20${p.nombre}" class="block mt-2 bg-yellow-400 text-black text-center font-black text-xs py-2">WHATSAPP</a></div></div>`).join('')}
-document.getElementById('buscador').addEventListener('input',renderGrid);
-let portada=localStorage.getItem('bazar_portada');if(portada)document.getElementById('portada').src=portada;
-setTimeout(()=>{document.getElementById('popupEntrada').classList.remove('hidden');document.getElementById('popupEntrada').classList.add('flex')},2000);
-renderBanner();renderGrid();
-</script>
-
-<!-- SCRIPT BOTON INSTALAR - SIN TOCAR TU SCRIPT DE ARRIBA -->
-<script>
-let promptInstalar=null;
-window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();promptInstalar=e;document.getElementById('btnInstalar').classList.remove('hidden')});
-document.getElementById('btnInstalar').addEventListener('click',async()=>{
- if(!promptInstalar) return;
- promptInstalar.prompt();
- await promptInstalar.userChoice;
- promptInstalar=null;
- document.getElementById('btnInstalar').classList.add('hidden');
-});
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
-</script>
- <!-- CONTADOR DE VISITAS BLC -->
-<div style="text-align:center; margin:20px 0; background:#111; color:#FFD700; padding:12px; border-radius:12px; font-family:sans-serif;">
-  <div>👁️ Visitas Hoy: <b id="visitas-hoy">...</b></div>
-  <div>🔥 Visitas Totales: <b id="visitas-total">...</b></div>
+<div class="w-full h-[90px] bg-zinc-900 flex items-center justify-between border-b border-zinc-800 px-4">
+<div class="text-3xl font-black leading-none">PIEZAS BUENAS,<br><span class="text-yellow-400">PRECIOS BUENOS.</span></div>
+<div class="bg-yellow-400 text-black font-black py-2 px-4 text-sm">BLC 2026</div>
 </div>
+
+<div class="p-3 bg-black border-b border-zinc-800">
+<input id="buscador" placeholder="Busca taladro, bocina, mueble..." class="w-full p-3 rounded bg-zinc-900 border border-zinc-700 text-white">
+</div>
+
+<!-- BANNER ARREGLADO - NO SOTA, REEL DE TUS FOTOS -->
+<div id="banner" class="w-full h-[280px] md:h-[380px] max-h-[45vh] overflow-hidden bg-black flex items-center justify-center relative"></div>
+
+<div id="grid" class="p-3 grid grid-cols-2 md:grid-cols-4 gap-3 bg-black"></div>
+
+<div id="popupEntrada" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
+<div class="bg-white rounded p-2"><img id="portada" class="max-w-full max-h-[80vh] object-contain"></div>
+</div>
+
 <script>
-// Contador total con API gratis + respaldo local
-const hoy = new Date().toISOString().slice(0,10);
-let totalLocal = parseInt(localStorage.getItem('blc_total')||'0') + 1;
-localStorage.setItem('blc_total', totalLocal);
+let productos = JSON.parse(localStorage.getItem('bazar_productos')||'[{"id":1,"nombre":"Taladro Bosch","precio":1200,"img":"https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400"}]');
+let banners = JSON.parse(localStorage.getItem('bazar_banners')||'[]');
+let portada = localStorage.getItem('bazar_portada')||'';
+let b = document.getElementById('banner');
 
-let hoyCount = localStorage.getItem('blc_hoy_fecha') === hoy ? parseInt(localStorage.getItem('blc_hoy_num')||'0')+1 : 1;
-localStorage.setItem('blc_hoy_fecha', hoy);
-localStorage.setItem('blc_hoy_num', hoyCount);
+if(banners.length==0){
+  b.innerHTML = `<div class='text-zinc-600 text-center'><p class='font-black text-xl'>BAZAR LOS CUATES</p><p class='text-sm'>Sube tu banner en el admin</p></div>`;
+  b.style.height='120px';
+}else{
+  let idx=0;
+  b.innerHTML = `<img id='imgBanner' src='${banners[0]}' style='width:100%;height:100%;object-fit:contain;background:#000;display:block'>`;
+  if(banners.length>1){
+    setInterval(()=>{
+      idx=(idx+1)%banners.length;
+      let img=document.getElementById('imgBanner');
+      if(img) img.src=banners[idx];
+    },3000);
+  }
+}
 
-document.getElementById('visitas-hoy').textContent = hoyCount;
-document.getElementById('visitas-total').textContent = totalLocal;
+let g=document.getElementById('grid');
+let q=document.getElementById('buscador');
+function renderGrid(){
+  let val=(q.value||'').toLowerCase();
+  let filtrados=productos.filter(p=>p.nombre.toLowerCase().includes(val));
+  g.innerHTML=filtrados.map(p=>`<div class="bg-zinc-900 rounded overflow-hidden border border-zinc-800"><img src="${p.img||p.imagen}" class="w-full h-[150px] object-cover"><div class="p-2"><div class="font-bold text-sm">${p.nombre}</div><div class="text-yellow-400 font-black">$${p.precio}</div><a href="https://wa.me/524491883244?text=Me interesa ${encodeURIComponent(p.nombre)}" target="_blank" class="block mt-2 bg-yellow-400 text-black text-center font-black py-2 rounded">WhatsApp</a></div></div>`).join('');
+}
+q.addEventListener('input',renderGrid);
+renderGrid();
 
-// Intenta contador global real (si hay internet)
-fetch('https://api.countapi.xyz/hit/bazar-los-cuates-2024/total')
-  .then(r=>r.json()).then(d=>{
-    if(d.value) document.getElementById('visitas-total').textContent = d.value;
-  }).catch(()=>{});
-
-fetch('https://api.countapi.xyz/hit/bazar-los-cuates-2024/'+hoy)
-  .then(r=>r.json()).then(d=>{
-    if(d.value) document.getElementById('visitas-hoy').textContent = d.value;
-  }).catch(()=>{});
+if(portada){
+  document.getElementById('portada').src=portada;
+  let pop=document.getElementById('popupEntrada');
+  pop.classList.remove('hidden');
+  pop.classList.add('flex');
+  pop.onclick=()=>{pop.classList.add('hidden')};
+}
 </script>
-<!-- FIN CONTADOR -->
 </body>
 </html>
