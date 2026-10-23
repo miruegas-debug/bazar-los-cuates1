@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BAZAR LOS CUATES</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FFEB00">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
 body{background:#0a0a0a;color:white}
@@ -25,6 +27,9 @@ body{background:#0a0a0a;color:white}
 
 <div id="popupEntrada" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50"><div class="bg-zinc-900 border-2 border-yellow-400 p-5 max-w-sm w-full text-center"><h3 class="font-black">¿Quieres una app como esta para tu negocio?</h3><p class="text-sm text-zinc-400 mt-2">Te armo tu propia página / app, sin tanto rollo. Cotiza sin compromiso.</p><div class="flex gap-2 mt-4"><button onclick="document.getElementById('popupEntrada').classList.add('hidden')" class="flex-1 border border-zinc-700 py-2 text-sm">No</button><a href="https://wa.me/524491883244?text=Quiero%20cotizar%20app" class="flex-1 bg-yellow-400 text-black font-black py-2 text-sm text-center">Sí, quiero info</a></div></div></div>
 
+<!-- BOTON INSTALAR APP - AGREGADO SIN TOCAR NADA ARRIBA -->
+<div id="btnInstalar" class="fixed bottom-4 left-4 right-4 bg-yellow-400 text-black font-black py-3 text-center text-sm hidden z-50 border-2 border-black shadow-[4px_4px_0px_#000]">📲 INSTALAR BAZAR COMO APP</div>
+
 <script>
 let productos=JSON.parse(localStorage.getItem('bazar_productos')||'[{"id":1,"nombre":"Taladro Bosch","precio":1200,"categoria":"HERRAMIENTA","fotos":["https://images.unsplash.com/photo-1504148455328-c376907d081c"]}]');
 let banners=JSON.parse(localStorage.getItem('bazar_banners')||'[]');
@@ -35,6 +40,20 @@ document.getElementById('buscador').addEventListener('input',renderGrid);
 let portada=localStorage.getItem('bazar_portada');if(portada)document.getElementById('portada').src=portada;
 setTimeout(()=>{document.getElementById('popupEntrada').classList.remove('hidden');document.getElementById('popupEntrada').classList.add('flex')},2000);
 renderBanner();renderGrid();
+</script>
+
+<!-- SCRIPT BOTON INSTALAR - SIN TOCAR TU SCRIPT DE ARRIBA -->
+<script>
+let promptInstalar=null;
+window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();promptInstalar=e;document.getElementById('btnInstalar').classList.remove('hidden')});
+document.getElementById('btnInstalar').addEventListener('click',async()=>{
+ if(!promptInstalar) return;
+ promptInstalar.prompt();
+ await promptInstalar.userChoice;
+ promptInstalar=null;
+ document.getElementById('btnInstalar').classList.add('hidden');
+});
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
 </script>
 </body>
 </html>
