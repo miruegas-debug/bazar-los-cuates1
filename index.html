@@ -55,5 +55,35 @@ document.getElementById('btnInstalar').addEventListener('click',async()=>{
 });
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
 </script>
+ <!-- CONTADOR DE VISITAS BLC -->
+<div style="text-align:center; margin:20px 0; background:#111; color:#FFD700; padding:12px; border-radius:12px; font-family:sans-serif;">
+  <div>👁️ Visitas Hoy: <b id="visitas-hoy">...</b></div>
+  <div>🔥 Visitas Totales: <b id="visitas-total">...</b></div>
+</div>
+<script>
+// Contador total con API gratis + respaldo local
+const hoy = new Date().toISOString().slice(0,10);
+let totalLocal = parseInt(localStorage.getItem('blc_total')||'0') + 1;
+localStorage.setItem('blc_total', totalLocal);
+
+let hoyCount = localStorage.getItem('blc_hoy_fecha') === hoy ? parseInt(localStorage.getItem('blc_hoy_num')||'0')+1 : 1;
+localStorage.setItem('blc_hoy_fecha', hoy);
+localStorage.setItem('blc_hoy_num', hoyCount);
+
+document.getElementById('visitas-hoy').textContent = hoyCount;
+document.getElementById('visitas-total').textContent = totalLocal;
+
+// Intenta contador global real (si hay internet)
+fetch('https://api.countapi.xyz/hit/bazar-los-cuates-2024/total')
+  .then(r=>r.json()).then(d=>{
+    if(d.value) document.getElementById('visitas-total').textContent = d.value;
+  }).catch(()=>{});
+
+fetch('https://api.countapi.xyz/hit/bazar-los-cuates-2024/'+hoy)
+  .then(r=>r.json()).then(d=>{
+    if(d.value) document.getElementById('visitas-hoy').textContent = d.value;
+  }).catch(()=>{});
+</script>
+<!-- FIN CONTADOR -->
 </body>
 </html>
