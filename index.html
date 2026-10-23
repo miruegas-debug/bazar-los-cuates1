@@ -1,14 +1,91 @@
-<section id="descarga-app" style="background:#FFD600;color:#000;padding:35px 20px;text-align:center;margin-top:30px;border-top:6px solid #000">
-<h2 style="font-size:26px;font-weight:900">DESCARGA LA APP<br>DE BAZAR LOS CUATES</h2>
-<p style="margin:12px 0;font-weight:600">Te aviso primero cuando suba piezas buenas. Se instala en 2 segundos.</p>
-<button id="btn-instalar-app" style="background:#000;color:#FFD600;border:0;padding:14px 20px;font-weight:900;width:90%;max-width:260px;margin:5px">📲 INSTALAR APP</button>
-<button id="btn-activar-push" style="background:#fff;color:#000;border:4px solid #000;padding:14px 20px;font-weight:900;width:90%;max-width:260px;margin:5px">🔔 ACTIVAR NOTIFICACIONES</button>
-<p id="estatus-push" style="margin-top:12px;font-weight:900"></p>
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bazar Los Cuates</title>
+<meta name="theme-color" content="#FFD600">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial Black,Arial,sans-serif}
+body{background:#0a0a0a;color:#fff}
+.top-yellow{background:#FFD600;color:#000;text-align:center;padding:8px;font-weight:900;font-size:14px}
+.header{background:#000;display:flex;justify-content:space-between;align-items:center;padding:12px 15px;position:sticky;top:0;z-index:10;border-bottom:3px solid #FFD600}
+.btn-wa{background:#FFD600;color:#000;padding:8px 16px;font-weight:900;text-decoration:none}
+.hero{padding:25px 20px}
+.hero h1{font-size:32px;font-weight:900;line-height:0.95}
+.hero h1 mark{background:#FFD600;color:#000;padding:0 6px}
+.grid{padding:15px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:#1a1a1a;border:2px solid #222;overflow:hidden}
+.card img{width:100%;height:160px;object-fit:cover}
+.card .info{padding:10px;font-size:14px}
+#descarga-app{background:#FFD600;color:#000;padding:35px 20px;text-align:center;margin-top:20px;border-top:6px solid #000}
+#descarga-app h2{font-size:26px;font-weight:900;line-height:1}
+.btn-black{background:#000;color:#FFD600;border:0;padding:14px 20px;font-weight:900;width:90%;max-width:280px;margin:6px;cursor:pointer}
+.btn-white{background:#fff;color:#000;border:4px solid #000;padding:14px 20px;font-weight:900;width:90%;max-width:280px;margin:6px;cursor:pointer}
+.footer{padding:20px;text-align:center;color:#777;background:#000;font-size:12px}
+</style>
+</head>
+<body>
+
+<div class="top-yellow">ENTREGA AV CONSTITUCION 216 JESUS MARIA - AGUASCALIENTES</div>
+<div class="top-yellow" style="border-top:2px solid #000;font-size:16px;padding:12px">ANUNCIATE AQUI $200 AL MES - WHATSAPP 4491883244</div>
+
+<div class="header">
+<div style="font-weight:900">BLC BAZAR LOS CUATES</div>
+<a class="btn-wa" href="https://wa.me/524491883244">WHATSAPP</a>
+</div>
+
+<div class="hero">
+<h1>PIEZAS BUENAS,<br><mark>PRECIO CLARO</mark><br>Y TRATO DIRECTO</h1>
+</div>
+
+<div id="catalogo" class="grid"></div>
+
+<section id="descarga-app">
+<h2>DESCARGA LA APP<br>DE BAZAR LOS CUATES</h2>
+<p style="margin:12px 0;font-weight:600;font-family:Arial">Te aviso primero cuando suba piezas buenas. Se instala en 2 segundos.</p>
+<button id="btn-instalar-app" class="btn-black">📲 INSTALAR APP</button>
+<button id="btn-activar-push" class="btn-white">🔔 ACTIVAR NOTIFICACIONES</button>
+<p id="estatus-push" style="margin-top:12px;font-weight:900;font-family:Arial"></p>
 </section>
 
+<div class="footer">Bazar Los Cuates - Av. Constitucion 216<br><a href="./admin.html" style="color:#555">Admin</a></div>
+
 <script>
-let deferredPrompt;const btnInstalar=document.getElementById('btn-instalar-app');
+async function cargarProductos(){
+  const cont=document.getElementById('catalogo');
+  try{
+    const r=await fetch('./productos.json?v='+Date.now());
+    const productos=await r.json();
+    cont.innerHTML=productos.map(p=>`
+      <div class="card">
+        <img src="${p.imagen || p.foto || ''}" onerror="this.src='https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600'">
+        <div class="info"><b>${p.nombre || p.titulo || 'Producto'}</b><br>$${p.precio || ''}</div>
+      </div>
+    `).join('');
+  }catch(e){
+    cont.innerHTML='<p style="padding:20px">Sube productos desde admin.html</p>';
+  }
+}
+cargarProductos();
+
+let deferredPrompt;
+const btnInstalar=document.getElementById('btn-instalar-app');
 window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredPrompt=e;btnInstalar.textContent='📲 INSTALAR APP - LISTA'});
-btnInstalar.addEventListener('click',async()=>{if(!deferredPrompt){alert('En Chrome dale a los 3 puntitos > Instalar app');return;}deferredPrompt.prompt();const r=await deferredPrompt.userChoice;if(r.outcome==='accepted'){btnInstalar.textContent='✅ APP INSTALADA';}deferredPrompt=null;});
-document.getElementById('btn-activar-push').addEventListener('click',async()=>{const s=document.getElementById('estatus-push');const p=await Notification.requestPermission();if(p!=='granted'){s.textContent='❌ Dale a Permitir';return;}s.textContent='🔔 ¡Activadas! Te aviso cuando suba piezas.';new Notification('Bazar Los Cuates',{body:'¡Listo! Ya te aviso de cada pieza nueva.'});});
+btnInstalar.addEventListener('click',async()=>{
+  if(!deferredPrompt){alert('En Chrome: 3 puntitos > Instalar app');return;}
+  deferredPrompt.prompt();
+  const r=await deferredPrompt.userChoice;
+  if(r.outcome==='accepted'){btnInstalar.textContent='✅ APP INSTALADA';}
+  deferredPrompt=null;
+});
+document.getElementById('btn-activar-push').addEventListener('click',async()=>{
+  const s=document.getElementById('estatus-push');
+  const perm=await Notification.requestPermission();
+  if(perm!=='granted'){s.textContent='❌ Dale a Permitir';return;}
+  s.textContent='🔔 ¡Activadas! Te aviso cuando suba piezas.';
+  new Notification('Bazar Los Cuates',{body:'¡Listo! Ya te aviso de cada pieza nueva.'});
+});
 </script>
+</body>
+</html>
