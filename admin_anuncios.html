@@ -3,42 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ADMIN ANUNCIOS V2</title>
+<title>ADMIN ANUNCIOS - Bazar Los Cuates</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
 body{background:#111;color:#fff;padding:20px}
 h1{background:#FFD600;color:#000;padding:12px;text-align:center;font-weight:900}
 .box{background:#1a1a1a;border:2px solid #333;padding:15px;margin:15px 0;border-radius:8px}
-input{width:100%;padding:12px;margin:6px 0;background:#222;border:2px solid #333;color:#fff}
+input{width:100%;padding:12px;margin:6px 0;background:#222;border:2px solid #333;color:#fff;font-size:15px}
 button{padding:12px;border:0;border-radius:6px;cursor:pointer;font-weight:900}
-.btn-add{background:#FFD600;color:#000;width:100%}
-.card-admin{display:flex;gap:12px;background:#222;padding:10px;margin:8px 0}
+.btn-add{background:#FFD600;color:#000;width:100%;margin-top:8px}
+.card-admin{display:flex;gap:12px;background:#222;padding:10px;margin:8px 0;border-radius:6px}
 .card-admin img{width:80px;height:80px;object-fit:cover}
 </style>
 </head>
 <body>
-<h1>ADMIN ANUNCIOS</h1>
-<p style="text-align:center;color:#888">Pon el WhatsApp del negocio que paga. Asi lo mandas directo a el.</p>
+<h1>ADMIN ANUNCIOS - CARRUSEL Y CATALOGO</h1>
+<p style="text-align:center;color:#888;padding:8px">Aquí subes negocios. Se ven arriba girando y cada 2 productos en el catálogo. Cada 3er espacio sale ANUNCIATE AQUI.</p>
 <div class="box">
-<input id="nombre" placeholder="Nombre negocio">
-<input id="whatsapp" placeholder="WhatsApp del negocio: 4491234567">
-<input id="precio" placeholder="Precio 200">
+<h3>Nuevo Anuncio</h3>
+<input id="nombre" placeholder="Nombre negocio: Ej. Taqueria El Güero">
+<input id="whatsapp" placeholder="WhatsApp del negocio: 4491234567 (10 digitos)">
+<input id="precio" placeholder="Precio 200 (deja vacio)">
 <input type="file" id="fileImg" accept="image/*">
-<input id="imgUrl" placeholder="https://... foto">
-<img id="preview" style="display:none;max-width:100%;max-height:200px">
-<button class="btn-add" id="btnGuardar">GUARDAR ANUNCIO</button>
-<p id="msg" style="color:#22c55e"></p>
+<input id="imgUrl" placeholder="O pega link de foto: https://...">
+<img id="preview" style="display:none;max-width:100%;max-height:200px;border:2px solid #333;margin-top:8px">
+<button class="btn-add" id="btnGuardar">💾 GUARDAR ANUNCIO</button>
+<p id="msg" style="color:#22c55e;margin-top:8px"></p>
 </div>
-<div class="box"><div id="lista"></div><a href="./index.html" style="color:#FFD600">← Volver</a></div>
+<div class="box">
+<h3>Anuncios Guardados (<span id="count">0</span>)</h3>
+<div id="lista"></div>
+<p style="text-align:center;margin-top:12px"><a href="./index.html" style="color:#FFD600">← Volver a pagina</a> | <a href="./admin.html" style="color:#FFD600">Admin Productos</a></p>
+</div>
 <script>
 let imgBase64="";const fileInput=document.getElementById('fileImg'),preview=document.getElementById('preview'),imgUrlInput=document.getElementById('imgUrl');
-fileInput.addEventListener('change',e=>{const file=e.target.files[0];const r=new FileReader();r.onload=ev=>{imgBase64=ev.target.result;preview.src=imgBase64;preview.style.display='block';imgUrlInput.value="";};r.readAsDataURL(file);});
+fileInput.addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{imgBase64=ev.target.result;preview.src=imgBase64;preview.style.display='block';imgUrlInput.value="";};r.readAsDataURL(file);});
 imgUrlInput.addEventListener('input',e=>{if(e.target.value){preview.src=e.target.value;preview.style.display='block';imgBase64="";}});
-function getAnuncios(){try{return JSON.parse(localStorage.getItem('bazar_anuncios'))||"[]"}catch{return[]}}
+function getAnuncios(){try{const g=localStorage.getItem('bazar_anuncios');if(g)return JSON.parse(g);}catch{}return[]}
 function saveAnuncios(a){localStorage.setItem('bazar_anuncios',JSON.stringify(a))}
-function render(){const lista=document.getElementById('lista');const anuncios=getAnuncios();lista.innerHTML="";anuncios.forEach(a=>{const d=document.createElement('div');d.className="card-admin";d.innerHTML=`<img src="${a.img}"><div style="flex:1"><b>${a.nombre}</b><br>WSP: ${a.whatsapp}<br>$${a.precio}<br><button onclick="borrar(${a.id})" style="background:#ff4444;color:#fff;padding:6px">Borrar</button></div>`;lista.appendChild(d);});}
-function borrar(id){saveAnuncios(getAnuncios().filter(p=>p.id!==id));render();}
-document.getElementById('btnGuardar').addEventListener('click',()=>{const nombre=document.getElementById('nombre').value.trim();let whatsapp=document.getElementById('whatsapp').value.trim().replace(/[^0-9]/g,'');const precio=document.getElementById('precio').value.trim()||'200';let img=imgBase64||document.getElementById('imgUrl').value.trim()||preview.src;if(!nombre||!img){alert('Falta nombre o foto');return;}if(!whatsapp)whatsapp='524491883244';else if(whatsapp.length===10)whatsapp='52'+whatsapp;let anuncios=getAnuncios();anuncios.unshift({id:Date.now(),nombre,whatsapp,precio,img});saveAnuncios(anuncios);document.getElementById('nombre').value='';document.getElementById('whatsapp').value='';document.getElementById('precio').value='';document.getElementById('imgUrl').value='';document.getElementById('fileImg').value='';preview.style.display='none';imgBase64='';document.getElementById('msg').innerText='Guardado! Cada 2 productos saldra un negocio';render();});render();
+function render(){const lista=document.getElementById('lista');const anuncios=getAnuncios();document.getElementById('count').innerText=anuncios.length;lista.innerHTML="";anuncios.forEach(a=>{const d=document.createElement('div');d.className="card-admin";d.innerHTML=`<img src="${a.img}"><div style="flex:1"><b>${a.nombre}</b><br>WSP: ${a.whatsapp||'4491883244'}<br>$${a.precio||200}<br><button onclick="borrar(${a.id})" style="background:#ff4444;color:#fff;padding:6px 10px;margin-top:4px">Borrar</button></div>`;lista.appendChild(d);});}
+function borrar(id){if(!confirm('Borrar este anuncio?'))return;saveAnuncios(getAnuncios().filter(p=>p.id!==id));render();}
+document.getElementById('btnGuardar').addEventListener('click',()=>{const nombre=document.getElementById('nombre').value.trim();let whatsapp=document.getElementById('whatsapp').value.trim().replace(/[^0-9]/g,'');const precio=document.getElementById('precio').value.trim()||'200';let img=imgBase64||document.getElementById('imgUrl').value.trim()||preview.src;if(!nombre){alert('Pon nombre');return;}if(!img||img.includes('preview')){alert('Pon foto');return;}if(!whatsapp)whatsapp='524491883244';else if(whatsapp.length===10)whatsapp='52'+whatsapp;let anuncios=getAnuncios();anuncios.unshift({id:Date.now(),nombre,whatsapp,precio,img});saveAnuncios(anuncios);document.getElementById('nombre').value='';document.getElementById('whatsapp').value='';document.getElementById('precio').value='';document.getElementById('imgUrl').value='';document.getElementById('fileImg').value='';preview.style.display='none';imgBase64='';document.getElementById('msg').innerText='✅ Guardado! Arriba gira y cada 2 productos sale un negocio.';render();});render();
 </script>
 </body>
 </html>
