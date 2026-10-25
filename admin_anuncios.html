@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ADMIN ANUNCIOS</title>
+<title>ADMIN ANUNCIOS V2</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
 body{background:#111;color:#fff;padding:20px}
@@ -17,25 +17,28 @@ button{padding:12px;border:0;border-radius:6px;cursor:pointer;font-weight:900}
 </style>
 </head>
 <body>
-<h1>ADMIN ANUNCIOS - CARRUSEL ARRIBA</h1>
+<h1>ADMIN ANUNCIOS</h1>
+<p style="text-align:center;color:#888">Pon el WhatsApp del negocio que paga. Asi lo mandas directo a el.</p>
 <div class="box">
-<input id="nombre" placeholder="Nombre negocio: Ej. Taquería El Güero">
+<input id="nombre" placeholder="Nombre negocio">
+<input id="whatsapp" placeholder="WhatsApp del negocio: 4491234567">
 <input id="precio" placeholder="Precio 200">
 <input type="file" id="fileImg" accept="image/*">
-<input id="imgUrl" placeholder="https://...">
+<input id="imgUrl" placeholder="https://... foto">
 <img id="preview" style="display:none;max-width:100%;max-height:200px">
 <button class="btn-add" id="btnGuardar">GUARDAR ANUNCIO</button>
-<p id="msg"></p>
+<p id="msg" style="color:#22c55e"></p>
 </div>
-<div class="box"><div id="lista"></div><a href="./index.html">Volver</a></div>
+<div class="box"><div id="lista"></div><a href="./index.html" style="color:#FFD600">← Volver</a></div>
 <script>
 let imgBase64="";const fileInput=document.getElementById('fileImg'),preview=document.getElementById('preview'),imgUrlInput=document.getElementById('imgUrl');
 fileInput.addEventListener('change',e=>{const file=e.target.files[0];const r=new FileReader();r.onload=ev=>{imgBase64=ev.target.result;preview.src=imgBase64;preview.style.display='block';imgUrlInput.value="";};r.readAsDataURL(file);});
-function getAnuncios(){try{return JSON.parse(localStorage.getItem('bazar_anuncios'))||"[]")}catch{return[]}}
+imgUrlInput.addEventListener('input',e=>{if(e.target.value){preview.src=e.target.value;preview.style.display='block';imgBase64="";}});
+function getAnuncios(){try{return JSON.parse(localStorage.getItem('bazar_anuncios'))||"[]"}catch{return[]}}
 function saveAnuncios(a){localStorage.setItem('bazar_anuncios',JSON.stringify(a))}
-function render(){const lista=document.getElementById('lista');lista.innerHTML="";getAnuncios().forEach(a=>{const d=document.createElement('div');d.className="card-admin";d.innerHTML=`<img src="${a.img}"><div><b>${a.nombre}</b><br><button onclick="borrar(${a.id})">Borrar</button></div>`;lista.appendChild(d);});}
+function render(){const lista=document.getElementById('lista');const anuncios=getAnuncios();lista.innerHTML="";anuncios.forEach(a=>{const d=document.createElement('div');d.className="card-admin";d.innerHTML=`<img src="${a.img}"><div style="flex:1"><b>${a.nombre}</b><br>WSP: ${a.whatsapp}<br>$${a.precio}<br><button onclick="borrar(${a.id})" style="background:#ff4444;color:#fff;padding:6px">Borrar</button></div>`;lista.appendChild(d);});}
 function borrar(id){saveAnuncios(getAnuncios().filter(p=>p.id!==id));render();}
-document.getElementById('btnGuardar').addEventListener('click',()=>{const nombre=document.getElementById('nombre').value;const precio=document.getElementById('precio').value||"200";let img=imgBase64||document.getElementById('imgUrl').value;if(!nombre||!img){alert('Falta nombre o foto');return;}let anuncios=getAnuncios();anuncios.unshift({id:Date.now(),nombre,precio,img});saveAnuncios(anuncios);document.getElementById('nombre').value="";preview.style.display='none';imgBase64="";render();document.getElementById('msg').innerText="Guardado! Ya gira arriba";});render();
+document.getElementById('btnGuardar').addEventListener('click',()=>{const nombre=document.getElementById('nombre').value.trim();let whatsapp=document.getElementById('whatsapp').value.trim().replace(/[^0-9]/g,'');const precio=document.getElementById('precio').value.trim()||'200';let img=imgBase64||document.getElementById('imgUrl').value.trim()||preview.src;if(!nombre||!img){alert('Falta nombre o foto');return;}if(!whatsapp)whatsapp='524491883244';else if(whatsapp.length===10)whatsapp='52'+whatsapp;let anuncios=getAnuncios();anuncios.unshift({id:Date.now(),nombre,whatsapp,precio,img});saveAnuncios(anuncios);document.getElementById('nombre').value='';document.getElementById('whatsapp').value='';document.getElementById('precio').value='';document.getElementById('imgUrl').value='';document.getElementById('fileImg').value='';preview.style.display='none';imgBase64='';document.getElementById('msg').innerText='Guardado! Cada 2 productos saldra un negocio';render();});render();
 </script>
 </body>
 </html>
