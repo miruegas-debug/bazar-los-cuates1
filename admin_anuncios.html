@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADMIN ANUNCIOS</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#111;color:#fff;padding:20px}
+h1{background:#FFD600;color:#000;padding:12px;text-align:center;font-weight:900}
+.box{background:#1a1a1a;border:2px solid #333;padding:15px;margin:15px 0;border-radius:8px}
+input{width:100%;padding:12px;margin:6px 0;background:#222;border:2px solid #333;color:#fff}
+button{padding:12px;border:0;border-radius:6px;cursor:pointer;font-weight:900}
+.btn-add{background:#FFD600;color:#000;width:100%}
+.card-admin{display:flex;gap:12px;background:#222;padding:10px;margin:8px 0}
+.card-admin img{width:80px;height:80px;object-fit:cover}
+</style>
+</head>
+<body>
+<h1>ADMIN ANUNCIOS - CARRUSEL ARRIBA</h1>
+<div class="box">
+<input id="nombre" placeholder="Nombre negocio: Ej. Taquería El Güero">
+<input id="precio" placeholder="Precio 200">
+<input type="file" id="fileImg" accept="image/*">
+<input id="imgUrl" placeholder="https://...">
+<img id="preview" style="display:none;max-width:100%;max-height:200px">
+<button class="btn-add" id="btnGuardar">GUARDAR ANUNCIO</button>
+<p id="msg"></p>
+</div>
+<div class="box"><div id="lista"></div><a href="./index.html">Volver</a></div>
+<script>
+let imgBase64="";const fileInput=document.getElementById('fileImg'),preview=document.getElementById('preview'),imgUrlInput=document.getElementById('imgUrl');
+fileInput.addEventListener('change',e=>{const file=e.target.files[0];const r=new FileReader();r.onload=ev=>{imgBase64=ev.target.result;preview.src=imgBase64;preview.style.display='block';imgUrlInput.value="";};r.readAsDataURL(file);});
+function getAnuncios(){try{return JSON.parse(localStorage.getItem('bazar_anuncios'))||"[]")}catch{return[]}}
+function saveAnuncios(a){localStorage.setItem('bazar_anuncios',JSON.stringify(a))}
+function render(){const lista=document.getElementById('lista');lista.innerHTML="";getAnuncios().forEach(a=>{const d=document.createElement('div');d.className="card-admin";d.innerHTML=`<img src="${a.img}"><div><b>${a.nombre}</b><br><button onclick="borrar(${a.id})">Borrar</button></div>`;lista.appendChild(d);});}
+function borrar(id){saveAnuncios(getAnuncios().filter(p=>p.id!==id));render();}
+document.getElementById('btnGuardar').addEventListener('click',()=>{const nombre=document.getElementById('nombre').value;const precio=document.getElementById('precio').value||"200";let img=imgBase64||document.getElementById('imgUrl').value;if(!nombre||!img){alert('Falta nombre o foto');return;}let anuncios=getAnuncios();anuncios.unshift({id:Date.now(),nombre,precio,img});saveAnuncios(anuncios);document.getElementById('nombre').value="";preview.style.display='none';imgBase64="";render();document.getElementById('msg').innerText="Guardado! Ya gira arriba";});render();
+</script>
+</body>
+</html>
