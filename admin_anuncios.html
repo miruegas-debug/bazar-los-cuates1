@@ -3,64 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ADMIN ANUNCIOS + PRECIO</title>
+<title>ADMIN ANUNCIOS</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
 body{background:#111;color:#fff;padding:20px}
-h1{background:#FFD600;color:#000;padding:12px;text-align:center;font-weight:900;font-size:20px}
+h1{background:#FFD600;color:#000;padding:12px;text-align:center;font-weight:900}
 .box{background:#1a1a1a;border:2px solid #333;padding:15px;margin:15px 0;border-radius:10px}
-input{width:100%;padding:14px;margin:8px 0;background:#222;border:2px solid #444;color:#fff;font-size:16px;border-radius:6px}
-button{padding:14px;border:0;border-radius:8px;cursor:pointer;font-weight:900;font-size:16px}
+input{width:100%;padding:14px;margin:8px 0;background:#222;border:2px solid #444;color:#fff;border-radius:6px}
+button{padding:14px;border:0;border-radius:8px;cursor:pointer;font-weight:900}
 .btn-add{background:#FFD600;color:#000;width:100%;margin-top:10px}
 .btn-precio{background:#fff;color:#000;width:100%;margin-top:8px;border:3px solid #FFD600}
 .card-admin{display:flex;gap:12px;background:#222;padding:10px;margin:8px 0;border-radius:8px}
 .card-admin img{width:70px;height:70px;object-fit:cover}
-#preview{max-width:100%;max-height:200px;border:3px solid #333;margin-top:10px;display:none;border-radius:8px}
+#preview{max-width:100%;max-height:200px;display:none;margin-top:10px;border-radius:8px}
 </style>
 </head>
 <body>
 <h1>ADMIN ANUNCIOS</h1>
-
 <div class="box">
 <h3 style="color:#FFD600">💰 PRECIO DEL ANUNCIO</h3>
-<p style="color:#888;font-size:13px">¿Cuánto cobras? Se verá en todos los letreros de ANUNCIATE AQUI</p>
 <input id="precioGlobal" type="number" placeholder="200">
-<button class="btn-precio" id="btnPrecio">💾 CAMBIAR PRECIO A ESTE</button>
-<p style="color:#22c55e;margin-top:8px" id="msgPrecio"></p>
-<p style="margin-top:8px">Precio actual: <b id="precioActual" style="color:#FFD600;font-size:20px">$200</b> al mes</p>
+<button class="btn-precio" id="btnPrecio">💾 CAMBIAR PRECIO</button>
+<p>Precio actual: <b id="precioActual" style="color:#FFD600;font-size:20px">$200</b></p>
+<p id="msgPrecio" style="color:#22c55e"></p>
 </div>
-
 <div class="box">
-<h3>Nuevo Negocio</h3>
 <input id="nombre" placeholder="1. Nombre del negocio">
 <input id="whatsapp" placeholder="2. WhatsApp: 4491234567">
-<p style="color:#FFD600;font-size:13px;margin-top:8px">3. Foto del negocio:</p>
+<p style="color:#FFD600;font-size:13px">3. Foto del negocio:</p>
 <input type="file" id="fileImg" accept="image/*">
 <img id="preview">
 <button class="btn-add" id="btnGuardar">💾 GUARDAR NEGOCIO</button>
 <p id="msg" style="color:#22c55e;margin-top:10px;font-weight:900"></p>
 </div>
-
 <div class="box">
 <h3>Guardados (<span id="count">0</span>)</h3>
 <div id="lista"></div>
-<a href="./index.html" style="color:#FFD600;display:block;text-align:center;margin-top:15px">← Volver a tu página</a>
+<a href="./index.html" style="color:#FFD600;display:block;text-align:center;margin-top:15px">← Volver</a>
 </div>
-
 <script>
 let imgBase64="";const fileInput=document.getElementById('fileImg'),preview=document.getElementById('preview');
 fileInput.addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=ev=>{imgBase64=ev.target.result;preview.src=imgBase64;preview.style.display='block';};r.readAsDataURL(file);});
-
 function getPrecio(){return localStorage.getItem('bazar_banner_precio')||'200';}
 function setPrecio(v){localStorage.setItem('bazar_banner_precio',v);document.getElementById('precioActual').innerText='$'+v;document.getElementById('msgPrecio').innerText='✅ Precio cambiado a $'+v;}
 document.getElementById('precioActual').innerText='$'+getPrecio();
-document.getElementById('btnPrecio').addEventListener('click',()=>{let v=document.getElementById('precioGlobal').value.trim();if(!v){alert('Pon un precio ej. 200');return;}setPrecio(v);document.getElementById('precioGlobal').value='';});
-
+document.getElementById('btnPrecio').addEventListener('click',()=>{let v=document.getElementById('precioGlobal').value.trim();if(!v){alert('Pon precio');return;}setPrecio(v);document.getElementById('precioGlobal').value='';});
 function getAnuncios(){try{return JSON.parse(localStorage.getItem('bazar_anuncios'))||[]}catch{return[]}}
 function saveAnuncios(a){localStorage.setItem('bazar_anuncios',JSON.stringify(a))}
-function render(){const lista=document.getElementById('lista');const anuncios=getAnuncios();document.getElementById('count').innerText=anuncios.length;lista.innerHTML="";anuncios.forEach(a=>{const d=document.createElement('div');d.className="card-admin";d.innerHTML=`<img src="${a.img}"><div style="flex:1"><b>${a.nombre}</b><br>WSP: ${a.whatsapp}<br><button onclick="borrar(${a.id})" style="background:#ff4444;color:#fff;padding:6px 10px;margin-top:4px;border-radius:4px">Borrar</button></div>`;lista.appendChild(d);});}
+function render(){const lista=document.getElementById('lista');const anuncios=getAnuncios();document.getElementById('count').innerText=anuncios.length;lista.innerHTML="";anuncios.forEach(a=>{const d=document.createElement('div');d.className="card-admin";d.innerHTML=`<img src="${a.img}"><div style="flex:1"><b>${a.nombre}</b><br>${a.whatsapp}<br><button onclick="borrar(${a.id})" style="background:#ff4444;color:#fff;padding:6px 10px;margin-top:4px">Borrar</button></div>`;lista.appendChild(d);});}
 function borrar(id){if(!confirm('¿Borrar?'))return;saveAnuncios(getAnuncios().filter(p=>p.id!==id));render();}
-document.getElementById('btnGuardar').addEventListener('click',()=>{const nombre=document.getElementById('nombre').value.trim();let whatsapp=document.getElementById('whatsapp').value.trim().replace(/[^0-9]/g,'');if(!nombre){alert('Pon nombre');return;}if(!imgBase64){alert('Selecciona foto');return;}if(!whatsapp)whatsapp='524491883244';else if(whatsapp.length===10)whatsapp='52'+whatsapp;let anuncios=getAnuncios();anuncios.unshift({id:Date.now(),nombre,whatsapp,img:imgBase64});saveAnuncios(anuncios);document.getElementById('nombre').value='';document.getElementById('whatsapp').value='';document.getElementById('fileImg').value='';preview.style.display='none';imgBase64='';document.getElementById('msg').innerText='✅ ¡Guardado!';render();});render();
+document.getElementById('btnGuardar').addEventListener('click',()=>{const nombre=document.getElementById('nombre').value.trim();let whatsapp=document.getElementById('whatsapp').value.trim().replace(/[^0-9]/g,'');if(!nombre){alert('Pon nombre');return;}if(!imgBase64){alert('Pon foto');return;}if(!whatsapp)whatsapp='524491883244';else if(whatsapp.length===10)whatsapp='52'+whatsapp;let anuncios=getAnuncios();anuncios.unshift({id:Date.now(),nombre,whatsapp,img:imgBase64});saveAnuncios(anuncios);document.getElementById('nombre').value='';document.getElementById('whatsapp').value='';document.getElementById('fileImg').value='';preview.style.display='none';imgBase64='';document.getElementById('msg').innerText='✅ ¡Guardado!';render();});render();
 </script>
 </body>
 </html>
