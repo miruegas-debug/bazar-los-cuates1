@@ -103,7 +103,7 @@ return;
 filtrados.forEach(p=>{
 let imgSrc = (p.fotos && p.fotos[0]) ? p.fotos[0] : p.img;
 if(!imgSrc) imgSrc = "https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600";
-const mensaje = `Hola Bazar Los Cuates, me interesa esta pieza:%0A%0A*${p.nombre}*%0APrecio: ${p.precio}%0A%0AVi la foto en la app, ¿sigue disponible?`;
+const mensaje = `Hola Bazar Los Cuates, me interesa esta pieza: ${p.nombre} Precio: ${p.precio}. Vi la foto en la app`;
 const waLink = `https://wa.me/524491883244?text=${encodeURIComponent(mensaje)}`;
 const div=document.createElement('div');
 div.className="card";
