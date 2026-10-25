@@ -1,23 +1,27 @@
 {
-  "name": "Bazar Los Cuates - Jesus Maria",
+  "name": "Bazar Los Cuates",
   "short_name": "BLC",
-  "description": "Piezas buenas, precio claro y trato directo",
-  "start_url": "/bazar-los-cuates1/",
-  "scope": "/bazar-los-cuates1/",
+  "description": "Piezas buenas, precio claro - Jesús María",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#FFD600",
   "icons": [
     {
       "src": "./869268815_1422434703341051_8980595446836735717_n.jpg",
-      "sizes": "512x512",
-      "type": "image/jpeg",
-      "purpose": "any maskable"
+      "sizes": "192x192",
+      "type": "image/jpeg"
     },
     {
       "src": "./869571887_1545214670744097_5139767720367970231_n.jpg",
-      "sizes": "192x192",
+      "sizes": "512x512",
       "type": "image/jpeg"
+    },
+    {
+      "src": "./869571887_1545214670744097_5139767720367970231_n.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
     }
   ]
 }
