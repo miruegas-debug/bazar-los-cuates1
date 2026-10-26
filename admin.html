@@ -7,7 +7,7 @@ h1{text-align:center;color:#FFD600;margin:10px 0}
 .tabs{display:flex;gap:6px;margin:12px 0;flex-wrap:wrap} .tab{flex:1;padding:12px;background:#222;border:1px solid #333;border-radius:8px;color:#fff;font-weight:900;cursor:pointer;text-align:center} .tab.activo{background:#FFD600;color:#000}
 .panel{display:none;background:#1a1a1a;padding:14px;border-radius:10px;border:1px solid #333;margin-bottom:12px} .panel.activo{display:block}
 input,select{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:2px solid #333;background:#111;color:#fff}
-.btn{width:100%;padding:14px;background:#FFD600;color:#000;border:0;border-radius:8px;font-weight:900;margin-top:8px;cursor:pointer}
+.btn{width:100%;padding:14px;background:#FFD600;color:#000;border:0;border-radius:8px;font-weight:900;margin-top:8px;cursor:pointer} .btn:disabled{background:#555;color:#888}
 .item{background:#222;padding:10px;border-radius:8px;margin:8px 0;display:flex;gap:10px;align-items:center;border:1px solid #333}
 .item img{width:60px;height:60px;object-fit:cover;border-radius:8px}
 .item .info{flex:1} .item .info b{display:block;color:#FFD600} .item .info small{color:#888}
@@ -38,7 +38,7 @@ input,select{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:2px s
 <input id="p-nombre" placeholder="Nombre ej: Cuna azul">
 <input id="p-precio" placeholder="Precio ej: 600">
 <input id="p-foto" type="file" accept="image/*">
-<button class="btn" onclick="subirPieza()">GUARDAR PIEZA</button>
+<button class="btn" id="btn-pieza" onclick="subirPieza()">GUARDAR PIEZA</button>
 <div id="lista-piezas"></div>
 </div>
 
@@ -47,14 +47,14 @@ input,select{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:2px s
 <input id="a-nombre" placeholder="Nombre negocio ej: Prueba 1">
 <input id="a-whatsapp" placeholder="WhatsApp ej: 4491883244">
 <input id="a-foto" type="file" accept="image/*">
-<button class="btn" onclick="subirAnuncio()">GUARDAR ANUNCIO</button>
+<button class="btn" id="btn-anuncio" onclick="subirAnuncio()">GUARDAR ANUNCIO</button>
 <div id="lista-anuncios"></div>
 </div>
 
 <div id="panel-portadas" class="panel">
 <h3>Subir foto portada grande</h3>
 <input id="portada-foto" type="file" accept="image/*">
-<button class="btn" onclick="subirPortada()">GUARDAR PORTADA</button>
+<button class="btn" id="btn-portada" onclick="subirPortada()">GUARDAR PORTADA</button>
 <div id="lista-portadas"></div>
 </div>
 
@@ -63,7 +63,7 @@ input,select{width:100%;padding:12px;margin:6px 0;border-radius:8px;border:2px s
 <input id="c-precio" placeholder="Precio Anunciate Aqui ej: 200">
 <input id="c-pass" placeholder="Nueva contraseña admin">
 <button class="btn" onclick="guardarConfig()">GUARDAR CONFIG</button>
-<p style="margin-top:10px;color:#888;font-size:12px">Visitas hoy y totales y clics de banner se ven en Firebase > stats</p>
+<p style="margin-top:10px;color:#888;font-size:12px">Visitas y clics se ven en Firebase > stats</p>
 <a href="./index.html" style="display:block;text-align:center;margin-top:14px;color:#FFD600">VER TIENDA</a>
 </div>
 </div>
@@ -87,7 +87,7 @@ window.showTab=function(t){
  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('activo'));
  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('activo'));
  document.getElementById('panel-'+t).classList.add('activo');
- event.target.classList.add('activo');
+ if(event) event.target.classList.add('activo');
  if(t==='anuncios') cargarAnuncios();
  if(t==='piezas') cargarPiezas();
  if(t==='portadas') cargarPortadas();
@@ -101,26 +101,71 @@ window.entrar=async()=>{
  else{document.getElementById('loginError').style.display='block';}
 }
 
-function fileToBase64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});}
+// ESTA ES LA NUEVA FUNCION QUE COMPRIME LAS FOTOS
+function fileToBase64(file){
+  return new Promise((res, rej) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      img.src = e.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+        if(width > 800){
+          height = (height * 800) / width;
+          width = 800;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        res(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.onerror = rej;
+    };
+    reader.onerror = rej;
+    reader.readAsDataURL(file);
+  });
+}
 
 window.subirPieza=async()=>{
- const nombre=document.getElementById('p-nombre').value; const precio=document.getElementById('p-precio').value; const file=document.getElementById('p-foto').files[0];
+ const btn=document.getElementById('btn-pieza');
+ const nombre=document.getElementById('p-nombre').value; 
+ const precio=document.getElementById('p-precio').value; 
+ const file=document.getElementById('p-foto').files[0];
  if(!nombre||!precio||!file) return alert('Falta dato');
- const foto=await fileToBase64(file);
- await addDoc(collection(db,"productos"),{nombre,precio,foto,fecha:Date.now()});
- alert('Pieza guardada'); document.getElementById('p-nombre').value='';document.getElementById('p-precio').value=''; cargarPiezas();
+ btn.innerText="SUBIENDO... ESPERA"; btn.disabled=true;
+ try{
+   const foto=await fileToBase64(file);
+   await addDoc(collection(db,"productos"),{nombre,precio,foto,fecha:Date.now()});
+   alert('Pieza guardada'); 
+   document.getElementById('p-nombre').value='';document.getElementById('p-precio').value='';document.getElementById('p-foto').value='';
+   cargarPiezas();
+ }catch(e){alert('Error: '+e.message);}finally{btn.innerText="GUARDAR PIEZA"; btn.disabled=false;}
 }
+
 async function cargarPiezas(){
  const snap=await getDocs(collection(db,"productos")); const cont=document.getElementById('lista-piezas'); cont.innerHTML='';
  snap.forEach(d=>{const data=d.data(); const div=document.createElement('div'); div.className='item'; div.innerHTML=`<img src="${data.foto}"><div class="info"><b>${data.nombre}</b><small>$${data.precio}</small></div><button class="btn-borrar" onclick="borrarDoc('productos','${d.id}')">X</button>`; cont.appendChild(div);});
 }
+
 window.subirAnuncio=async()=>{
- const nombre=document.getElementById('a-nombre').value; const whatsapp=document.getElementById('a-whatsapp').value; const file=document.getElementById('a-foto').files[0];
+ const btn=document.getElementById('btn-anuncio');
+ const nombre=document.getElementById('a-nombre').value; 
+ const whatsapp=document.getElementById('a-whatsapp').value; 
+ const file=document.getElementById('a-foto').files[0];
  if(!nombre||!whatsapp||!file) return alert('Falta dato');
- const img=await fileToBase64(file);
- await addDoc(collection(db,"anuncios"),{nombre,whatsapp,img,clicks:0,fecha:Date.now()});
- alert('Anuncio guardado'); document.getElementById('a-nombre').value='';document.getElementById('a-whatsapp').value=''; cargarAnuncios();
+ btn.innerText="SUBIENDO... ESPERA"; btn.disabled=true;
+ try{
+   const img=await fileToBase64(file);
+   await addDoc(collection(db,"anuncios"),{nombre,whatsapp,img,clicks:0,fecha:Date.now()});
+   alert('Anuncio guardado'); 
+   document.getElementById('a-nombre').value='';document.getElementById('a-whatsapp').value='';document.getElementById('a-foto').value='';
+   cargarAnuncios();
+ }catch(e){alert('Error: '+e.message);}finally{btn.innerText="GUARDAR ANUNCIO"; btn.disabled=false;}
 }
+
 async function cargarAnuncios(){
  const snap=await getDocs(collection(db,"anuncios")); const cont=document.getElementById('lista-anuncios'); cont.innerHTML='';
  snap.forEach(d=>{
@@ -133,12 +178,11 @@ async function cargarAnuncios(){
       <b>${data.nombre}</b>
       <small>WA: ${data.whatsapp}</small>
       <div class="clics-box">👁️ CLICS: ${clicks} <span>(no editable)</span></div>
-      <input value="${clicks} clics totales - Este banner" readonly style="background:#222;border:1px dashed #555;color:#FFD600;font-weight:900;text-align:center;margin-top:6px">
+      <input value="${clicks} clics totales" readonly style="background:#222;border:1px dashed #555;color:#FFD600;font-weight:900;text-align:center;margin-top:6px">
     </div>
     <button class="btn-borrar" onclick="borrarDoc('anuncios','${d.id}')">X</button>`;
   cont.appendChild(div);
  });
- // Mostrar tambien total de stats
  const ref=doc(db,"stats","banner_clicks"); const snapStats=await getDoc(ref);
  if(snapStats.exists()){
   const totalDiv=document.createElement('div'); totalDiv.style.cssText='background:#FFD600;color:#000;padding:10px;border-radius:8px;font-weight:900;text-align:center;margin-top:10px';
@@ -146,15 +190,25 @@ async function cargarAnuncios(){
   cont.appendChild(totalDiv);
  }
 }
+
 window.subirPortada=async()=>{
+ const btn=document.getElementById('btn-portada');
  const file=document.getElementById('portada-foto').files[0]; if(!file) return alert('Falta foto');
- const foto=await fileToBase64(file); await addDoc(collection(db,"portadas"),{foto,fecha:Date.now()});
- alert('Portada guardada'); cargarPortadas();
+ btn.innerText="SUBIENDO... ESPERA"; btn.disabled=true;
+ try{
+   const foto=await fileToBase64(file); 
+   await addDoc(collection(db,"portadas"),{foto,fecha:Date.now()});
+   alert('Portada guardada'); 
+   document.getElementById('portada-foto').value='';
+   cargarPortadas();
+ }catch(e){alert('Error: '+e.message);}finally{btn.innerText="GUARDAR PORTADA"; btn.disabled=false;}
 }
+
 async function cargarPortadas(){
  const snap=await getDocs(collection(db,"portadas")); const cont=document.getElementById('lista-portadas'); cont.innerHTML='';
  snap.forEach(d=>{const data=d.data(); const div=document.createElement('div'); div.className='item'; div.innerHTML=`<img src="${data.foto}"><div class="info"><b>Portada</b></div><button class="btn-borrar" onclick="borrarDoc('portadas','${d.id}')">X</button>`; cont.appendChild(div);});
 }
+
 window.borrarDoc=async(col,id)=>{if(!confirm('¿Borrar?'))return; await deleteDoc(doc(db,col,id)); if(col==='productos')cargarPiezas(); if(col==='anuncios')cargarAnuncios(); if(col==='portadas')cargarPortadas();}
 window.guardarConfig=async()=>{
  const precio=document.getElementById('c-precio').value; const pass=document.getElementById('c-pass').value;
