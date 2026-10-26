@@ -4,7 +4,6 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Arial}
 .top-bar{background:#FFD600;color:#000;text-align:center;padding:6px;font-size:12px;font-weight:900}
-/* BANNER AHORA MAS GRANDE QUE PORTADA */
 .slider-top{background:#111;overflow:hidden;height:285px;border-bottom:3px solid #FFD600} 
 .top-track{display:flex;transition:transform 0.6s ease;width:100%} 
 .top-slide{min-width:100%;display:flex;align-items:center;gap:18px;padding:20px;cursor:pointer;box-sizing:border-box;flex-shrink:0}
@@ -17,6 +16,20 @@
 .contador{padding:8px 12px;background:#0a0a0a;color:#888;font-size:11px;display:flex;gap:15px;justify-content:center;border-bottom:1px solid #1a1a1a} .contador span{color:#FFD600;font-weight:900}
 .catalogo{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px} .card{background:#1a1a1a;border-radius:10px;overflow:hidden;border:1px solid #222} .card img{width:100%;height:160px;object-fit:cover} .card .info{padding:10px} .card b{font-size:13px;display:block} .card .btn{display:block;background:#FFD600;color:#000;text-align:center;padding:10px;border-radius:6px;text-decoration:none;font-weight:900;margin-top:6px;font-size:12px}
 .acciones{padding:12px;display:flex;flex-direction:column;gap:8px} .btn-app{padding:14px;border-radius:10px;border:0;font-weight:900;width:100%;display:block;text-align:center;text-decoration:none} .btn-instalar{background:#FFD600;color:#000}
+/* POP UP APP - PULL UP */
+#appModal{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;align-items:flex-end;justify-content:center;z-index:9999;padding:0;animation:fadeIn .3s}
+#appModal.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-box{background:#1a1a1a;border-top:3px solid #FFD600;border-left:2px solid #FFD600;border-right:2px solid #FFD600;border-radius:20px 20px 0 0;padding:26px 22px;width:100%;max-width:480px;text-align:center;animation:slideUp .4s ease}
+.modal-box h2{color:#FFD600;font-size:24px;margin-bottom:6px} .modal-box p{color:#ccc;font-size:14px;margin-bottom:18px;line-height:1.4}
+.modal-box .btn{padding:14px;border-radius:12px;display:block;text-decoration:none;font-weight:900;margin-bottom:10px;font-size:15px}
+.btn-si{background:#FFD600;color:#000} .btn-no{background:#222;color:#888;border:1px solid #333}
+/* FOOTER APPS */
+.footer-apps{background:#111;border-top:3px solid #FFD600;padding:24px 18px;text-align:center;margin-top:24px}
+.footer-apps h3{color:#FFD600;font-size:19px;margin-bottom:6px} .footer-apps p{color:#999;font-size:13px;margin:8px 0 16px;line-height:1.4}
+.footer-apps .btn-cotizar{background:#FFD600;color:#000;padding:14px 22px;border-radius:12px;text-decoration:none;font-weight:900;display:inline-block;font-size:15px}
+.footer-apps .sub{margin-top:18px;color:#444;font-size:11px}
 </style></head><body>
 <div class="top-bar">BAZAR LOS CUATES - JESÚS MARÍA, AGS</div>
 <div class="slider-top"><div id="topTrack" class="top-track"></div></div>
@@ -28,12 +41,34 @@
 <a href="./BLC.apk" download class="btn-app btn-instalar">📥 DESCARGAR APLICACIÓN</a>
 <a href="./admin.html" style="text-align:center;color:#555;font-size:11px;text-decoration:none;margin-top:14px;display:block">Admin</a>
 </div>
+
+<!-- FOOTER QUIERES UNA APP? -->
+<div class="footer-apps">
+<h3>¿Quieres una app o página web como esta?</h3>
+<p>Nosotros te hacemos tu aplicación o página para tu negocio. Tu propio bazar, tienda o catálogo online.<br>Desde $500 pesos. Entrega rápida.</p>
+<a class="btn-cotizar" href="https://wa.me/524491883244?text=Hola%20vi%20la%20pagina%20del%20Bazar%20Los%20Cuates%20y%20me%20interesa%20que%20me%20hagan%20una%20app%20o%20pagina%20web%20para%20mi%20negocio" target="_blank">📲 COTIZAR MI APP / WEB</a>
+<div class="sub">Bazar Los Cuates • Jesús María, Ags • Hecho en Ags</div>
+</div>
+
+<!-- POP UP / PULL UP APP -->
+<div id="appModal">
+<div class="modal-box">
+<h2>📲 ¡Lleva el Bazar en tu cel!</h2>
+<p>Descarga nuestra aplicación oficial y ve todas las piezas más rápido, sin entrar al navegador.</p>
+<a href="./BLC.apk" download class="btn btn-si" onclick="cerrarModal()">📥 DESCARGAR APP AHORA</a>
+<a href="#" class="btn btn-no" onclick="cerrarModal();return false;">Seguir viendo la página</a>
+</div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4", authDomain: "bazar-los-cuates.firebaseapp.com", projectId: "bazar-los-cuates", storageBucket: "bazar-los-cuates.firebasestorage.app", messagingSenderId: "908351301550", appId: "1:908351301550:web:3ae25892920ce8dda24a3f" };
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
 let productosNube=[]; let filtro="";
+function cerrarModal(){document.getElementById('appModal').classList.remove('show'); localStorage.setItem('appModalVisto','1');}
+window.cerrarModal=cerrarModal;
+setTimeout(()=>{ if(!localStorage.getItem('appModalVisto')){document.getElementById('appModal').classList.add('show');} },2200);
 async function registrarClickBanner(id,nombre){ try{ const ref=doc(db,"stats","banner_clicks"); const snap=await getDoc(ref); let data=snap.exists()?snap.data():{}; data[nombre]=(data[nombre]||0)+1; data.total=(data.total||0)+1; data.ultimo=new Date().toLocaleString(); await setDoc(ref,data,{merge:true}); if(id){ await updateDoc(doc(db,"anuncios",id),{clicks: increment(1)}).catch(()=>{});} }catch(e){} }
 async function cargarProductos(){ const snap=await getDocs(collection(db,"productos")); productosNube=[]; snap.forEach(d=>productosNube.push({id:d.id,...d.data()})); productosNube.sort(()=>Math.random()-0.5); renderCatalogo(); }
 function renderCatalogo(){ const cont=document.getElementById('catalogo'); const lista=productosNube.filter(x=>(x.nombre+" "+x.precio).toLowerCase().includes(filtro.toLowerCase())); cont.innerHTML=""; if(lista.length==0){cont.innerHTML="<p style='grid-column:1/3;text-align:center;padding:30px;color:#666'>No hay piezas</p>";return;} lista.forEach(prod=>{ const wa=`https://wa.me/524491883244?text=${encodeURIComponent('Hola me interesa '+prod.nombre+' $'+prod.precio)}`; const d=document.createElement('div'); d.className='card'; d.innerHTML=`<img src="${prod.foto}"><div class="info"><b>${prod.nombre}</b><span style="color:#FFD600;font-weight:900">$${prod.precio}</span><a class="btn" href="${wa}" target="_blank">📲 ¡ME INTERESA!</a></div>`; cont.appendChild(d); }); }
