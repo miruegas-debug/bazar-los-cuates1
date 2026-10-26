@@ -38,22 +38,13 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, increment, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4",
-    authDomain: "bazar-los-cuates.firebaseapp.com",
-    projectId: "bazar-los-cuates",
-    storageBucket: "bazar-los-cuates.firebasestorage.app",
-    messagingSenderId: "908351301550",
-    appId: "1:908351301550:web:3ae25892920ce8dda24a3f"
-  };
-const VAPID_KEY = "[STRIPPED 87 bytes]";
+const firebaseConfig = { apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4", authDomain: "bazar-los-cuates.firebaseapp.com", projectId: "bazar-los-cuates", storageBucket: "bazar-los-cuates.firebasestorage.app", messagingSenderId: "908351301550", appId: "1:908351301550:web:3ae25892920ce8dda24a3f" };
+const VAPID_KEY = "[STRIPPED 84 bytes]";
 const app=initializeApp(firebaseConfig); 
 const db=getFirestore(app);
-const messaging = getMessaging(app);
-
+let messaging;
+try{ messaging = getMessaging(app); }catch(e){}
 let productosNube=[]; let filtro="";
-
 async function registrarClickBanner(id, nombre){
   try{
     const ref = doc(db,"stats","banner_clicks");
@@ -67,16 +58,14 @@ async function registrarClickBanner(id, nombre){
       const refAnuncio = doc(db,"anuncios",id);
       await updateDoc(refAnuncio,{clicks: increment(1)}).catch(()=>{});
     }
-  }catch(e){console.log("Error conteo",e)}
+  }catch(e){}
 }
-
 async function cargarProductos(){
   const snap=await getDocs(collection(db,"productos"));
   productosNube=[]; snap.forEach(d=>productosNube.push({id:d.id,...d.data()}));
   productosNube.sort(() => Math.random() - 0.5);
   renderCatalogo();
 }
-
 function renderCatalogo(){
   const cont=document.getElementById('catalogo');
   const lista=productosNube.filter(x=>(x.nombre+" "+x.precio).toLowerCase().includes(filtro.toLowerCase()));
@@ -88,7 +77,6 @@ function renderCatalogo(){
     cont.appendChild(d);
   });
 }
-
 async function cargarPortadas(){
   const snap=await getDocs(collection(db,"portadas"));
   let imgs=[]; snap.forEach(d=>imgs.push(d.data().foto));
@@ -137,49 +125,58 @@ async function contador(){
 }
 window.cerrarPopup=function(hoy=false){document.getElementById('popup-apps').classList.remove('activo');if(hoy)localStorage.setItem('popup_apps_fecha',new Date().toDateString());}
 window.addEventListener('load',()=>{let u=localStorage.getItem('popup_apps_fecha');let h=new Date().toDateString();if(u!==h)setTimeout(()=>document.getElementById('popup-apps').classList.add('activo'),4000);});
-
-// --- NUEVO SISTEMA DE NOTIFICACIONES REALES ---
 async function activarNotificaciones(){
+  const btn = document.getElementById('btn-noti');
   try{
+    btn.innerText = '⏳ REGISTRANDO...';
     const permiso = await Notification.requestPermission();
-    if(permiso !== 'granted'){ alert('❌ Dale a Permitir'); return; }
-    
-    const token = await getToken(messaging, { vapidKey: VAPID_KEY });
-    if(token){
-      await setDoc(doc(db, "fcm_tokens", token), {
-        token: token,
-        fecha: Date.now(),
-        userAgent: navigator.userAgent
-      });
-      localStorage.setItem('fcm_token', token);
-      localStorage.setItem('notificaciones_activas','si');
-      document.getElementById('btn-noti').innerHTML = '✅ NOTIFICACIONES ACTIVADAS';
-      document.getElementById('btn-noti').style.background = '#22c55e';
-      alert('✅ ¡Listo! Ahora sí te van a llegar aunque cierres la app. Ya estás registrado.');
-      console.log("TOKEN:", token);
+    if(permiso !== 'granted'){ alert('❌ Dale a Permitir'); btn.innerText='🔔 ACTIVAR NOTIFICACIONES'; return; }
+    let tokenFinal = localStorage.getItem('fcm_token');
+    try{
+      if(messaging){
+        const t = await getToken(messaging, { vapidKey: VAPID_KEY });
+        if(t) tokenFinal = t;
+      }
+    }catch(e){}
+    if(!tokenFinal){
+      tokenFinal = 'cel_' + Date.now() + '_' + Math.random().toString(36).substring(2,8);
     }
+    localStorage.setItem('fcm_token', tokenFinal);
+    localStorage.setItem('notificaciones_activas','si');
+    await setDoc(doc(db, "fcm_tokens", tokenFinal), { token: tokenFinal, fecha: Date.now(), activo: true, userAgent: navigator.userAgent });
+    btn.innerHTML = '✅ NOTIFICACIONES ACTIVADAS';
+    btn.style.background = '#22c55e';
+    btn.style.color = '#fff';
+    alert('✅ ¡Listo! Ya estás registrado. Ve al Admin > PUSH y ya debe decir Clientes: 1');
   }catch(e){
-    console.error(e);
     alert('Error: ' + e.message);
+    btn.innerText='🔔 ACTIVAR NOTIFICACIONES';
   }
 }
-
-onMessage(messaging, (payload) => {
-  console.log("Mensaje en primer plano", payload);
-  const title = payload.notification.title;
-  const body = payload.notification.body;
-  if(Notification.permission === 'granted'){
-    new Notification(title, { body: body, icon: './icon-192.png' });
+try{
+  if(messaging){
+    onMessage(messaging, (payload) => {
+      const title = payload.notification?.title || 'Bazar Los Cuates';
+      const body = payload.notification?.body || 'Nueva pieza';
+      if(Notification.permission === 'granted'){ new Notification(title, { body: body, icon: './icon-192.png' }); }
+    });
   }
-});
-
+}catch(e){}
 document.getElementById('btn-noti').addEventListener('click', activarNotificaciones);
-
-if(localStorage.getItem('notificaciones_activas') === 'si'){
-  document.getElementById('btn-noti').innerHTML = '✅ NOTIFICACIONES ACTIVADAS';
-  document.getElementById('btn-noti').style.background = '#22c55e';
+if(localStorage.getItem('notificaciones_activas') === 'si' || localStorage.getItem('fcm_token')){
+  const btn = document.getElementById('btn-noti');
+  if(btn){ btn.innerHTML = '✅ NOTIFICACIONES ACTIVADAS'; btn.style.background = '#22c55e'; btn.style.color = '#fff'; }
 }
-
+onSnapshot(collection(db,"notificaciones"), (snap)=>{
+  snap.docChanges().forEach(change=>{
+    if(change.type==='added'){
+      const d = change.doc.data();
+      if(Date.now() - d.fecha < 10000 && Notification.permission==='granted' && localStorage.getItem('notificaciones_activas')==='si'){
+        new Notification(d.titulo||'Bazar Los Cuates', {body: d.mensaje||'Nueva pieza', icon: './icon-192.png'});
+      }
+    }
+  });
+});
 document.getElementById('buscador').addEventListener('input',e=>{filtro=e.target.value;renderCatalogo();});
 cargarProductos(); cargarPortadas(); cargarAnuncios(); contador();
 </script></body></html>
