@@ -2,20 +2,21 @@
 <html lang="es-MX"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Bazar Los Cuates</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Arial}
-header{background:#FFD600;color:#000;padding:14px;text-align:center;font-weight:900}
+header{background:#FFD600;color:#000;padding:14px;text-align:center;font-weight:900;letter-spacing:1px}
 .tabs{display:flex;overflow-x:auto;background:#0f0f0f;border-bottom:2px solid #1a1a1a} .tab{padding:14px 18px;white-space:nowrap;cursor:pointer;color:#888;font-weight:700;font-size:13px;border-bottom:3px solid transparent} .tab.active{color:#FFD600;border-bottom-color:#FFD600;background:#1a1a1a}
 .panel{display:none;padding:14px} .panel.active{display:block}
 .card{background:#151515;padding:16px;border-radius:14px;border:1px solid #222;margin-bottom:14px}
-input,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #2a2a2a;background:#0a0a0a;color:#fff;margin-bottom:10px;font-size:14px}
+input,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #2a2a2a;background:#0a0a0a;color:#fff;margin-bottom:10px;font-size:14px;outline:none}
+input:focus{border-color:#FFD600}
 input[type=file]{background:#1a1a1a;border:1px dashed #444}
-button{padding:13px;border-radius:10px;border:0;font-weight:900;cursor:pointer} .btn-yellow{background:#FFD600;color:#000;width:100%} 
+button{padding:13px;border-radius:10px;border:0;font-weight:900;cursor:pointer} .btn-yellow{background:#FFD600;color:#000;width:100%;transition:0.2s} .btn-yellow:active{transform:scale(0.98)}
 .item{display:flex;gap:12px;align-items:center;background:#0f0f0f;padding:10px;border-radius:12px;margin-bottom:8px;border:1px solid #1e1e1e}
 .item img{width:65px;height:65px;object-fit:cover;border-radius:10px} .btn-del{background:#1a1a1a;color:#ff4444;border:1px solid #333;padding:8px 12px;border-radius:8px}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px} .stat{background:#111;padding:14px;border-radius:12px;text-align:center;border:1px solid #222} .stat b{color:#FFD600;font-size:22px;display:block}
 .preview{width:100%;max-height:200px;object-fit:contain;display:none;margin-bottom:10px;border-radius:12px;border:1px solid #222}
-#login{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:9999} #loginBox{background:#151515;padding:28px;border-radius:20px;border:1px solid #2a2a2a;width:90%;max-width:360px;text-align:center}
+#login{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:9999} #loginBox{background:#151515;padding:28px;border-radius:20px;border:1px solid #2a2a2a;width:90%;max-width:360px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.8)}
 </style></head><body>
-<div id="login"><div id="loginBox"><h2 style="color:#FFD600">🔒 ADMIN</h2><p style="color:#888;font-size:13px;margin:8px 0">Contraseña:</p><input id="passInput" type="password" placeholder="cuates123"><button onclick="checkPass()" class="btn-yellow" style="margin-top:12px">ENTRAR</button></div></div>
+<div id="login"><div id="loginBox"><h2 style="color:#FFD600">🔒 ADMIN</h2><p style="color:#888;font-size:13px;margin:8px 0">Contraseña:</p><input id="passInput" type="password" placeholder="" value="" autocomplete="new-password" autocorrect="off" spellcheck="false"><button onclick="checkPass()" class="btn-yellow" style="margin-top:12px">ENTRAR</button><p style="color:#333;font-size:10px;margin-top:12px">Bazar Los Cuates</p></div></div>
 <header>BAZAR LOS CUATES - ADMIN</header>
 <div class="stats" style="padding:12px 14px 0"><div class="stat"><span>Clientes</span><b id="totalClientes">0</b></div><div class="stat"><span>Total Visitas</span><b id="totalVisitas">0</b></div><div class="stat"><span>Hoy</span><b id="hoyVisitas">0</b></div><div class="stat"><span>Clicks</span><b id="totalClicks">0</b></div></div>
 <div class="tabs"><div class="tab active" onclick="openTab('prod')">📦 Productos</div><div class="tab" onclick="openTab('port')">🖼️ Portadas</div><div class="tab" onclick="openTab('anun')">📣 Anuncios</div></div>
@@ -31,8 +32,26 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4", authDomain: "bazar-los-cuates.firebaseapp.com", projectId: "bazar-los-cuates", storageBucket: "bazar-los-cuates.firebasestorage.app", messagingSenderId: "908351301550", appId: "1:908351301550:web:3ae25892920ce8dda24a3f" };
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
-window.checkPass=()=>{ const p=document.getElementById('passInput').value; if(p==='cuates123'){ document.getElementById('login').style.display='none'; localStorage.setItem('admin_bazar','ok'); cargarTodo(); }else{ alert('Incorrecta'); } }
-if(localStorage.getItem('admin_bazar')==='ok'){ document.getElementById('login').style.display='none'; }
+
+// LIMPIAR TODO AL ENTRAR - SIEMPRE PEDIR CONTRASEÑA Y CAMPO EN BLANCO
+localStorage.removeItem('admin_bazar');
+const passInput = document.getElementById('passInput');
+passInput.value = '';
+passInput.setAttribute('autocomplete','new-password');
+setTimeout(()=>{ passInput.value=''; }, 100);
+
+window.checkPass=()=>{ 
+  const p=document.getElementById('passInput').value; 
+  if(p==='cuates123'){ 
+    document.getElementById('login').style.display='none'; 
+    // Ya no guardamos nada para que siempre pida contraseña
+    cargarTodo(); 
+  }else{ 
+    alert('Contraseña incorrecta'); 
+    document.getElementById('passInput').value='';
+  } 
+}
+
 async function comprimirImagen(file, maxWidth=800){ return new Promise((resolve)=>{ const reader=new FileReader(); reader.onload=(e)=>{ const img=new Image(); img.onload=()=>{ const canvas=document.createElement('canvas'); let w=img.width, h=img.height; if(w>maxWidth){ h=(maxWidth/w)*h; w=maxWidth; } canvas.width=w; canvas.height=h; const ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0,w,h); resolve(canvas.toDataURL('image/jpeg',0.7)); }; img.src=e.target.result; }; reader.readAsDataURL(file); }); }
 function mostrarPreview(base64, id){ const el=document.getElementById(id); el.src=base64; el.style.display='block'; }
 let base64Prod=null, base64Port=null, base64Anun=null;
@@ -60,5 +79,4 @@ document.getElementById('btnAddProd').onclick=async()=>{
 document.getElementById('btnAddPort').onclick=async()=>{ let foto=document.getElementById('port_foto').value.trim(); if(base64Port) foto=base64Port; if(!foto){alert("Elige foto");return;} await addDoc(collection(db,"portadas"),{foto}); alert("Guardado"); location.reload(); }
 document.getElementById('btnAddAnuncio').onclick=async()=>{ const nombre=document.getElementById('a_nombre').value.trim(); const whatsapp=document.getElementById('a_whats').value.trim(); let img=document.getElementById('a_img').value.trim(); if(base64Anun) img=base64Anun; if(!nombre||!whatsapp){alert("Falta nombre/whatsapp");return;} await addDoc(collection(db,"anuncios"),{nombre,whatsapp,img}); alert("Guardado"); location.reload(); }
 document.getElementById('btnPrecio').onclick=async()=>{ const precio=document.getElementById('precio_banner').value.trim(); await setDoc(doc(db,"config","banner"),{precio},{merge:true}); alert("Precio guardado"); }
-if(localStorage.getItem('admin_bazar')==='ok') cargarTodo();
 </script></body></html>
