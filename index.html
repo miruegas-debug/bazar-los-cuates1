@@ -106,7 +106,7 @@ function renderCatalogo(f=""){const c=document.getElementById('catalogo');const 
 let sI=0;function renderSlider(){const imgs=getPortadas();const track=document.getElementById('slideTrack');track.innerHTML="";imgs.forEach(src=>{const d=document.createElement('div');d.className='slide';d.innerHTML=`<img src="${src}">`;track.appendChild(d);});if(imgs.length>1){if(window.sInt)clearInterval(window.sInt);window.sInt=setInterval(()=>{sI=(sI+1)%imgs.length;track.style.transform=`translateX(-${sI*100}%)`;},3500);}}
 function renderTop(){const track=document.getElementById('topTrack');let anuncios=getAnuncios();let precio=getPrecio();let lista=[...anuncios,{nombre:`ANUNCIATE AQUI $${precio} AL MES`,whatsapp:'524491883244',img:'',esAnunciate:true}];track.innerHTML="";lista.forEach(an=>{const div=document.createElement('div');div.className='top-slide';if(an.esAnunciate){div.onclick=()=>window.open(`https://wa.me/524491883244?text=${encodeURIComponent('Hola vi ANUNCIATE AQUI $'+precio+' en Bazar Los Cuates')}`,'_blank');div.innerHTML=`<div class="txt"><b>ANUNCIATE AQUI $${precio} AL MES</b><span>Toca aqui - 4491883244 - Solo 1 espacio</span></div>`;}else{const wa=`https://wa.me/${String(an.whatsapp).replace(/[^0-9]/g,'')}?text=${encodeURIComponent('Hola vi tu anuncio de '+an.nombre+' en Bazar Los Cuates')}`;div.onclick=()=>window.open(wa,'_blank');div.innerHTML=`${an.img?`<img src="${an.img}">`:''}<div class="txt"><b>${an.nombre}</b><span>Toca para WhatsApp</span></div>`;}track.appendChild(div);});let idx=0;if(window.topInt)clearInterval(window.topInt);if(lista.length>1){window.topInt=setInterval(()=>{idx=(idx+1)%lista.length;track.style.transform=`translateX(-${idx*100}%)`;},3000);}}
 
-// CONTADOR DE VISITAS
+// CONTADOR DE VISITAS - ESTE NO SE BORRA
 function actualizarContador(){
   let total = parseInt(localStorage.getItem('bazar_visitas_total')||'0');
   let hoy = parseInt(localStorage.getItem('bazar_visitas_hoy')||'0');
@@ -120,7 +120,7 @@ function actualizarContador(){
   document.getElementById('visitasHoy').innerText = hoy;
 }
 
-// POP-UP
+// POP-UP - ESTE NO SE BORRA
 function cerrarPopup(hoy=false){document.getElementById('popup-apps').classList.remove('activo'); if(hoy){localStorage.setItem('popup_apps_fecha', new Date().toDateString());}}
 window.addEventListener('load', ()=>{
   let ultima = localStorage.getItem('popup_apps_fecha');
@@ -130,13 +130,13 @@ window.addEventListener('load', ()=>{
   }
 });
 
-// INSTALAR APP - CON TUS 2 JPGs
+// INSTALAR APP - CORREGIDO PARA CLIENTES
 let deferredPrompt=null;
 window.addEventListener('beforeinstallprompt',(e)=>{
   e.preventDefault();
   deferredPrompt=e;
   let btn=document.getElementById('btn-instalar-app');
-  btn.innerText='📲 INSTALAR AHORA - ¡LISTO!';
+  btn.innerText='📲 INSTALAR APLICACIÓN';
   btn.style.background='#22c55e';
   btn.style.color='#fff';
 });
@@ -144,13 +144,13 @@ document.getElementById('btn-instalar-app').addEventListener('click',async()=>{
   if(deferredPrompt){
     deferredPrompt.prompt();
     const c=await deferredPrompt.userChoice;
-    if(c.outcome==='accepted'){alert('¡Gracias! Se instaló Bazar Los Cuates con tu icono');}
+    if(c.outcome==='accepted'){alert('¡Gracias! Se instaló Bazar Los Cuates');}
     deferredPrompt=null;
   }else{
     if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone){
-      alert('¡Ya la tienes instalada!');
+      alert('¡Ya tienes instalada la app de Bazar Los Cuates! Búscala en tu menú como BLC.');
     }else{
-      alert('Para instalar: Si no sale el letrero automático, dale a los 3 puntitos de Chrome arriba > Instalar app. Chrome tarda 1 minuto en detectar tus 2 JPGs después de subir el manifest.');
+      alert('Para instalar Bazar Los Cuates en tu celular:\n\n1. Toca los 3 puntitos de arriba de tu navegador\n2. Selecciona "Instalar app" o "Agregar a pantalla de inicio"\n\n¡Y queda con su icono en tu menú!');
     }
   }
 });
@@ -167,4 +167,4 @@ renderCatalogo();renderSlider();renderTop();
 document.getElementById('buscador').addEventListener('input',e=>renderCatalogo(e.target.value));
 </script>
 </body>
-</html>
+  </html>
