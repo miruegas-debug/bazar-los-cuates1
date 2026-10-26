@@ -36,7 +36,7 @@
 <div id="popup-apps"><div class="popup-box"><button class="btn-cerrar" onclick="cerrarPopup()">×</button><h2>¿TE INTERESA UNA APP COMO ESTA?</h2><p>Yo te hago tu aplicación para tu negocio, como Bazar Los Cuates. Se instala como app con tu logo.</p><p style="color:#FFD600;font-weight:900;font-size:16px">¡Desde $500!</p><a class="btn-wha" href="https://wa.me/524491883244?text=Hola%20vi%20tu%20pop-up%20de%20apps" target="_blank">💬 SÍ, ME INTERESA</a><div class="no-mostrar" onclick="cerrarPopup(true)">No volver a mostrar hoy</div></div></div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, increment, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {
     apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4",
     authDomain: "bazar-los-cuates.firebaseapp.com",
@@ -59,7 +59,6 @@ async function registrarClickBanner(id, nombre){
     data.total = (data.total || 0) + 1;
     data.ultimo = new Date().toLocaleString();
     await setDoc(ref, data, {merge:true});
-    // Tambien incrementa en el documento del anuncio
     if(id){
       const refAnuncio = doc(db,"anuncios",id);
       await updateDoc(refAnuncio,{clicks: increment(1)}).catch(()=>{});
@@ -70,9 +69,14 @@ async function registrarClickBanner(id, nombre){
 async function cargarProductos(){
   const snap=await getDocs(collection(db,"productos"));
   productosNube=[]; snap.forEach(d=>productosNube.push({id:d.id,...d.data()}));
-  productosNube.sort((a,b)=>(b.fecha||0)-(a.fecha||0));
+  // NUEVO: REVOLVER PRODUCTOS CADA VEZ QUE ENTRA ALGUIEN
+  productosNube.sort(() => Math.random() - 0.5);
   renderCatalogo();
+  
+  // NUEVO: AVISAR SI HAY PRODUCTO NUEVO MIENTRAS ESTÁ EN LA PÁGINA
+  escucharNuevosProductos();
 }
+
 function renderCatalogo(){
   const cont=document.getElementById('catalogo');
   const lista=productosNube.filter(x=>(x.nombre+" "+x.precio).toLowerCase().includes(filtro.toLowerCase()));
@@ -84,6 +88,28 @@ function renderCatalogo(){
     cont.appendChild(d);
   });
 }
+
+// NUEVO: ESCUCHA PRODUCTOS NUEVOS Y MANDA NOTIFICACIÓN LOCAL
+let primerCarga = true;
+function escucharNuevosProductos(){
+  if(window._escuchando) return;
+  window._escuchando = true;
+  onSnapshot(collection(db,"productos"), (snap)=>{
+    if(primerCarga){ primerCarga = false; return; }
+    snap.docChanges().forEach(change=>{
+      if(change.type === 'added'){
+        const prod = change.doc.data();
+        if(Notification && Notification.permission === 'granted'){
+          new Notification('🔔 Bazar Los Cuates - Nueva pieza!', {
+            body: `${prod.nombre} - $${prod.precio}`,
+            icon: './icon-192.png'
+          });
+        }
+      }
+    });
+  });
+}
+
 async function cargarPortadas(){
   const snap=await getDocs(collection(db,"portadas"));
   let imgs=[]; snap.forEach(d=>imgs.push(d.data().foto));
@@ -132,10 +158,65 @@ async function contador(){
 }
 window.cerrarPopup=function(hoy=false){document.getElementById('popup-apps').classList.remove('activo');if(hoy)localStorage.setItem('popup_apps_fecha',new Date().toDateString());}
 window.addEventListener('load',()=>{let u=localStorage.getItem('popup_apps_fecha');let h=new Date().toDateString();if(u!==h)setTimeout(()=>document.getElementById('popup-apps').classList.add('activo'),4000);});
+
+// NUEVO: LÓGICA MEJORADA DE INSTALACIÓN
 let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredPrompt=e;});
-document.getElementById('btn-instalar-app').addEventListener('click',async()=>{if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null;}else alert('Para instalar: 3 puntitos arriba > Instalar app / Agregar a pantalla de inicio');});
-document.getElementById('btn-noti').addEventListener('click',async()=>{if(!('Notification' in window))return;let p=await Notification.requestPermission();if(p==='granted')alert('✅ Notificaciones activadas');});
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  console.log('PWA lista para instalar');
+  document.getElementById('btn-instalar-app').innerHTML = '📲 INSTALAR APLICACIÓN (LISTA)';
+  document.getElementById('btn-instalar-app').style.background = '#22c55e';
+});
+
+document.getElementById('btn-instalar-app').addEventListener('click',async()=>{
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('Resultado instalacion', outcome);
+    deferredPrompt=null;
+    document.getElementById('btn-instalar-app').innerText = '✅ APP INSTALADA';
+  }else{
+    // Si no hay prompt, es porque ya esta instalada o no esta disponible
+    if(window.matchMedia('(display-mode: standalone)').matches){
+      alert('✅ Ya tienes la app instalada!');
+    } else {
+      alert('Para instalar: 1) Da clic en los 3 puntitos arriba a la derecha\n2) Instalar app / Agregar a pantalla de inicio\n3) Instalar');
+    }
+  }
+});
+
+// NUEVO: LÓGICA MEJORADA DE NOTIFICACIONES
+document.getElementById('btn-noti').addEventListener('click',async()=>{
+  if(!('Notification' in window)){
+    alert('Tu celular no soporta notificaciones');
+    return;
+  }
+  let permiso = Notification.permission;
+  if(permiso !== 'granted'){
+    permiso = await Notification.requestPermission();
+  }
+  if(permiso==='granted'){
+    // Guardamos en Firebase que este usuario quiere notificaciones
+    try{
+      await addDoc(collection(db,"suscriptores"),{fecha:Date.now(), permiso: 'granted', userAgent: navigator.userAgent});
+    }catch(e){}
+    localStorage.setItem('notificaciones_activas','si');
+    document.getElementById('btn-noti').innerHTML = '✅ NOTIFICACIONES ACTIVADAS';
+    document.getElementById('btn-noti').style.background = '#22c55e';
+    // Mandamos una de prueba
+    new Notification('🔔 Bazar Los Cuates', {body: '¡Listo! Te avisaré cada que suba una pieza nueva', icon: './icon-192.png'});
+    alert('✅ Notificaciones activadas. Ahora te avisaré cada que suba algo nuevo.');
+  } else {
+    alert('❌ Necesitas darle Permitir para que te avise');
+  }
+});
+
+// Si ya tenía permiso, marcamos el boton como activo
+if(Notification && Notification.permission === 'granted'){
+  document.getElementById('btn-noti').innerHTML = '✅ NOTIFICACIONES ACTIVADAS';
+}
+
 if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
 document.getElementById('buscador').addEventListener('input',e=>{filtro=e.target.value;renderCatalogo();});
 cargarProductos(); cargarPortadas(); cargarAnuncios(); contador();
