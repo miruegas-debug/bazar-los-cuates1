@@ -14,7 +14,6 @@ input,select,textarea{width:100%;padding:12px;margin:6px 0;border-radius:8px;bor
 .item .info{flex:1} .item .info b{display:block;color:#FFD600} .item .info small{color:#888}
 .item .btn-borrar{background:#ff4444;color:#fff;padding:8px 12px;border:0;border-radius:6px;cursor:pointer;font-weight:900}
 .clics-box{background:#111;border:1px solid #FFD600;color:#FFD600;padding:8px 12px;border-radius:6px;margin-top:6px;font-weight:900;font-size:14px;display:flex;justify-content:space-between}
-.clics-box span{color:#fff;font-weight:400}
 #login{max-width:360px;margin:40px auto;background:#1a1a1a;padding:20px;border-radius:12px;border:2px solid #FFD600;text-align:center}
 .push-box{background:#111;border:2px solid #22c55e;border-radius:10px;padding:14px}
 </style></head><body>
@@ -33,7 +32,6 @@ input,select,textarea{width:100%;padding:12px;margin:6px 0;border-radius:8px;bor
 <div class="tab" onclick="showTab('push')">🔔 PUSH</div>
 <div class="tab" onclick="showTab('config')">⚙️ CONFIG</div>
 </div>
-
 <div id="panel-piezas" class="panel activo">
 <h3>Subir pieza</h3>
 <input id="p-nombre" placeholder="Nombre ej: Cuna azul">
@@ -42,7 +40,6 @@ input,select,textarea{width:100%;padding:12px;margin:6px 0;border-radius:8px;bor
 <button class="btn" id="btn-pieza" onclick="subirPieza()">GUARDAR PIEZA</button>
 <div id="lista-piezas"></div>
 </div>
-
 <div id="panel-anuncios" class="panel">
 <h3>Subir anuncio banner</h3>
 <input id="a-nombre" placeholder="Nombre negocio ej: Prueba 1">
@@ -51,14 +48,12 @@ input,select,textarea{width:100%;padding:12px;margin:6px 0;border-radius:8px;bor
 <button class="btn" id="btn-anuncio" onclick="subirAnuncio()">GUARDAR ANUNCIO</button>
 <div id="lista-anuncios"></div>
 </div>
-
 <div id="panel-portadas" class="panel">
 <h3>Subir foto portada grande</h3>
 <input id="portada-foto" type="file" accept="image/*">
 <button class="btn" id="btn-portada" onclick="subirPortada()">GUARDAR PORTADA</button>
 <div id="lista-portadas"></div>
 </div>
-
 <div id="panel-push" class="panel">
 <div class="push-box">
 <h3 style="color:#22c55e">🔔 MANDAR NOTIFICACIÓN</h3>
@@ -67,10 +62,9 @@ input,select,textarea{width:100%;padding:12px;margin:6px 0;border-radius:8px;bor
 <textarea id="push-mensaje" rows="3" placeholder="Mensaje">¡Nueva pieza disponible! Entra a verla</textarea>
 <button class="btn btn-push" id="btn-push" onclick="enviarPushATodos()">📢 MANDAR A TODOS (con página abierta)</button>
 <button class="btn" style="background:#333;color:#fff" onclick="enviarPushPrueba()">🧪 MANDARME PRUEBA SOLO A MI</button>
-<p style="font-size:11px;color:#666;margin-top:8px">La prueba te llega arriba como WhatsApp aunque cierres el admin.</p>
+<p style="font-size:11px;color:#666;margin-top:8px">Ya no necesitas activar en este mismo cel. Jala el token de Firebase.</p>
 </div>
 </div>
-
 <div id="panel-config" class="panel">
 <h3>Configuración</h3>
 <input id="c-precio" placeholder="Precio Anunciate Aqui ej: 200">
@@ -80,13 +74,11 @@ input,select,textarea{width:100%;padding:12px;margin:6px 0;border-radius:8px;bor
 <a href="./index.html" style="display:block;text-align:center;margin-top:14px;color:#FFD600">VER TIENDA</a>
 </div>
 </div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4", authDomain: "bazar-los-cuates.firebaseapp.com", projectId: "bazar-los-cuates", storageBucket: "bazar-los-cuates.firebasestorage.app", messagingSenderId: "908351301550", appId: "1:908351301550:web:3ae25892920ce8dda24a3f", measurementId: "G-XT51JZ4H5L" };
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
-
 window.showTab=function(t){
  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('activo'));
  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('activo'));
@@ -96,7 +88,6 @@ window.showTab=function(t){
  if(t==='portadas') cargarPortadas();
  if(t==='push') cargarTokens();
 }
-
 window.entrar=async()=>{
  const p=document.getElementById('pass').value;
  const ref=doc(db,"config","admin"); const snap=await getDoc(ref);
@@ -104,7 +95,6 @@ window.entrar=async()=>{
  if(p===real){document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';cargarPiezas();cargarAnuncios();cargarPortadas();cargarTokens();}
  else{document.getElementById('loginError').style.display='block';}
 }
-
 function fileToBase64(file){
   return new Promise((res, rej) => {
     const img = new Image();
@@ -127,7 +117,6 @@ function fileToBase64(file){
     reader.readAsDataURL(file);
   });
 }
-
 window.subirPieza=async()=>{
  const btn=document.getElementById('btn-pieza');
  const nombre=document.getElementById('p-nombre').value; 
@@ -205,18 +194,31 @@ async function cargarTokens(){
  try{
    const snap=await getDocs(collection(db,"fcm_tokens"));
    document.getElementById('total-tokens').innerText = snap.size;
- }catch(e){ document.getElementById('total-tokens').innerText = '0 - activa notificaciones primero'; }
+ }catch(e){ document.getElementById('total-tokens').innerText = '0'; }
 }
 window.enviarPushPrueba=async()=>{
- const miToken = localStorage.getItem('fcm_token');
- if(!miToken){ alert('En este celular no has activado notificaciones. Ve a la tienda y dale a Activar'); return; }
+ let miToken = localStorage.getItem('fcm_token');
+ if(!miToken){
+   try{
+     const snap = await getDocs(collection(db,"fcm_tokens"));
+     if(!snap.empty){
+       miToken = snap.docs[0].data().token;
+     }
+   }catch(e){}
+ }
+ if(!miToken){ 
+   alert('Aún no hay ningún celular registrado. Ve a tu tienda en Chrome, dale a 🔔 ACTIVAR NOTIFICACIONES y espera el verde'); 
+   return; 
+ }
  const titulo = document.getElementById('push-titulo').value || '🔔 Bazar Los Cuates';
  const mensaje = document.getElementById('push-mensaje').value || 'Prueba';
  await addDoc(collection(db,"push_historial"),{titulo,mensaje,fecha:Date.now(), tipo:'prueba'});
  if(Notification.permission==='granted'){
    new Notification(titulo,{body:mensaje, icon:'./icon-192.png'});
-   alert('✅ Te mandé la notificación arriba, ¿la viste?');
- } else { alert('No tienes permiso de notificaciones'); }
+   alert('✅ Te mandé la notificación arriba ¿la viste?');
+ } else { 
+   alert('Token encontrado pero sin permiso en este navegador. Token: ' + miToken.substring(0,20)); 
+ }
 }
 window.enviarPushATodos=async()=>{
  const titulo = document.getElementById('push-titulo').value;
@@ -226,7 +228,7 @@ window.enviarPushATodos=async()=>{
  try{
    await addDoc(collection(db,"push_historial"),{titulo,mensaje,fecha:Date.now(), tipo:'todos'});
    await addDoc(collection(db,"notificaciones"),{titulo,mensaje,fecha:Date.now()});
-   alert('✅ Aviso guardado. A todos con la página abierta les llega en segundos.');
+   alert('✅ Aviso guardado. A todos con la página abierta les llega.');
  }catch(e){alert('Error '+e.message)}finally{btn.innerText='📢 MANDAR A TODOS (con página abierta)'; btn.disabled=false;}
 }
 </script></body></html>
