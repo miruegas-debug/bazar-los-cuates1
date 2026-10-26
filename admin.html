@@ -1,137 +1,69 @@
 <!DOCTYPE html>
-<html lang="es-MX"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Bazar Los Cuates</title>
-<style>body{background:#000;color:#fff;font-family:Arial;padding:12px}h2{color:#FFD600;text-align:center}h3{color:#FFD600;margin:15px 0 8px;border-bottom:1px solid #222;padding-bottom:5px}
-.card{background:#111;padding:12px;border-radius:10px;border:1px solid #222;margin-bottom:12px}
-input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #333;background:#1a1a1a;color:#fff;margin-bottom:8px;box-sizing:border-box}
-button{padding:12px;border-radius:8px;border:0;font-weight:900;cursor:pointer}
-.btn-yellow{background:#FFD600;color:#000;width:100%} .btn-green{background:#22c55e;color:#fff;width:100%}
-.item{display:flex;gap:10px;align-items:center;background:#1a1a1a;padding:8px;border-radius:8px;margin-bottom:8px;border:1px solid #222}
-.item img{width:60px;height:60px;object-fit:cover;border-radius:6px} .item .txt{flex:1;font-size:12px} .btn-del{background:#ef4444;color:#fff;padding:6px 10px;font-size:11px}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px} .stat{background:#1a1a1a;padding:10px;border-radius:8px;text-align:center;border:1px solid #222}
-.stat b{color:#FFD600;font-size:20px;display:block}
+<html lang="es-MX"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Bazar</title>
+<style>body{background:#0a0a0a;color:#fff;font-family:Arial;margin:0}header{background:#FFD600;color:#000;padding:12px;text-align:center;font-weight:900}
+.tabs{display:flex;overflow-x:auto;background:#111;border-bottom:2px solid #222} .tab{padding:12px 16px;white-space:nowrap;cursor:pointer;border-bottom:3px solid transparent} .tab.active{border-bottom-color:#FFD600;color:#FFD600;font-weight:900}
+.panel{display:none;padding:12px} .panel.active{display:block}
+.card{background:#1a1a1a;padding:12px;border-radius:10px;border:1px solid #222;margin-bottom:12px}
+input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #333;background:#000;color:#fff;margin-bottom:8px;box-sizing:border-box}
+button{padding:12px;border-radius:8px;border:0;font-weight:900;cursor:pointer} .btn-yellow{background:#FFD600;color:#000;width:100%} .btn-green{background:#22c55e;color:#fff;width:100%}
+.item{display:flex;gap:10px;align-items:center;background:#111;padding:8px;border-radius:8px;margin-bottom:8px;border:1px solid #222}
+.item img{width:60px;height:60px;object-fit:cover;border-radius:6px} .btn-del{background:#ef4444;color:#fff;padding:6px 10px;font-size:11px;border-radius:6px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px} .stat{background:#111;padding:12px;border-radius:8px;text-align:center;border:1px solid #222} .stat b{color:#FFD600;font-size:22px;display:block}
 </style></head><body>
-<h2>ADMIN BAZAR LOS CUATES</h2>
-
-<div class="stats">
-<div class="stat">Clientes<b id="totalClientes">0</b></div>
-<div class="stat">Total Visitas<b id="totalVisitas">0</b></div>
-<div class="stat">Hoy<b id="hoyVisitas">0</b></div>
-<div class="stat">Clicks Banner<b id="totalClicks">0</b></div>
+<header>BAZAR LOS CUATES - ADMIN</header>
+<div class="tabs">
+<div class="tab active" onclick="openTab('prod')">📦 Productos</div>
+<div class="tab" onclick="openTab('port')">🖼️ Portadas</div>
+<div class="tab" onclick="openTab('anun')">📣 Anuncios</div>
+<div class="tab" onclick="openTab('noti')">🔔 Notificaciones</div>
+<div class="tab" onclick="openTab('stats')">📊 Stats</div>
 </div>
 
-<div class="card">
-<h3>📢 Mandar Notificación</h3>
-<input id="titulo" placeholder="Título: NUEVA MERCANCÍA">
-<textarea id="mensaje" placeholder="Mensaje: Llegaron bicicletas..."></textarea>
-<button id="btnEnviar" class="btn-green">📢 ENVIAR A TODOS</button>
-<p id="statusNoti" style="font-size:11px;color:#888;margin-top:6px"></p>
+<div id="prod" class="panel active">
+<div class="card"><h3>Agregar Producto</h3><input id="p_nombre" placeholder="Nombre"><input id="p_precio" placeholder="Precio"><input id="p_foto" placeholder="URL foto"><button id="btnAddProd" class="btn-yellow">GUARDAR PRODUCTO</button></div>
+<div class="card"><h3>Lista Productos (<span id="countProd">0</span>)</h3><div id="listaProd"></div></div>
 </div>
 
-<div class="card">
-<h3>➕ Agregar Producto</h3>
-<input id="p_nombre" placeholder="Nombre ej: Bicicleta rodada 26">
-<input id="p_precio" placeholder="Precio ej: 1500">
-<input id="p_foto" placeholder="Link foto (URL)">
-<button id="btnAddProd" class="btn-yellow">GUARDAR PRODUCTO</button>
-</div>
-<div class="card"><h3>📦 Productos (<span id="countProd">0</span>)</h3><div id="listaProd"></div></div>
-
-<div class="card">
-<h3>🖼️ Portadas (carrusel grande)</h3>
-<input id="port_foto" placeholder="Link foto portada">
-<button id="btnAddPort" class="btn-yellow">AGREGAR PORTADA</button>
-<div id="listaPort" style="margin-top:10px"></div>
+<div id="port" class="panel">
+<div class="card"><h3>Agregar Portada</h3><input id="port_foto" placeholder="URL foto portada grande"><button id="btnAddPort" class="btn-yellow">AGREGAR PORTADA</button></div>
+<div class="card"><div id="listaPort"></div></div>
+<div class="card"><h3>Precio Anúnciate Aquí</h3><input id="precio_banner" placeholder="200"><button id="btnPrecio" class="btn-yellow">GUARDAR PRECIO</button></div>
 </div>
 
-<div class="card">
-<h3>📣 Anuncios (arriba)</h3>
-<input id="a_nombre" placeholder="Nombre negocio">
-<input id="a_whats" placeholder="WhatsApp ej: 524491883244">
-<input id="a_img" placeholder="Link imagen logo">
-<button id="btnAddAnuncio" class="btn-yellow">AGREGAR ANUNCIO</button>
-<div id="listaAnuncios" style="margin-top:10px"></div>
+<div id="anun" class="panel">
+<div class="card"><h3>Agregar Anuncio Superior</h3><input id="a_nombre" placeholder="Nombre negocio"><input id="a_whats" placeholder="WhatsApp 5244..."><input id="a_img" placeholder="URL logo"><button id="btnAddAnuncio" class="btn-yellow">AGREGAR ANUNCIO</button></div>
+<div class="card"><div id="listaAnuncios"></div></div>
 </div>
 
-<div class="card">
-<h3>💰 Precio Anúnciate Aquí</h3>
-<input id="precio_banner" placeholder="200">
-<button id="btnPrecio" class="btn-yellow">GUARDAR PRECIO</button>
+<div id="noti" class="panel">
+<div class="stats"><div class="stat">Clientes Registrados<b id="totalClientes">0</b></div><div class="stat">Estado<b style="font-size:12px;color:#22c55e">Listo para enviar</b></div></div>
+<div class="card"><h3>Mandar Notificación a Todos</h3><input id="titulo" placeholder="Título: NUEVA MERCANCÍA"><textarea id="mensaje" placeholder="Mensaje: Llegaron..."></textarea><button id="btnEnviar" class="btn-green">📢 ENVIAR A TODOS AHORA</button><p id="statusNoti" style="font-size:11px;color:#888;margin-top:8px">Para probar: abre tu tienda en otro celular o pestaña, activa notificaciones, y luego manda desde aquí. Te debe salir un alert en la tienda.</p></div>
+</div>
+
+<div id="stats" class="panel">
+<div class="stats"><div class="stat">Total Visitas<b id="totalVisitas">0</b></div><div class="stat">Hoy<b id="hoyVisitas">0</b></div><div class="stat">Clicks Banner<b id="totalClicks">0</b></div><div class="stat">Fecha<b id="fechaStats" style="font-size:12px">-</b></div></div>
 </div>
 
 <a href="./index.html" style="color:#555;font-size:12px;display:block;text-align:center;margin:20px">← Volver a tienda</a>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4", authDomain: "bazar-los-cuates.firebaseapp.com", projectId: "bazar-los-cuates", storageBucket: "bazar-los-cuates.firebasestorage.app", messagingSenderId: "908351301550", appId: "1:908351301550:web:3ae25892920ce8dda24a3f" };
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
-
-async function cargarStats(){
-  try{
-    const snapTokens=await getDocs(collection(db,"fcm_tokens"));
-    document.getElementById('totalClientes').innerText=snapTokens.size;
-    document.getElementById('statusNoti').innerText=snapTokens.size+" clientes listos";
-  }catch(e){ document.getElementById('totalClientes').innerText="0"; }
-  try{
-    const snapVis=await getDoc(doc(db,"stats","visitas"));
-    if(snapVis.exists()){ document.getElementById('totalVisitas').innerText=snapVis.data().total||0; document.getElementById('hoyVisitas').innerText=snapVis.data().hoy||0; }
-    const snapClick=await getDoc(doc(db,"stats","banner_clicks"));
-    if(snapClick.exists()){ document.getElementById('totalClicks').innerText=snapClick.data().total||0; }
-    const snapPrice=await getDoc(doc(db,"config","banner"));
-    if(snapPrice.exists()){ document.getElementById('precio_banner').value=snapPrice.data().precio||"200"; }
-  }catch(e){}
-}
-
-async function cargarProductos(){
-  const snap=await getDocs(collection(db,"productos"));
-  const cont=document.getElementById('listaProd'); cont.innerHTML=""; let c=0;
-  snap.forEach(d=>{ c++; const p=d.data(); const div=document.createElement('div'); div.className='item'; div.innerHTML=`<img src="${p.foto}"><div class="txt"><b>${p.nombre}</b><br>$${p.precio}</div><button class="btn-del" onclick="borrar('productos','${d.id}')">X</button>`; cont.appendChild(div); });
-  document.getElementById('countProd').innerText=c;
-}
-async function cargarPortadas(){
-  const snap=await getDocs(collection(db,"portadas")); const cont=document.getElementById('listaPort'); cont.innerHTML="";
-  snap.forEach(d=>{ const p=d.data(); const div=document.createElement('div'); div.className='item'; div.innerHTML=`<img src="${p.foto}"><div class="txt">Portada</div><button class="btn-del" onclick="borrar('portadas','${d.id}')">X</button>`; cont.appendChild(div); });
-}
-async function cargarAnuncios(){
-  const snap=await getDocs(collection(db,"anuncios")); const cont=document.getElementById('listaAnuncios'); cont.innerHTML="";
-  snap.forEach(d=>{ const p=d.data(); const div=document.createElement('div'); div.className='item'; div.innerHTML=`<img src="${p.img}"><div class="txt"><b>${p.nombre}</b><br>${p.whatsapp}</div><button class="btn-del" onclick="borrar('anuncios','${d.id}')">X</button>`; cont.appendChild(div); });
+window.openTab=(id)=>{ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); event.currentTarget.classList.add('active'); }
+async function cargarTodo(){
+  const snapTokens=await getDocs(collection(db,"fcm_tokens")); document.getElementById('totalClientes').innerText=snapTokens.size;
+  try{ const s=await getDoc(doc(db,"stats","visitas")); if(s.exists()){ document.getElementById('totalVisitas').innerText=s.data().total||0; document.getElementById('hoyVisitas').innerText=s.data().hoy||0; document.getElementById('fechaStats').innerText=s.data().fecha||"-"; } const c=await getDoc(doc(db,"stats","banner_clicks")); if(c.exists()) document.getElementById('totalClicks').innerText=c.data().total||0; const p=await getDoc(doc(db,"config","banner")); if(p.exists()) document.getElementById('precio_banner').value=p.data().precio||"200"; }catch(e){}
+  const snapProd=await getDocs(collection(db,"productos")); const lp=document.getElementById('listaProd'); lp.innerHTML=""; let cp=0; snapProd.forEach(d=>{ cp++; const p=d.data(); const div=document.createElement('div'); div.className='item'; div.innerHTML=`<img src="${p.foto}"><div style="flex:1"><b>${p.nombre}</b><br>$${p.precio}</div><button class="btn-del" onclick="borrar('productos','${d.id}')">X</button>`; lp.appendChild(div); }); document.getElementById('countProd').innerText=cp;
+  const snapPort=await getDocs(collection(db,"portadas")); const lport=document.getElementById('listaPort'); lport.innerHTML=""; snapPort.forEach(d=>{ const p=d.data(); const div=document.createElement('div'); div.className='item'; div.innerHTML=`<img src="${p.foto}"><div style="flex:1">Portada</div><button class="btn-del" onclick="borrar('portadas','${d.id}')">X</button>`; lport.appendChild(div); });
+  const snapAnun=await getDocs(collection(db,"anuncios")); const lanun=document.getElementById('listaAnuncios'); lanun.innerHTML=""; snapAnun.forEach(d=>{ const p=d.data(); const div=document.createElement('div'); div.className='item'; div.innerHTML=`<img src="${p.img}"><div style="flex:1"><b>${p.nombre}</b><br>${p.whatsapp}</div><button class="btn-del" onclick="borrar('anuncios','${d.id}')">X</button>`; lanun.appendChild(div); });
 }
 window.borrar=async(col,id)=>{ if(!confirm("¿Borrar?"))return; await deleteDoc(doc(db,col,id)); location.reload(); }
-
-document.getElementById('btnAddProd').onclick=async()=>{
-  const nombre=document.getElementById('p_nombre').value.trim();
-  const precio=document.getElementById('p_precio').value.trim();
-  const foto=document.getElementById('p_foto').value.trim();
-  if(!nombre||!precio||!foto){alert("Llena todo");return;}
-  await addDoc(collection(db,"productos"),{nombre,precio,foto}); alert("Producto guardado"); location.reload();
-}
-document.getElementById('btnAddPort').onclick=async()=>{
-  const foto=document.getElementById('port_foto').value.trim(); if(!foto){alert("Pon link");return;}
-  await addDoc(collection(db,"portadas"),{foto}); alert("Portada guardada"); location.reload();
-}
-document.getElementById('btnAddAnuncio').onclick=async()=>{
-  const nombre=document.getElementById('a_nombre').value.trim();
-  const whatsapp=document.getElementById('a_whats').value.trim();
-  const img=document.getElementById('a_img').value.trim();
-  if(!nombre||!whatsapp){alert("Nombre y WhatsApp");return;}
-  await addDoc(collection(db,"anuncios"),{nombre,whatsapp,img}); alert("Anuncio guardado"); location.reload();
-}
-document.getElementById('btnPrecio').onclick=async()=>{
-  const precio=document.getElementById('precio_banner').value.trim();
-  await setDoc(doc(db,"config","banner"),{precio},{merge:true}); alert("Precio guardado");
-}
-document.getElementById('btnEnviar').onclick=async()=>{
-  const titulo=document.getElementById('titulo').value.trim();
-  const mensaje=document.getElementById('mensaje').value.trim();
-  if(!titulo||!mensaje){alert("Pon título y mensaje");return;}
-  const btn=document.getElementById('btnEnviar'); btn.innerText="⏳ ENVIANDO...";
-  try{
-    await addDoc(collection(db,"notificaciones"),{titulo,mensaje,fecha:Date.now()});
-    alert("✅ Enviado a "+document.getElementById('totalClientes').innerText+" clientes");
-    document.getElementById('titulo').value=""; document.getElementById('mensaje').value="";
-    btn.innerText="📢 ENVIAR A TODOS";
-  }catch(e){ alert("Error: "+e.message); btn.innerText="📢 ENVIAR A TODOS"; }
-}
-
-cargarStats(); cargarProductos(); cargarPortadas(); cargarAnuncios();
+document.getElementById('btnAddProd').onclick=async()=>{ const nombre=document.getElementById('p_nombre').value.trim(); const precio=document.getElementById('p_precio').value.trim(); const foto=document.getElementById('p_foto').value.trim(); if(!nombre||!precio||!foto){alert("Llena todo");return;} await addDoc(collection(db,"productos"),{nombre,precio,foto}); alert("Guardado"); location.reload(); }
+document.getElementById('btnAddPort').onclick=async()=>{ const foto=document.getElementById('port_foto').value.trim(); if(!foto){alert("URL");return;} await addDoc(collection(db,"portadas"),{foto}); alert("Guardado"); location.reload(); }
+document.getElementById('btnAddAnuncio').onclick=async()=>{ const nombre=document.getElementById('a_nombre').value.trim(); const whatsapp=document.getElementById('a_whats').value.trim(); const img=document.getElementById('a_img').value.trim(); if(!nombre||!whatsapp){alert("Falta nombre/whatsapp");return;} await addDoc(collection(db,"anuncios"),{nombre,whatsapp,img}); alert("Guardado"); location.reload(); }
+document.getElementById('btnPrecio').onclick=async()=>{ const precio=document.getElementById('precio_banner').value.trim(); await setDoc(doc(db,"config","banner"),{precio},{merge:true}); alert("Precio guardado"); }
+document.getElementById('btnEnviar').onclick=async()=>{ const titulo=document.getElementById('titulo').value.trim(); const mensaje=document.getElementById('mensaje').value.trim(); if(!titulo||!mensaje){alert("Falta título/mensaje");return;} const btn=document.getElementById('btnEnviar'); btn.innerText="⏳ ENVIANDO..."; try{ await addDoc(collection(db,"notificaciones"),{titulo,mensaje,fecha:Date.now()}); alert("✅ Enviado a "+document.getElementById('totalClientes').innerText+" clientes. Abre la tienda en otro cel y debe salir alerta."); document.getElementById('titulo').value=""; document.getElementById('mensaje').value=""; btn.innerText="📢 ENVIAR A TODOS AHORA"; }catch(e){ alert("Error: "+e.message); btn.innerText="📢 ENVIAR A TODOS AHORA"; } }
+cargarTodo();
 </script></body></html>
