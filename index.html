@@ -29,7 +29,7 @@
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4", authDomain: "bazar-los-cuates.firebaseapp.com", projectId: "bazar-los-cuates", storageBucket: "bazar-los-cuates.firebasestorage.app", messagingSenderId: "908351301550", appId: "1:908351301550:web:3ae25892920ce8dda24a3f" };
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
 let productosNube=[]; let filtro="";
@@ -48,17 +48,15 @@ async function activarNotificaciones(){
       tokenFinal = 'cel_' + Date.now() + '_' + Math.random().toString(36).substring(2,8);
       localStorage.setItem('fcm_token', tokenFinal);
     }
-    // GUARDAR SIN PEDIR PERMISO - ESTO ES LO QUE TE FALTABA
     await addDoc(collection(db, "fcm_tokens"), { token: tokenFinal, fecha: Date.now(), activo: true });
     localStorage.setItem('notificaciones_activas','si');
     btn.innerHTML='✅ NOTIFICACIONES ACTIVADAS';
     btn.style.background='#22c55e';
     btn.style.color='#fff';
-    alert('✅ ¡Ya quedó guardado! Ahora ve a tu Admin y ya debe decir Clientes: 1 o 2');
-    // Ahora si intenta pedir permiso real, pero ya guardado
+    alert('✅ ¡Ya quedó guardado! Ahora ve a tu Admin y ya debe decir Clientes: 1');
     try{ await Notification.requestPermission(); }catch(e){}
   }catch(e){
-    alert('Error Firebase: '+e.message+'\n\nSi dice permission-denied es que no publicaste Reglas');
+    alert('Error Firebase: '+e.message);
     btn.innerText='🔔 ACTIVAR NOTIFICACIONES';
   }
 }
@@ -66,6 +64,21 @@ document.getElementById('btn-noti').addEventListener('click', activarNotificacio
 if(localStorage.getItem('notificaciones_activas')==='si' || localStorage.getItem('fcm_token')){
   const btn=document.getElementById('btn-noti'); if(btn){ btn.innerHTML='✅ NOTIFICACIONES ACTIVADAS'; btn.style.background='#22c55e'; btn.style.color='#fff'; }
 }
+// ESCUCHAR NOTIFICACIONES - ESTO HACE QUE TE LLEGUE AL CELULAR
+onSnapshot(collection(db,"notificaciones"), snap=>{
+  snap.docChanges().forEach(change=>{
+    if(change.type==="added"){
+      const d=change.doc.data();
+      if(Date.now()-d.fecha < 15000){
+        if(Notification.permission==="granted"){
+          new Notification(d.titulo,{body:d.mensaje});
+        }else{
+          alert("🔔 "+d.titulo+"\n\n"+d.mensaje);
+        }
+      }
+    }
+  });
+});
 document.getElementById('buscador').addEventListener('input',e=>{filtro=e.target.value;renderCatalogo();});
 cargarProductos(); cargarPortadas(); cargarAnuncios(); contador();
 </script></body></html>
