@@ -3,145 +3,166 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bazar Los Cuates</title>
-<meta name="theme-color" content="#FFD600">
+<title>Bazar Los Cuates - Piezas buenas, precio claro</title>
 <link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#FFD600">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-body{background:#0a0a0a;color:#fff}
-.top-yellow{background:#FFD600;color:#000;text-align:center;padding:8px;font-weight:900;font-size:12px}
-.header{background:#000;display:flex;justify-content:space-between;align-items:center;padding:12px 15px;position:sticky;top:0;z-index:100}
-.logo{font-weight:900}.logo span{background:#FFD600;color:#000;padding:6px 10px}
-.btn-wa{background:#FFD600;color:#000;padding:8px 14px;font-weight:900;text-decoration:none}
-.hero{padding:20px;background:#111}
-.hero h1{font-size:32px;font-weight:900;line-height:0.95;text-transform:uppercase}
-.hero h1 mark{background:#FFD600;color:#000;padding:0 6px}
-.hero-slider{position:relative;width:100%;height:260px;overflow:hidden;margin-top:15px;border:3px solid #222;background:#000}
-.slide-track{display:flex;height:100%;transition:transform 0.6s ease}
-.slide{flex:0 0 100%;height:100%}.slide img{width:100%;height:100%;object-fit:cover}
-.marquee{background:#FFD600;color:#000;padding:8px 0;font-weight:900;overflow:hidden;white-space:nowrap}
-.buscador{padding:12px;background:#000}
-.buscador input{width:100%;padding:12px;background:#111;border:2px solid #333;color:#fff}
-.grid{padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.card{background:#1a1a1a;border:2px solid #222;overflow:hidden}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:Arial, sans-serif}
+.top-bar{background:#FFD600;color:#000;text-align:center;padding:6px;font-size:12px;font-weight:900}
+.slider-top{background:#111;overflow:hidden;position:relative;height:70px;border-bottom:2px solid #222}
+.top-track{display:flex;transition:transform 0.5s ease;width:100%}
+.top-slide{min-width:100%;display:flex;align-items:center;gap:10px;padding:10px;cursor:pointer}
+.top-slide img{width:50px;height:50px;object-fit:cover;border-radius:8px}
+.top-slide .txt b{display:block;font-size:14px;color:#FFD600}
+.top-slide .txt span{font-size:11px;color:#aaa}
+.portada{position:relative;height:260px;overflow:hidden;background:#111}
+.slide-track{display:flex;transition:transform 0.5s ease;height:100%}
+.slide{min-width:100%;height:100%}
+.slide img{width:100%;height:100%;object-fit:cover}
+.buscador{padding:12px;background:#111}
+.buscador input{width:100%;padding:12px;border-radius:8px;border:2px solid #333;background:#1a1a1a;color:#fff}
+.contador{padding:8px 12px;background:#0a0a0a;color:#888;font-size:11px;display:flex;gap:15px;justify-content:center;border-bottom:1px solid #1a1a1a}
+.contador span{color:#FFD600;font-weight:900}
+.catalogo{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+.card{background:#1a1a1a;border-radius:10px;overflow:hidden;border:1px solid #222}
 .card img{width:100%;height:160px;object-fit:cover}
-.card .info{padding:8px}.card b{color:#FFD600}
-.card .btn{background:#FFD600;color:#000;display:block;text-align:center;padding:8px;font-weight:900;text-decoration:none;margin-top:6px}
-
-/* TOP BIEN CENTRADO */
-.top-carrusel{background:#FFD600;color:#000;overflow:hidden;height:85px;position:relative;border-bottom:3px solid #000}
-.top-track{display:flex;transition:transform 0.6s ease;height:100%}
-.top-slide{flex:0 0 100%;display:flex;align-items:center;gap:12px;padding:0 15px;cursor:pointer}
-.top-slide img{width:65px;height:65px;object-fit:cover;border:3px solid #000;border-radius:6px}
-.top-slide .txt b{font-size:17px;font-weight:900}
-.top-slide .txt span{font-size:11px;font-weight:700}
-
-/* BOTONES DE ABAJO QUE TE BORRE */
-.descarga-section{background:#FFD600;color:#000;padding:25px;text-align:center;border-top:4px solid #000}
-.descarga-section h2{font-size:28px;font-weight:900;margin-bottom:12px}
-.btn-descarga{display:block;width:100%;max-width:350px;margin:8px auto;padding:14px;background:#000;color:#FFD600;font-weight:900;border:0;border-radius:8px;cursor:pointer;font-size:15px}
-.btn-descarga.sec{background:#fff;color:#000;border:3px solid #000}
-
-.footer{padding:20px;text-align:center;color:#666;background:#000;font-size:12px}
+.card .info{padding:10px}
+.card b{font-size:13px;display:block;margin-bottom:4px}
+.card .btn{display:block;background:#FFD600;color:#000;text-align:center;padding:8px;border-radius:6px;text-decoration:none;font-weight:900;margin-top:6px;font-size:12px}
+.acciones{padding:12px;display:flex;flex-direction:column;gap:8px}
+.btn-app{padding:14px;border-radius:10px;border:0;font-weight:900;cursor:pointer}
+.btn-instalar{background:#FFD600;color:#000}
+.btn-noti{background:#222;color:#fff;border:1px solid #333}
+.up-banner{background:#1a1a1a;border:2px dashed #FFD600;margin:12px;border-radius:10px;padding:12px;text-align:center}
+.up-banner b{color:#FFD600}
+.up-banner a{display:inline-block;margin-top:8px;background:#22c55e;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:900}
 </style>
 </head>
 <body>
-<div class="top-yellow">AV CONSTITUCION 216 JESUS MARIA - ENTREGA A DOMICILIO</div>
 
-<div class="top-carrusel" id="topCarrusel">
-  <div class="top-track" id="topTrack"></div>
+<div class="top-bar">BAZAR LOS CUATES - JESÚS MARÍA, AGS - PIEZAS BUENAS, PRECIO CLARO</div>
+
+<div class="slider-top">
+  <div id="topTrack" class="top-track"></div>
 </div>
 
-<div class="header">
-  <div class="logo"><span>BLC</span> BAZAR LOS CUATES</div>
-  <a class="btn-wa" href="https://wa.me/524491883244" target="_blank">WHATSAPP</a>
+<div class="portada">
+  <div id="slideTrack" class="slide-track"></div>
 </div>
 
-<div class="hero">
-  <h1>PIEZAS BUENAS,<br><mark>PRECIO CLARO</mark></h1>
-  <div class="hero-slider"><div class="slide-track" id="slideTrack"></div></div>
+<div class="buscador">
+  <input id="buscador" placeholder="Buscar pieza... Ej: sala, refri, moto">
 </div>
 
-<div class="marquee">MUEBLES ◆ CUCHILLOS ◆ BOCINAS ◆ HERRAMIENTA ◆ ELECTRONICA ◆</div>
-<div class="buscador"><input id="buscador" type="text" placeholder="Buscar..."></div>
-<div class="grid" id="catalogo"></div>
-
-<div class="descarga-section">
-  <h2>DESCARGA LA APP</h2>
-  <p style="font-weight:700;margin-bottom:12px;font-size:13px">Instala Bazar Los Cuates en tu celular</p>
-  <button class="btn-descarga" id="btn-instalar-app">📲 INSTALAR APLICACION</button>
-  <button class="btn-descarga sec" id="btn-noti">🔔 ACTIVAR NOTIFICACIONES</button>
-  <p style="font-size:11px;margin-top:10px;color:#333">Te avisamos cuando haya piezas nuevas</p>
+<div class="contador">
+  <div>Hoy: <span id="visitasHoy">0</span></div>
+  <div>Total: <span id="visitasTotal">0</span></div>
+  <div>En línea</div>
 </div>
 
-<div class="footer">Bazar Los Cuates - 4491883244 - Jesús María, Aguascalientes<br>AV CONSTITUCION 216</div>
+<div id="catalogo" class="catalogo"></div>
+
+<div class="up-banner">
+  <b>¿QUIERES UNA APP COMO ESTA?</b><br>
+  <span style="font-size:13px;color:#aaa">Yo te la hago para tu negocio, se instala como app real con tu logo</span><br>
+  <a href="https://wa.me/524491883244?text=Hola%20me%20interesa%20una%20app%20como%20la%20de%20Bazar%20Los%20Cuates" target="_blank">YO QUIERO MI APP - WHATSAPP</a>
+</div>
+
+<div class="acciones">
+  <button id="btn-instalar-app" class="btn-app btn-instalar">📲 INSTALAR APLICACIÓN</button>
+  <button id="btn-noti" class="btn-app btn-noti">🔔 ACTIVAR NOTIFICACIONES</button>
+  <a href="./admin.html" style="text-align:center;color:#555;font-size:11px;text-decoration:none;margin-top:10px">Admin</a>
+</div>
+
+<!-- POP-UP YO HAGO APPS -->
+<style>
+#popup-apps{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:99999;display:none;align-items:center;justify-content:center}
+#popup-apps.activo{display:flex}
+.popup-box{background:#111;border:3px solid #FFD600;border-radius:16px;padding:24px;width:90%;max-width:360px;text-align:center;color:#fff;position:relative}
+.popup-box h2{color:#FFD600;font-size:22px;margin-bottom:10px;font-weight:900;line-height:1.2}
+.popup-box p{font-size:14px;margin-bottom:12px;color:#ccc;line-height:1.3}
+.popup-box .btn-wha{display:block;background:#22c55e;color:#fff;padding:14px;border-radius:10px;text-decoration:none;font-weight:900;margin-top:12px}
+.popup-box .btn-cerrar{position:absolute;top:8px;right:12px;background:none;border:0;color:#fff;font-size:26px;cursor:pointer}
+.popup-box .no-mostrar{margin-top:12px;font-size:12px;color:#777;cursor:pointer;text-decoration:underline}
+</style>
+<div id="popup-apps">
+  <div class="popup-box">
+    <button class="btn-cerrar" onclick="cerrarPopup()">×</button>
+    <h2>¿TE INTERESA UNA APP COMO ESTA?</h2>
+    <p>Yo te hago tu aplicación para tu negocio, como Bazar Los Cuates. Aparece en Google, se instala como app con tu logo y tu WhatsApp.</p>
+    <p style="color:#FFD600;font-weight:900;font-size:16px">¡Desde $500!</p>
+    <a class="btn-wha" href="https://wa.me/524491883244?text=Hola%20vi%20tu%20pop-up%20en%20Bazar%20Los%20Cuates%20y%20me%20interesa%20una%20app" target="_blank">💬 SÍ, ME INTERESA</a>
+    <div class="no-mostrar" onclick="cerrarPopup(true)">No volver a mostrar hoy</div>
+  </div>
+</div>
 
 <script>
 function getProductos(){try{return JSON.parse(localStorage.getItem('bazar_productos'))||[]}catch{return[]}}
 function getAnuncios(){try{return JSON.parse(localStorage.getItem('bazar_anuncios'))||[]}catch{return[]}}
 function getPrecio(){return localStorage.getItem('bazar_banner_precio')||'200';}
+function getPortadas(){try{const m=localStorage.getItem('bazar_portadas');if(m){const p=JSON.parse(m);if(p.length>0)return p;}}catch{}return["https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=400&fit=crop"];}
+function renderCatalogo(f=""){const c=document.getElementById('catalogo');const prods=getProductos().filter(x=>(x.nombre+" "+x.precio).toLowerCase().includes(f.toLowerCase()));c.innerHTML="";if(prods.length===0){c.innerHTML="<p style='grid-column:1/3;text-align:center;padding:30px;color:#666'>Aún no hay piezas. Agrégalas en Admin</p>";return;}prods.forEach(prod=>{const img=(prod.fotos&&prod.fotos[0])?prod.fotos[0]:prod.img;const wa=`https://wa.me/524491883244?text=${encodeURIComponent('Hola me interesa '+prod.nombre+' $'+prod.precio)}`;const d=document.createElement('div');d.className='card';d.innerHTML=`<img src="${img}" loading="lazy"><div class="info"><b>${prod.nombre}</b><span style="color:#FFD600;font-weight:900">$${prod.precio}</span><a class="btn" href="${wa}" target="_blank">WHATSAPP</a></div>`;c.appendChild(d);});}
+let sI=0;function renderSlider(){const imgs=getPortadas();const track=document.getElementById('slideTrack');track.innerHTML="";imgs.forEach(src=>{const d=document.createElement('div');d.className='slide';d.innerHTML=`<img src="${src}">`;track.appendChild(d);});if(imgs.length>1){if(window.sInt)clearInterval(window.sInt);window.sInt=setInterval(()=>{sI=(sI+1)%imgs.length;track.style.transform=`translateX(-${sI*100}%)`;},3500);}}
+function renderTop(){const track=document.getElementById('topTrack');let anuncios=getAnuncios();let precio=getPrecio();let lista=[...anuncios,{nombre:`ANUNCIATE AQUI $${precio} AL MES`,whatsapp:'524491883244',img:'',esAnunciate:true}];track.innerHTML="";lista.forEach(an=>{const div=document.createElement('div');div.className='top-slide';if(an.esAnunciate){div.onclick=()=>window.open(`https://wa.me/524491883244?text=${encodeURIComponent('Hola vi ANUNCIATE AQUI $'+precio+' en Bazar Los Cuates')}`,'_blank');div.innerHTML=`<div class="txt"><b>ANUNCIATE AQUI $${precio} AL MES</b><span>Toca aqui - 4491883244 - Solo 1 espacio</span></div>`;}else{const wa=`https://wa.me/${String(an.whatsapp).replace(/[^0-9]/g,'')}?text=${encodeURIComponent('Hola vi tu anuncio de '+an.nombre+' en Bazar Los Cuates')}`;div.onclick=()=>window.open(wa,'_blank');div.innerHTML=`${an.img?`<img src="${an.img}">`:''}<div class="txt"><b>${an.nombre}</b><span>Toca para WhatsApp</span></div>`;}track.appendChild(div);});let idx=0;if(window.topInt)clearInterval(window.topInt);if(lista.length>1){window.topInt=setInterval(()=>{idx=(idx+1)%lista.length;track.style.transform=`translateX(-${idx*100}%)`;},3000);}}
 
-function renderCatalogo(f=""){
-  const c=document.getElementById('catalogo');
-  const prods=getProductos().filter(x=>(x.nombre+" "+x.precio).toLowerCase().includes(f.toLowerCase()));
-  c.innerHTML="";
-  if(prods.length===0){c.innerHTML="<p style='grid-column:1/3;text-align:center;padding:20px;color:#888'>No hay piezas aún - Ve al ADMIN</p>";return;}
-  prods.forEach(prod=>{
-    const img=(prod.fotos&&prod.fotos[0])?prod.fotos[0]:prod.img;
-    const wa=`https://wa.me/524491883244?text=${encodeURIComponent('Hola me interesa '+prod.nombre)}`;
-    const d=document.createElement('div');d.className='card';
-    d.innerHTML=`<img src="${img}"><div class="info"><b>${prod.nombre}</b><br>$${prod.precio}<br><a class="btn" href="${wa}" target="_blank">WHATSAPP</a></div>`;
-    c.appendChild(d);
-  });
+// CONTADOR DE VISITAS
+function actualizarContador(){
+  let total = parseInt(localStorage.getItem('bazar_visitas_total')||'0');
+  let hoy = parseInt(localStorage.getItem('bazar_visitas_hoy')||'0');
+  let fecha = localStorage.getItem('bazar_visitas_fecha');
+  let hoyStr = new Date().toDateString();
+  if(fecha !== hoyStr){ hoy = 0; localStorage.setItem('bazar_visitas_fecha', hoyStr); }
+  total++; hoy++;
+  localStorage.setItem('bazar_visitas_total', total);
+  localStorage.setItem('bazar_visitas_hoy', hoy);
+  document.getElementById('visitasTotal').innerText = total;
+  document.getElementById('visitasHoy').innerText = hoy;
 }
 
-function getPortadas(){try{const m=localStorage.getItem('bazar_portadas');if(m)return JSON.parse(m);}catch{}return["https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800"];}
-let sI=0;
-function renderSlider(){
-  const imgs=getPortadas();const track=document.getElementById('slideTrack');track.innerHTML="";
-  imgs.forEach(src=>{const d=document.createElement('div');d.className='slide';d.innerHTML=`<img src="${src}">`;track.appendChild(d);});
-  if(imgs.length>1)setInterval(()=>{sI=(sI+1)%imgs.length;track.style.transform=`translateX(-${sI*100}%)`;},3000);
-}
-
-function renderTop(){
-  const track=document.getElementById('topTrack');
-  let anuncios=getAnuncios();
-  let precio=getPrecio();
-  let lista=[...anuncios,{nombre:`ANUNCIATE AQUI $${precio} AL MES`,whatsapp:'524491883244',img:'',esAnunciate:true}];
-  track.innerHTML="";
-  lista.forEach(an=>{
-    const div=document.createElement('div');div.className='top-slide';
-    if(an.esAnunciate){
-      div.onclick=()=>window.open(`https://wa.me/524491883244?text=${encodeURIComponent('Hola vi ANUNCIATE AQUI $'+precio)}`,'_blank');
-      div.innerHTML=`<div class="txt"><b>ANUNCIATE AQUI $${precio} AL MES</b><span>Toca aqui - 4491883244</span></div>`;
-    } else {
-      const wa=`https://wa.me/${String(an.whatsapp).replace(/[^0-9]/g,'')}?text=${encodeURIComponent('Hola '+an.nombre)}`;
-      div.onclick=()=>window.open(wa,'_blank');
-      div.innerHTML=`${an.img?`<img src="${an.img}">`:''}<div class="txt"><b>${an.nombre}</b><span>Toca para WhatsApp</span></div>`;
-    }
-    track.appendChild(div);
-  });
-  let idx=0;
-  if(window.topInt)clearInterval(window.topInt);
-  if(lista.length>1){
-    window.topInt=setInterval(()=>{idx=(idx+1)%lista.length;track.style.transform=`translateX(-${idx*100}%)`;},3000);
+// POP-UP
+function cerrarPopup(hoy=false){document.getElementById('popup-apps').classList.remove('activo'); if(hoy){localStorage.setItem('popup_apps_fecha', new Date().toDateString());}}
+window.addEventListener('load', ()=>{
+  let ultima = localStorage.getItem('popup_apps_fecha');
+  let hoyStr = new Date().toDateString();
+  if(ultima !== hoyStr){
+    setTimeout(()=>{document.getElementById('popup-apps').classList.add('activo');}, 4000);
   }
-}
+});
 
-// BOTONES DE INSTALAR Y NOTIS
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;});
+// INSTALAR APP - CON TUS 2 JPGs
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  let btn=document.getElementById('btn-instalar-app');
+  btn.innerText='📲 INSTALAR AHORA - ¡LISTO!';
+  btn.style.background='#22c55e';
+  btn.style.color='#fff';
+});
 document.getElementById('btn-instalar-app').addEventListener('click',async()=>{
-  if(deferredPrompt){deferredPrompt.prompt();const r=await deferredPrompt.userChoice;deferredPrompt=null;}
-  else{alert('Para instalar: En tu navegador dale a los 3 puntitos > Instalar app o Agregar a pantalla de inicio');}
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    const c=await deferredPrompt.userChoice;
+    if(c.outcome==='accepted'){alert('¡Gracias! Se instaló Bazar Los Cuates con tu icono');}
+    deferredPrompt=null;
+  }else{
+    if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone){
+      alert('¡Ya la tienes instalada!');
+    }else{
+      alert('Para instalar: Si no sale el letrero automático, dale a los 3 puntitos de Chrome arriba > Instalar app. Chrome tarda 1 minuto en detectar tus 2 JPGs después de subir el manifest.');
+    }
+  }
 });
 document.getElementById('btn-noti').addEventListener('click',async()=>{
-  if(!('Notification' in window)){alert('Tu navegador no soporta notificaciones');return;}
-  const perm=await Notification.requestPermission();
-  if(perm==='granted'){new Notification('Bazar Los Cuates',{body:'¡Notificaciones activadas! Te avisaremos de piezas nuevas.',icon:'./icon-192.png'});alert('✅ Notificaciones activadas');}
-  else{alert('No diste permiso para notificaciones');}
+  if(!('Notification' in window)){alert('No soporta notificaciones');return;}
+  let p=await Notification.requestPermission();
+  if(p==='granted'){new Notification('Bazar Los Cuates',{body:'¡Notificaciones activadas!',icon:'./869268815_1422434703341051_8980595446836735717_n.jpg'}); alert('✅ Activadas');}
+  else alert('No diste permiso');
 });
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').then(()=>console.log('SW OK')).catch(e=>console.log(e));}
 
+actualizarContador();
 renderCatalogo();renderSlider();renderTop();
 document.getElementById('buscador').addEventListener('input',e=>renderCatalogo(e.target.value));
 </script>
