@@ -14,7 +14,7 @@
 .buscador{padding:12px;background:#111} .buscador input{width:100%;padding:12px;border-radius:8px;border:2px solid #333;background:#1a1a1a;color:#fff}
 .contador{padding:8px 12px;background:#0a0a0a;color:#888;font-size:11px;display:flex;gap:15px;justify-content:center;border-bottom:1px solid #1a1a1a} .contador span{color:#FFD600;font-weight:900}
 .catalogo{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px} .card{background:#1a1a1a;border-radius:10px;overflow:hidden;border:1px solid #222} .card img{width:100%;height:160px;object-fit:cover} .card .info{padding:10px} .card b{font-size:13px;display:block} .card .btn{display:block;background:#FFD600;color:#000;text-align:center;padding:8px;border-radius:6px;text-decoration:none;font-weight:900;margin-top:6px;font-size:12px}
-.acciones{padding:12px;display:flex;flex-direction:column;gap:8px} .btn-app{padding:14px;border-radius:10px;border:0;font-weight:900;width:100%;display:block;text-align:center;text-decoration:none} .btn-instalar{background:#FFD600;color:#000} .btn-noti{background:#222;color:#fff;border:1px solid #333}
+.acciones{padding:12px;display:flex;flex-direction:column;gap:8px} .btn-app{padding:14px;border-radius:10px;border:0;font-weight:900;width:100%;display:block;text-align:center;text-decoration:none} .btn-instalar{background:#FFD600;color:#000}
 </style></head><body>
 <div class="top-bar">BAZAR LOS CUATES - JESÚS MARÍA, AGS</div>
 <div class="slider-top"><div id="topTrack" class="top-track"></div></div>
@@ -24,12 +24,11 @@
 <div id="catalogo" class="catalogo"><p style="grid-column:1/3;text-align:center;padding:30px;color:#888">Cargando...</p></div>
 <div class="acciones">
 <a href="./BLC.apk" download class="btn-app btn-instalar">📥 DESCARGAR APLICACIÓN</a>
-<button id="btn-noti" class="btn-app btn-noti">🔔 ACTIVAR NOTIFICACIONES</button>
 <a href="./admin.html" style="text-align:center;color:#555;font-size:11px;text-decoration:none;margin-top:14px;display:block">Admin</a>
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, updateDoc, increment, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4", authDomain: "bazar-los-cuates.firebaseapp.com", projectId: "bazar-los-cuates", storageBucket: "bazar-los-cuates.firebasestorage.app", messagingSenderId: "908351301550", appId: "1:908351301550:web:3ae25892920ce8dda24a3f" };
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
 let productosNube=[]; let filtro="";
@@ -39,46 +38,6 @@ function renderCatalogo(){ const cont=document.getElementById('catalogo'); const
 async function cargarPortadas(){ const snap=await getDocs(collection(db,"portadas")); let imgs=[]; snap.forEach(d=>imgs.push(d.data().foto)); if(imgs.length==0) imgs=["https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800"]; const track=document.getElementById('slideTrack'); track.innerHTML=""; imgs.forEach(src=>{const div=document.createElement('div'); div.className='slide'; div.innerHTML=`<img src="${src}">`; track.appendChild(div);}); let idx=0; if(imgs.length>1){setInterval(()=>{idx=(idx+1)%imgs.length; track.style.transform=`translateX(-${idx*100}%)`;},3500);} }
 async function cargarAnuncios(){ const snapA=await getDocs(collection(db,"anuncios")); const snapC=await getDoc(doc(db,"config","banner")); let precio="200"; if(snapC.exists()) precio=snapC.data().precio||"200"; let anuncios=[]; snapA.forEach(d=>anuncios.push({id:d.id,...d.data()})); let lista=[...anuncios,{nombre:`ANUNCIATE AQUI $${precio} AL MES`,esAnunciate:true,id:null}]; const track=document.getElementById('topTrack'); track.innerHTML=""; lista.forEach(an=>{ const div=document.createElement('div'); div.className='top-slide'; if(an.esAnunciate){ div.onclick=async()=>{ await registrarClickBanner(null,`ANUNCIATE AQUI`); window.open(`https://wa.me/524491883244?text=${encodeURIComponent('Hola vi que puedo anunciarme por $'+precio)}`,'_blank'); }; div.innerHTML=`<div class="txt"><b>ANUNCIATE AQUI $${precio} AL MES</b><span>Toca aqui</span></div>`; } else { div.onclick=async()=>{ await registrarClickBanner(an.id,an.nombre); window.open(`https://wa.me/${String(an.whatsapp).replace(/[^-0-9]/g,'')}?text=${encodeURIComponent('Hola vi tu anuncio de '+an.nombre+' en Bazar Los Cuates')}`,'_blank'); }; div.innerHTML=`${an.img?`<img src="${an.img}">`:''}<div class="txt"><b>${an.nombre}</b><span>WhatsApp</span></div>`; } track.appendChild(div); }); let idxTop=0; if(lista.length>1){setInterval(()=>{idxTop=(idxTop+1)%lista.length; track.style.transform=`translateX(-${idxTop*100}%)`;},3000);} }
 async function contador(){ const hoyStr=new Date().toISOString().split('T')[0]; const ref=doc(db,"stats","visitas"); const snap=await getDoc(ref); let data=snap.exists()?snap.data():{total:0,hoy:0,fecha:""}; if(data.fecha!==hoyStr){data.hoy=0;data.fecha=hoyStr;} data.total=(data.total||0)+1; data.hoy=(data.hoy||0)+1; await setDoc(ref,data); document.getElementById('visitasTotal').innerText=data.total; document.getElementById('visitasHoy').innerText=data.hoy; }
-async function activarNotificaciones(){
-  const btn=document.getElementById('btn-noti');
-  btn.innerText='⏳ GUARDANDO...';
-  try{
-    let tokenFinal = localStorage.getItem('fcm_token');
-    if(!tokenFinal){
-      tokenFinal = 'cel_' + Date.now() + '_' + Math.random().toString(36).substring(2,8);
-      localStorage.setItem('fcm_token', tokenFinal);
-    }
-    await addDoc(collection(db, "fcm_tokens"), { token: tokenFinal, fecha: Date.now(), activo: true });
-    localStorage.setItem('notificaciones_activas','si');
-    btn.innerHTML='✅ NOTIFICACIONES ACTIVADAS';
-    btn.style.background='#22c55e';
-    btn.style.color='#fff';
-    alert('✅ ¡Ya quedó guardado! Ahora ve a tu Admin y ya debe decir Clientes: 1');
-    try{ await Notification.requestPermission(); }catch(e){}
-  }catch(e){
-    alert('Error Firebase: '+e.message);
-    btn.innerText='🔔 ACTIVAR NOTIFICACIONES';
-  }
-}
-document.getElementById('btn-noti').addEventListener('click', activarNotificaciones);
-if(localStorage.getItem('notificaciones_activas')==='si' || localStorage.getItem('fcm_token')){
-  const btn=document.getElementById('btn-noti'); if(btn){ btn.innerHTML='✅ NOTIFICACIONES ACTIVADAS'; btn.style.background='#22c55e'; btn.style.color='#fff'; }
-}
-// ESCUCHAR NOTIFICACIONES - ESTO HACE QUE TE LLEGUE AL CELULAR
-onSnapshot(collection(db,"notificaciones"), snap=>{
-  snap.docChanges().forEach(change=>{
-    if(change.type==="added"){
-      const d=change.doc.data();
-      if(Date.now()-d.fecha < 15000){
-        if(Notification.permission==="granted"){
-          new Notification(d.titulo,{body:d.mensaje});
-        }else{
-          alert("🔔 "+d.titulo+"\n\n"+d.mensaje);
-        }
-      }
-    }
-  });
-});
 document.getElementById('buscador').addEventListener('input',e=>{filtro=e.target.value;renderCatalogo();});
 cargarProductos(); cargarPortadas(); cargarAnuncios(); contador();
 </script></body></html>
