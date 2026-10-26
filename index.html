@@ -15,7 +15,7 @@
 .contador{padding:8px 12px;background:#0a0a0a;color:#888;font-size:11px;display:flex;gap:15px;justify-content:center;border-bottom:1px solid #1a1a1a} .contador span{color:#FFD600;font-weight:900}
 .catalogo{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px} .card{background:#1a1a1a;border-radius:10px;overflow:hidden;border:1px solid #222} .card img{width:100%;height:160px;object-fit:cover} .card .info{padding:10px} .card b{font-size:13px;display:block} .card .btn{display:block;background:#FFD600;color:#000;text-align:center;padding:8px;border-radius:6px;text-decoration:none;font-weight:900;margin-top:6px;font-size:12px}
 .up-banner{background:#1a1a1a;border:2px dashed #FFD600;margin:12px;border-radius:10px;padding:16px;text-align:center} .up-banner b{display:block;font-size:18px;margin-bottom:10px} .up-banner a{display:inline-block;background:#22c55e;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:900}
-.acciones{padding:12px;display:flex;flex-direction:column;gap:8px} .btn-app{padding:14px;border-radius:10px;border:0;font-weight:900;width:100%} .btn-instalar{background:#FFD600;color:#000} .btn-noti{background:#222;color:#fff;border:1px solid #333}
+.acciones{padding:12px;display:flex;flex-direction:column;gap:8px} .btn-app{padding:14px;border-radius:10px;border:0;font-weight:900;width:100%;display:block;text-align:center;text-decoration:none} .btn-instalar{background:#FFD600;color:#000} .btn-noti{background:#222;color:#fff;border:1px solid #333}
 #popup-apps{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:99999;display:none;align-items:center;justify-content:center} #popup-apps.activo{display:flex} .popup-box{background:#111;border:3px solid #FFD600;border-radius:16px;padding:24px;width:90%;max-width:360px;text-align:center;color:#fff;position:relative} .popup-box h2{color:#FFD600;font-size:22px;margin-bottom:10px;font-weight:900} .popup-box p{font-size:14px;margin-bottom:12px;color:#ccc} .popup-box .btn-wha{display:block;background:#22c55e;color:#fff;padding:14px;border-radius:10px;text-decoration:none;font-weight:900;margin-top:12px} .popup-box .btn-cerrar{position:absolute;top:8px;right:12px;background:none;border:0;color:#fff;font-size:26px;cursor:pointer} .popup-box .no-mostrar{margin-top:12px;font-size:12px;color:#777;cursor:pointer;text-decoration:underline}
 </style></head><body>
 <div class="top-bar">BAZAR LOS CUATES - JESÚS MARÍA, AGS</div>
@@ -29,7 +29,7 @@
 <a href="https://wa.me/524491883244?text=Hola%20me%20interesa%20una%20app%20como%20la%20de%20Bazar%20Los%20Cuates" target="_blank">YO QUIERO MI APP - WHATSAPP</a>
 </div>
 <div class="acciones">
-<button id="btn-instalar-app" class="btn-app btn-instalar">📲 INSTALAR APLICACIÓN</button>
+<a href="./BLC%20-%20Google%20Play%20package%20(1).zip" download class="btn-app btn-instalar">📥 DESCARGAR APLICACIÓN BAZAR LOS CUATES</a>
 <button id="btn-noti" class="btn-app btn-noti">🔔 ACTIVAR NOTIFICACIONES</button>
 <a href="./admin.html" style="text-align:center;color:#555;font-size:11px;text-decoration:none;margin-top:14px;display:block">Admin</a>
 </div>
@@ -49,7 +49,6 @@ const firebaseConfig = {
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
 let productosNube=[]; let filtro="";
 
-// REGISTRA CLIC DEL BANNER
 async function registrarClickBanner(id, nombre){
   try{
     const ref = doc(db,"stats","banner_clicks");
@@ -69,11 +68,8 @@ async function registrarClickBanner(id, nombre){
 async function cargarProductos(){
   const snap=await getDocs(collection(db,"productos"));
   productosNube=[]; snap.forEach(d=>productosNube.push({id:d.id,...d.data()}));
-  // NUEVO: REVOLVER PRODUCTOS CADA VEZ QUE ENTRA ALGUIEN
   productosNube.sort(() => Math.random() - 0.5);
   renderCatalogo();
-  
-  // NUEVO: AVISAR SI HAY PRODUCTO NUEVO MIENTRAS ESTÁ EN LA PÁGINA
   escucharNuevosProductos();
 }
 
@@ -89,7 +85,6 @@ function renderCatalogo(){
   });
 }
 
-// NUEVO: ESCUCHA PRODUCTOS NUEVOS Y MANDA NOTIFICACIÓN LOCAL
 let primerCarga = true;
 function escucharNuevosProductos(){
   if(window._escuchando) return;
@@ -159,34 +154,6 @@ async function contador(){
 window.cerrarPopup=function(hoy=false){document.getElementById('popup-apps').classList.remove('activo');if(hoy)localStorage.setItem('popup_apps_fecha',new Date().toDateString());}
 window.addEventListener('load',()=>{let u=localStorage.getItem('popup_apps_fecha');let h=new Date().toDateString();if(u!==h)setTimeout(()=>document.getElementById('popup-apps').classList.add('activo'),4000);});
 
-// NUEVO: LÓGICA MEJORADA DE INSTALACIÓN
-let deferredPrompt=null;
-window.addEventListener('beforeinstallprompt',(e)=>{
-  e.preventDefault();
-  deferredPrompt=e;
-  console.log('PWA lista para instalar');
-  document.getElementById('btn-instalar-app').innerHTML = '📲 INSTALAR APLICACIÓN (LISTA)';
-  document.getElementById('btn-instalar-app').style.background = '#22c55e';
-});
-
-document.getElementById('btn-instalar-app').addEventListener('click',async()=>{
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log('Resultado instalacion', outcome);
-    deferredPrompt=null;
-    document.getElementById('btn-instalar-app').innerText = '✅ APP INSTALADA';
-  }else{
-    // Si no hay prompt, es porque ya esta instalada o no esta disponible
-    if(window.matchMedia('(display-mode: standalone)').matches){
-      alert('✅ Ya tienes la app instalada!');
-    } else {
-      alert('Para instalar: 1) Da clic en los 3 puntitos arriba a la derecha\n2) Instalar app / Agregar a pantalla de inicio\n3) Instalar');
-    }
-  }
-});
-
-// NUEVO: LÓGICA MEJORADA DE NOTIFICACIONES
 document.getElementById('btn-noti').addEventListener('click',async()=>{
   if(!('Notification' in window)){
     alert('Tu celular no soporta notificaciones');
@@ -197,14 +164,12 @@ document.getElementById('btn-noti').addEventListener('click',async()=>{
     permiso = await Notification.requestPermission();
   }
   if(permiso==='granted'){
-    // Guardamos en Firebase que este usuario quiere notificaciones
     try{
       await addDoc(collection(db,"suscriptores"),{fecha:Date.now(), permiso: 'granted', userAgent: navigator.userAgent});
     }catch(e){}
     localStorage.setItem('notificaciones_activas','si');
     document.getElementById('btn-noti').innerHTML = '✅ NOTIFICACIONES ACTIVADAS';
     document.getElementById('btn-noti').style.background = '#22c55e';
-    // Mandamos una de prueba
     new Notification('🔔 Bazar Los Cuates', {body: '¡Listo! Te avisaré cada que suba una pieza nueva', icon: './icon-192.png'});
     alert('✅ Notificaciones activadas. Ahora te avisaré cada que suba algo nuevo.');
   } else {
@@ -212,7 +177,6 @@ document.getElementById('btn-noti').addEventListener('click',async()=>{
   }
 });
 
-// Si ya tenía permiso, marcamos el boton como activo
 if(Notification && Notification.permission === 'granted'){
   document.getElementById('btn-noti').innerHTML = '✅ NOTIFICACIONES ACTIVADAS';
 }
