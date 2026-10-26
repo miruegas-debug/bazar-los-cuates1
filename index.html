@@ -4,16 +4,18 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Arial}
 .top-bar{background:#FFD600;color:#000;text-align:center;padding:6px;font-size:12px;font-weight:900}
-.slider-top{background:#111;overflow:hidden;height:175px;border-bottom:3px solid #222} 
+/* BANNER AHORA MAS GRANDE QUE PORTADA */
+.slider-top{background:#111;overflow:hidden;height:285px;border-bottom:3px solid #FFD600} 
 .top-track{display:flex;transition:transform 0.6s ease;width:100%} 
-.top-slide{min-width:100%;display:flex;align-items:center;gap:15px;padding:15px;cursor:pointer;box-sizing:border-box;flex-shrink:0}
-.top-slide img{width:110px;height:110px;object-fit:cover;border-radius:12px;border:2px solid #FFD600}
-.top-slide .txt b{display:block;font-size:22px;color:#FFD600;line-height:1.1}
-.top-slide .txt span{font-size:16px;color:#fff}
-.portada{position:relative;height:260px;overflow:hidden;background:#111} .slide-track{display:flex;transition:transform 0.6s ease;height:100%;width:100%} .slide{min-width:100%;height:100%;flex-shrink:0} .slide img{width:100%;height:100%;object-fit:cover}
+.top-slide{min-width:100%;display:flex;align-items:center;gap:18px;padding:20px;cursor:pointer;box-sizing:border-box;flex-shrink:0}
+.top-slide img{width:135px;height:135px;object-fit:cover;border-radius:16px;border:3px solid #FFD600;flex-shrink:0}
+.top-slide .txt b{display:block;font-size:26px;color:#FFD600;line-height:1.1}
+.top-slide .txt span{font-size:16px;color:#fff;display:block;margin-top:4px}
+.top-slide .txt i{font-size:12px;color:#888;font-style:normal;background:#1a1a1a;padding:4px 8px;border-radius:20px;margin-top:8px;display:inline-block}
+.portada{position:relative;height:190px;overflow:hidden;background:#111} .slide-track{display:flex;transition:transform 0.6s ease;height:100%;width:100%} .slide{min-width:100%;height:100%;flex-shrink:0} .slide img{width:100%;height:100%;object-fit:cover}
 .buscador{padding:12px;background:#111} .buscador input{width:100%;padding:12px;border-radius:8px;border:2px solid #333;background:#1a1a1a;color:#fff}
 .contador{padding:8px 12px;background:#0a0a0a;color:#888;font-size:11px;display:flex;gap:15px;justify-content:center;border-bottom:1px solid #1a1a1a} .contador span{color:#FFD600;font-weight:900}
-.catalogo{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px} .card{background:#1a1a1a;border-radius:10px;overflow:hidden;border:1px solid #222} .card img{width:100%;height:160px;object-fit:cover} .card .info{padding:10px} .card b{font-size:13px;display:block} .card .btn{display:block;background:#FFD600;color:#000;text-align:center;padding:8px;border-radius:6px;text-decoration:none;font-weight:900;margin-top:6px;font-size:12px}
+.catalogo{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px} .card{background:#1a1a1a;border-radius:10px;overflow:hidden;border:1px solid #222} .card img{width:100%;height:160px;object-fit:cover} .card .info{padding:10px} .card b{font-size:13px;display:block} .card .btn{display:block;background:#FFD600;color:#000;text-align:center;padding:10px;border-radius:6px;text-decoration:none;font-weight:900;margin-top:6px;font-size:12px}
 .acciones{padding:12px;display:flex;flex-direction:column;gap:8px} .btn-app{padding:14px;border-radius:10px;border:0;font-weight:900;width:100%;display:block;text-align:center;text-decoration:none} .btn-instalar{background:#FFD600;color:#000}
 </style></head><body>
 <div class="top-bar">BAZAR LOS CUATES - JESÚS MARÍA, AGS</div>
@@ -34,9 +36,30 @@ const app=initializeApp(firebaseConfig); const db=getFirestore(app);
 let productosNube=[]; let filtro="";
 async function registrarClickBanner(id,nombre){ try{ const ref=doc(db,"stats","banner_clicks"); const snap=await getDoc(ref); let data=snap.exists()?snap.data():{}; data[nombre]=(data[nombre]||0)+1; data.total=(data.total||0)+1; data.ultimo=new Date().toLocaleString(); await setDoc(ref,data,{merge:true}); if(id){ await updateDoc(doc(db,"anuncios",id),{clicks: increment(1)}).catch(()=>{});} }catch(e){} }
 async function cargarProductos(){ const snap=await getDocs(collection(db,"productos")); productosNube=[]; snap.forEach(d=>productosNube.push({id:d.id,...d.data()})); productosNube.sort(()=>Math.random()-0.5); renderCatalogo(); }
-function renderCatalogo(){ const cont=document.getElementById('catalogo'); const lista=productosNube.filter(x=>(x.nombre+" "+x.precio).toLowerCase().includes(filtro.toLowerCase())); cont.innerHTML=""; if(lista.length==0){cont.innerHTML="<p style='grid-column:1/3;text-align:center;padding:30px;color:#666'>No hay piezas</p>";return;} lista.forEach(prod=>{ const wa=`https://wa.me/524491883244?text=${encodeURIComponent('Hola me interesa '+prod.nombre+' $'+prod.precio)}`; const d=document.createElement('div'); d.className='card'; d.innerHTML=`<img src="${prod.foto}"><div class="info"><b>${prod.nombre}</b><span style="color:#FFD600;font-weight:900">$${prod.precio}</span><a class="btn" href="${wa}" target="_blank">WHATSAPP</a></div>`; cont.appendChild(d); }); }
+function renderCatalogo(){ const cont=document.getElementById('catalogo'); const lista=productosNube.filter(x=>(x.nombre+" "+x.precio).toLowerCase().includes(filtro.toLowerCase())); cont.innerHTML=""; if(lista.length==0){cont.innerHTML="<p style='grid-column:1/3;text-align:center;padding:30px;color:#666'>No hay piezas</p>";return;} lista.forEach(prod=>{ const wa=`https://wa.me/524491883244?text=${encodeURIComponent('Hola me interesa '+prod.nombre+' $'+prod.precio)}`; const d=document.createElement('div'); d.className='card'; d.innerHTML=`<img src="${prod.foto}"><div class="info"><b>${prod.nombre}</b><span style="color:#FFD600;font-weight:900">$${prod.precio}</span><a class="btn" href="${wa}" target="_blank">📲 ¡ME INTERESA!</a></div>`; cont.appendChild(d); }); }
 async function cargarPortadas(){ const snap=await getDocs(collection(db,"portadas")); let imgs=[]; snap.forEach(d=>imgs.push(d.data().foto)); if(imgs.length==0) imgs=["https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800"]; const track=document.getElementById('slideTrack'); track.innerHTML=""; imgs.forEach(src=>{const div=document.createElement('div'); div.className='slide'; div.innerHTML=`<img src="${src}">`; track.appendChild(div);}); let idx=0; if(imgs.length>1){setInterval(()=>{idx=(idx+1)%imgs.length; track.style.transform=`translateX(-${idx*100}%)`;},3500);} }
-async function cargarAnuncios(){ const snapA=await getDocs(collection(db,"anuncios")); const snapC=await getDoc(doc(db,"config","banner")); let precio="200"; if(snapC.exists()) precio=snapC.data().precio||"200"; let anuncios=[]; snapA.forEach(d=>anuncios.push({id:d.id,...d.data()})); let lista=[...anuncios,{nombre:`ANUNCIATE AQUI $${precio} AL MES`,esAnunciate:true,id:null}]; const track=document.getElementById('topTrack'); track.innerHTML=""; lista.forEach(an=>{ const div=document.createElement('div'); div.className='top-slide'; if(an.esAnunciate){ div.onclick=async()=>{ await registrarClickBanner(null,`ANUNCIATE AQUI`); window.open(`https://wa.me/524491883244?text=${encodeURIComponent('Hola vi que puedo anunciarme por $'+precio)}`,'_blank'); }; div.innerHTML=`<div class="txt"><b>ANUNCIATE AQUI $${precio} AL MES</b><span>Toca aqui</span></div>`; } else { div.onclick=async()=>{ await registrarClickBanner(an.id,an.nombre); window.open(`https://wa.me/${String(an.whatsapp).replace(/[^-0-9]/g,'')}?text=${encodeURIComponent('Hola vi tu anuncio de '+an.nombre+' en Bazar Los Cuates')}`,'_blank'); }; div.innerHTML=`${an.img?`<img src="${an.img}">`:''}<div class="txt"><b>${an.nombre}</b><span>WhatsApp</span></div>`; } track.appendChild(div); }); let idxTop=0; if(lista.length>1){setInterval(()=>{idxTop=(idxTop+1)%lista.length; track.style.transform=`translateX(-${idxTop*100}%)`;},3000);} }
+async function cargarAnuncios(){ 
+  const snapA=await getDocs(collection(db,"anuncios")); 
+  const snapC=await getDoc(doc(db,"config","banner")); 
+  const snapV=await getDoc(doc(db,"stats","visitas"));
+  let precio="200"; if(snapC.exists()) precio=snapC.data().precio||"200"; 
+  let totalV="0"; if(snapV.exists()) totalV=snapV.data().total||"0";
+  let anuncios=[]; snapA.forEach(d=>anuncios.push({id:d.id,...d.data()})); 
+  let lista=[...anuncios,{nombre:`ANUNCIATE AQUI $${precio} AL MES`,esAnunciate:true,id:null,visitas:totalV,precio:precio}]; 
+  const track=document.getElementById('topTrack'); track.innerHTML=""; 
+  lista.forEach(an=>{ 
+    const div=document.createElement('div'); div.className='top-slide'; 
+    if(an.esAnunciate){ 
+      div.onclick=async()=>{ await registrarClickBanner(null,`ANUNCIATE AQUI`); window.open(`https://wa.me/524491883244?text=${encodeURIComponent('Hola vi que puedo anunciarme por $'+precio+' y tienen '+totalV+' visitas')}`,'_blank'); }; 
+      div.innerHTML=`<div class="txt"><b>ANUNCIATE AQUI $${an.precio} AL MES</b><span>👀 Te ven ${an.visitas} personas</span><i>📲 Toca aqui - WhatsApp</i></div>`; 
+    } else { 
+      div.onclick=async()=>{ await registrarClickBanner(an.id,an.nombre); window.open(`https://wa.me/${String(an.whatsapp).replace(/[^-0-9]/g,'')}?text=${encodeURIComponent('Hola vi tu anuncio de '+an.nombre+' en Bazar Los Cuates')}`,'_blank'); }; 
+      div.innerHTML=`${an.img?`<img src="${an.img}">`:''}<div class="txt"><b>${an.nombre}</b><span>Toca para WhatsApp</span><i>Anuncio patrocinado</i></div>`; 
+    } 
+    track.appendChild(div); 
+  }); 
+  let idxTop=0; if(lista.length>1){setInterval(()=>{idxTop=(idxTop+1)%lista.length; track.style.transform=`translateX(-${idxTop*100}%)`;},3500);} 
+}
 async function contador(){ const hoyStr=new Date().toISOString().split('T')[0]; const ref=doc(db,"stats","visitas"); const snap=await getDoc(ref); let data=snap.exists()?snap.data():{total:0,hoy:0,fecha:""}; if(data.fecha!==hoyStr){data.hoy=0;data.fecha=hoyStr;} data.total=(data.total||0)+1; data.hoy=(data.hoy||0)+1; await setDoc(ref,data); document.getElementById('visitasTotal').innerText=data.total; document.getElementById('visitasHoy').innerText=data.hoy; }
 document.getElementById('buscador').addEventListener('input',e=>{filtro=e.target.value;renderCatalogo();});
 cargarProductos(); cargarPortadas(); cargarAnuncios(); contador();
