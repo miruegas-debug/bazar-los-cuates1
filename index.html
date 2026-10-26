@@ -9,24 +9,29 @@
 .buscador{padding:12px;background:#111} .buscador input{width:100%;padding:12px;border-radius:8px;border:2px solid #333;background:#1a1a1a;color:#fff}
 .contador{padding:8px 12px;background:#0a0a0a;color:#888;font-size:11px;display:flex;gap:15px;justify-content:center;border-bottom:1px solid #1a1a1a} .contador span{color:#FFD600;font-weight:900}
 .catalogo{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px} .card{background:#1a1a1a;border-radius:10px;overflow:hidden;border:1px solid #222} .card img{width:100%;height:160px;object-fit:cover} .card .info{padding:10px} .card b{font-size:13px;display:block} .card .btn{display:block;background:#FFD600;color:#000;text-align:center;padding:8px;border-radius:6px;text-decoration:none;font-weight:900;margin-top:6px;font-size:12px}
+.up-banner{background:#1a1a1a;border:2px dashed #FFD600;margin:12px;border-radius:10px;padding:16px;text-align:center} .up-banner b{display:block;font-size:18px;margin-bottom:10px} .up-banner a{display:inline-block;background:#22c55e;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:900}
 .acciones{padding:12px;display:flex;flex-direction:column;gap:8px} .btn-app{padding:14px;border-radius:10px;border:0;font-weight:900;width:100%} .btn-instalar{background:#FFD600;color:#000} .btn-noti{background:#222;color:#fff;border:1px solid #333}
-.up-banner{background:#1a1a1a;border:2px dashed #FFD600;margin:12px;border-radius:10px;padding:12px;text-align:center} .up-banner a{display:inline-block;margin-top:8px;background:#22c55e;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:900}
 #popup-apps{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:99999;display:none;align-items:center;justify-content:center} #popup-apps.activo{display:flex} .popup-box{background:#111;border:3px solid #FFD600;border-radius:16px;padding:24px;width:90%;max-width:360px;text-align:center;color:#fff;position:relative} .popup-box h2{color:#FFD600;font-size:22px;margin-bottom:10px;font-weight:900} .popup-box p{font-size:14px;margin-bottom:12px;color:#ccc} .popup-box .btn-wha{display:block;background:#22c55e;color:#fff;padding:14px;border-radius:10px;text-decoration:none;font-weight:900;margin-top:12px} .popup-box .btn-cerrar{position:absolute;top:8px;right:12px;background:none;border:0;color:#fff;font-size:26px;cursor:pointer} .popup-box .no-mostrar{margin-top:12px;font-size:12px;color:#777;cursor:pointer;text-decoration:underline}
 </style></head><body>
 <div class="top-bar">BAZAR LOS CUATES - JESÚS MARÍA, AGS</div>
-<div class="slider-top"><div id="topTrack" class="top-track">Cargando...</div></div>
+<div class="slider-top"><div id="topTrack" class="top-track">Cargando anuncios...</div></div>
 <div class="portada"><div id="slideTrack" class="slide-track"></div></div>
 <div class="buscador"><input id="buscador" placeholder="Buscar pieza..."></div>
 <div class="contador"><div>Hoy: <span id="visitasHoy">0</span></div><div>Total: <span id="visitasTotal">0</span></div></div>
 <div id="catalogo" class="catalogo"><p style="grid-column:1/3;text-align:center;padding:30px;color:#888">Cargando desde la nube...</p></div>
-<div class="up-banner"><b>¿QUIERES UNA APP COMO ESTA?</b><br><a href="https://wa.me/524491883244?text=Hola%20me%20interesa%20una%20app" target="_blank">YO QUIERO MI APP - WHATSAPP</a></div>
+
+<div class="up-banner">
+<b>¿QUIERES UNA APP COMO ESTA?</b>
+<a href="https://wa.me/524491883244?text=Hola%20me%20interesa%20una%20app%20como%20la%20de%20Bazar%20Los%20Cuates" target="_blank">YO QUIERO MI APP - WHATSAPP</a>
+</div>
+
 <div class="acciones">
 <button id="btn-instalar-app" class="btn-app btn-instalar">📲 INSTALAR APLICACIÓN</button>
 <button id="btn-noti" class="btn-app btn-noti">🔔 ACTIVAR NOTIFICACIONES</button>
-<a href="./admin.html" style="text-align:center;color:#555;font-size:11px;text-decoration:none;margin-top:10px">Admin</a>
+<a href="./admin.html" style="text-align:center;color:#555;font-size:11px;text-decoration:none;margin-top:14px;display:block">Admin</a>
 </div>
 
-<div id="popup-apps"><div class="popup-box"><button class="btn-cerrar" onclick="cerrarPopup()">×</button><h2>¿TE INTERESA UNA APP COMO ESTA?</h2><p>Yo te hago tu aplicación para tu negocio, como Bazar Los Cuates. Se instala como app con tu logo.</p><p style="color:#FFD600;font-weight:900;font-size:16px">¡Desde $500!</p><a class="btn-wha" href="https://wa.me/524491883244?text=Hola%20vi%20tu%20pop-up" target="_blank">💬 SÍ, ME INTERESA</a><div class="no-mostrar" onclick="cerrarPopup(true)">No volver a mostrar hoy</div></div></div>
+<div id="popup-apps"><div class="popup-box"><button class="btn-cerrar" onclick="cerrarPopup()">×</button><h2>¿TE INTERESA UNA APP COMO ESTA?</h2><p>Yo te hago tu aplicación para tu negocio, como Bazar Los Cuates. Se instala como app con tu logo.</p><p style="color:#FFD600;font-weight:900;font-size:16px">¡Desde $500!</p><a class="btn-wha" href="https://wa.me/524491883244?text=Hola%20vi%20tu%20pop-up%20de%20apps" target="_blank">💬 SÍ, ME INTERESA</a><div class="no-mostrar" onclick="cerrarPopup(true)">No volver a mostrar hoy</div></div></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
