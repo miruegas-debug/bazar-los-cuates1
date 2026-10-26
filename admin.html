@@ -2,82 +2,44 @@
 <html lang="es-MX"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Bazar Los Cuates</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Arial}
-header{background:#FFD600;color:#000;padding:14px;text-align:center;font-weight:900;font-size:16px;letter-spacing:1px}
-.tabs{display:flex;overflow-x:auto;background:#0f0f0f;border-bottom:2px solid #1a1a1a;gap:2px;padding:0 8px} .tab{padding:14px 18px;white-space:nowrap;cursor:pointer;color:#888;font-weight:700;font-size:13px;border-bottom:3px solid transparent;transition:0.2s} .tab.active{color:#FFD600;border-bottom-color:#FFD600;background:#1a1a1a;border-radius:8px 8px 0 0}
-.panel{display:none;padding:14px;animation:fade 0.2s} .panel.active{display:block} @keyframes fade{from{opacity:0}to{opacity:1}}
-.card{background:linear-gradient(145deg,#151515,#111);padding:16px;border-radius:14px;border:1px solid #222;margin-bottom:14px;box-shadow:0 4px 12px rgba(0,0,0,0.5)}
-.card h3{color:#FFD600;margin-bottom:10px;font-size:14px}
+header{background:#FFD600;color:#000;padding:14px;text-align:center;font-weight:900}
+.tabs{display:flex;overflow-x:auto;background:#0f0f0f;border-bottom:2px solid #1a1a1a} .tab{padding:14px 18px;white-space:nowrap;cursor:pointer;color:#888;font-weight:700;font-size:13px;border-bottom:3px solid transparent} .tab.active{color:#FFD600;border-bottom-color:#FFD600;background:#1a1a1a}
+.panel{display:none;padding:14px} .panel.active{display:block}
+.card{background:#151515;padding:16px;border-radius:14px;border:1px solid #222;margin-bottom:14px}
 input,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #2a2a2a;background:#0a0a0a;color:#fff;margin-bottom:10px;font-size:14px}
-input[type=file]{background:#1a1a1a;border:1px dashed #333;padding:12px}
-button{padding:13px;border-radius:10px;border:0;font-weight:900;cursor:pointer;transition:0.2s} button:active{transform:scale(0.97)}
-.btn-yellow{background:#FFD600;color:#000;width:100%;font-size:14px} .btn-yellow:hover{background:#ffdf33}
+input[type=file]{background:#1a1a1a;border:1px dashed #444}
+button{padding:13px;border-radius:10px;border:0;font-weight:900;cursor:pointer} .btn-yellow{background:#FFD600;color:#000;width:100%} 
 .item{display:flex;gap:12px;align-items:center;background:#0f0f0f;padding:10px;border-radius:12px;margin-bottom:8px;border:1px solid #1e1e1e}
-.item img{width:65px;height:65px;object-fit:cover;border-radius:10px;border:1px solid #222} .btn-del{background:#1a1a1a;color:#ff4444;border:1px solid #2a2a2a;padding:8px 12px;border-radius:8px;font-size:12px}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px} .stat{background:linear-gradient(145deg,#1a1a1a,#111);padding:14px;border-radius:12px;text-align:center;border:1px solid #222} .stat b{color:#FFD600;font-size:24px;display:block;margin-top:4px} .stat span{font-size:11px;color:#666;text-transform:uppercase;letter-spacing:1px}
-.preview{width:100%;max-height:220px;object-fit:contain;display:none;margin-bottom:10px;border-radius:12px;border:2px solid #222;background:#000}
-#login{position:fixed;inset:0;background:radial-gradient(circle at top,#1a1a1a,#000);display:flex;align-items:center;justify-content:center;z-index:9999} #loginBox{background:#151515;padding:28px;border-radius:20px;border:1px solid #2a2a2a;width:90%;max-width:360px;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,0.8)} #loginBox h2{color:#FFD600;margin-bottom:6px} #loginBox p{color:#888;font-size:13px;margin-bottom:12px}
+.item img{width:65px;height:65px;object-fit:cover;border-radius:10px} .btn-del{background:#1a1a1a;color:#ff4444;border:1px solid #333;padding:8px 12px;border-radius:8px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px} .stat{background:#111;padding:14px;border-radius:12px;text-align:center;border:1px solid #222} .stat b{color:#FFD600;font-size:22px;display:block}
+.preview{width:100%;max-height:200px;object-fit:contain;display:none;margin-bottom:10px;border-radius:12px;border:1px solid #222}
+#login{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:9999} #loginBox{background:#151515;padding:28px;border-radius:20px;border:1px solid #2a2a2a;width:90%;max-width:360px;text-align:center}
 </style></head><body>
-<div id="login"><div id="loginBox"><h2>🔒 ADMIN BAZAR</h2><p>Ingresa la contraseña</p><input id="passInput" type="password" placeholder="••••••••"><button onclick="checkPass()" class="btn-yellow" style="margin-top:12px">ENTRAR</button><p style="font-size:11px;color:#444;margin-top:12px">Contraseña: cuates123</p></div></div>
-
+<div id="login"><div id="loginBox"><h2 style="color:#FFD600">🔒 ADMIN</h2><p style="color:#888;font-size:13px;margin:8px 0">Contraseña:</p><input id="passInput" type="password" placeholder="cuates123"><button onclick="checkPass()" class="btn-yellow" style="margin-top:12px">ENTRAR</button></div></div>
 <header>BAZAR LOS CUATES - ADMIN</header>
-
-<div class="stats" style="padding:12px 14px 0">
-<div class="stat"><span>Clientes</span><b id="totalClientes">0</b></div>
-<div class="stat"><span>Visitas Totales</span><b id="totalVisitas">0</b></div>
-<div class="stat"><span>Visitas Hoy</span><b id="hoyVisitas">0</b></div>
-<div class="stat"><span>Clicks Banners</span><b id="totalClicks">0</b></div>
-</div>
-
-<div class="tabs">
-<div class="tab active" onclick="openTab('prod')">📦 Productos</div>
-<div class="tab" onclick="openTab('port')">🖼️ Portadas</div>
-<div class="tab" onclick="openTab('anun')">📣 Anuncios</div>
-</div>
-
+<div class="stats" style="padding:12px 14px 0"><div class="stat"><span>Clientes</span><b id="totalClientes">0</b></div><div class="stat"><span>Total Visitas</span><b id="totalVisitas">0</b></div><div class="stat"><span>Hoy</span><b id="hoyVisitas">0</b></div><div class="stat"><span>Clicks</span><b id="totalClicks">0</b></div></div>
+<div class="tabs"><div class="tab active" onclick="openTab('prod')">📦 Productos</div><div class="tab" onclick="openTab('port')">🖼️ Portadas</div><div class="tab" onclick="openTab('anun')">📣 Anuncios</div></div>
 <div id="prod" class="panel active">
-<div class="card">
-<h3>➕ Nuevo Producto</h3>
-<input id="p_nombre" placeholder="Nombre del producto ej: Bicicleta 26">
-<input id="p_precio" placeholder="Precio ej: 1500">
-<label style="font-size:11px;color:#888;margin-bottom:6px;display:block">📸 Foto del producto (de tu galería):</label>
-<input id="p_file" type="file" accept="image/*">
-<img id="previewProd" class="preview">
-<input id="p_foto" placeholder="Opcional: pega URL si no eliges archivo">
-<button id="btnAddProd" class="btn-yellow">💾 GUARDAR PRODUCTO</button>
+<div class="card"><h3>➕ Nuevo Producto</h3><input id="p_nombre" placeholder="Nombre ej: Bicicleta 26"><input id="p_precio" placeholder="Precio ej: 1500"><label style="font-size:11px;color:#888">Foto (de tu galería):</label><input id="p_file" type="file" accept="image/*"><img id="previewProd" class="preview"><input id="p_foto" placeholder="O pega URL (opcional)"><button id="btnAddProd" class="btn-yellow">💾 GUARDAR PRODUCTO</button><p id="statusProd" style="font-size:11px;color:#888;margin-top:6px"></p></div>
+<div class="card"><h3>Productos (<span id="countProd">0</span>)</h3><div id="listaProd"></div></div>
 </div>
-<div class="card"><h3>📦 Mis Productos (<span id="countProd">0</span>)</h3><div id="listaProd"></div></div>
-</div>
-
-<div id="port" class="panel">
-<div class="card"><h3>🖼️ Nueva Portada (carrusel grande)</h3><input id="port_file" type="file" accept="image/*"><img id="previewPort" class="preview"><input id="port_foto" placeholder="O URL de portada"><button id="btnAddPort" class="btn-yellow">AGREGAR PORTADA</button></div>
-<div class="card"><div id="listaPort"></div></div>
-<div class="card"><h3>💰 Precio Anúnciate Aquí</h3><input id="precio_banner" placeholder="Ej: 200"><button id="btnPrecio" class="btn-yellow">GUARDAR PRECIO</button></div>
-</div>
-
-<div id="anun" class="panel">
-<div class="card"><h3>📣 Nuevo Anuncio Superior</h3><input id="a_nombre" placeholder="Nombre del negocio"><input id="a_whats" placeholder="WhatsApp ej: 524491883244"><input id="a_file" type="file" accept="image/*"><img id="previewAnun" class="preview"><input id="a_img" placeholder="O URL del logo"><button id="btnAddAnuncio" class="btn-yellow">AGREGAR ANUNCIO</button></div>
-<div class="card"><h3>Anuncios Activos</h3><div id="listaAnuncios"></div></div>
-</div>
-
-<a href="./index.html" style="color:#333;font-size:12px;display:block;text-align:center;margin:24px;text-decoration:none">← Volver a la tienda</a>
-
+<div id="port" class="panel"><div class="card"><h3>Nueva Portada</h3><input id="port_file" type="file" accept="image/*"><img id="previewPort" class="preview"><input id="port_foto" placeholder="O URL"><button id="btnAddPort" class="btn-yellow">AGREGAR PORTADA</button></div><div class="card"><div id="listaPort"></div></div><div class="card"><h3>Precio Anúnciate</h3><input id="precio_banner" placeholder="200"><button id="btnPrecio" class="btn-yellow">GUARDAR PRECIO</button></div></div>
+<div id="anun" class="panel"><div class="card"><h3>Nuevo Anuncio</h3><input id="a_nombre" placeholder="Nombre negocio"><input id="a_whats" placeholder="WhatsApp"><input id="a_file" type="file" accept="image/*"><img id="previewAnun" class="preview"><input id="a_img" placeholder="O URL logo"><button id="btnAddAnuncio" class="btn-yellow">AGREGAR ANUNCIO</button></div><div class="card"><div id="listaAnuncios"></div></div></div>
+<a href="./index.html" style="color:#333;font-size:12px;display:block;text-align:center;margin:20px;text-decoration:none">← Volver a tienda</a>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4", authDomain: "bazar-los-cuates.firebaseapp.com", projectId: "bazar-los-cuates", storageBucket: "bazar-los-cuates.firebasestorage.app", messagingSenderId: "908351301550", appId: "1:908351301550:web:3ae25892920ce8dda24a3f" };
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
-
-window.checkPass=()=>{ const p=document.getElementById('passInput').value; if(p==='cuates123'){ document.getElementById('login').style.display='none'; localStorage.setItem('admin_bazar','ok'); cargarTodo(); }else{ alert('Contraseña incorrecta'); } }
+window.checkPass=()=>{ const p=document.getElementById('passInput').value; if(p==='cuates123'){ document.getElementById('login').style.display='none'; localStorage.setItem('admin_bazar','ok'); cargarTodo(); }else{ alert('Incorrecta'); } }
 if(localStorage.getItem('admin_bazar')==='ok'){ document.getElementById('login').style.display='none'; }
-
-function fileToBase64(file, previewId){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>{ const img=document.getElementById(previewId); img.src=r.result; img.style.display='block'; res(r.result); }; r.onerror=rej; r.readAsDataURL(file); }); }
+async function comprimirImagen(file, maxWidth=800){ return new Promise((resolve)=>{ const reader=new FileReader(); reader.onload=(e)=>{ const img=new Image(); img.onload=()=>{ const canvas=document.createElement('canvas'); let w=img.width, h=img.height; if(w>maxWidth){ h=(maxWidth/w)*h; w=maxWidth; } canvas.width=w; canvas.height=h; const ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0,w,h); resolve(canvas.toDataURL('image/jpeg',0.7)); }; img.src=e.target.result; }; reader.readAsDataURL(file); }); }
+function mostrarPreview(base64, id){ const el=document.getElementById(id); el.src=base64; el.style.display='block'; }
 let base64Prod=null, base64Port=null, base64Anun=null;
-document.getElementById('p_file').addEventListener('change', async e=>{ if(e.target.files[0]) base64Prod=await fileToBase64(e.target.files[0],'previewProd'); });
-document.getElementById('port_file').addEventListener('change', async e=>{ if(e.target.files[0]) base64Port=await fileToBase64(e.target.files[0],'previewPort'); });
-document.getElementById('a_file').addEventListener('change', async e=>{ if(e.target.files[0]) base64Anun=await fileToBase64(e.target.files[0],'previewAnun'); });
-
+document.getElementById('p_file').addEventListener('change', async e=>{ if(e.target.files[0]){ document.getElementById('statusProd').innerText='⏳ Comprimiendo foto...'; base64Prod=await comprimirImagen(e.target.files[0], 800); mostrarPreview(base64Prod,'previewProd'); document.getElementById('statusProd').innerText='✅ Foto lista, pesa poco, ya puedes guardar'; } });
+document.getElementById('port_file').addEventListener('change', async e=>{ if(e.target.files[0]){ base64Port=await comprimirImagen(e.target.files[0], 1200); mostrarPreview(base64Port,'previewPort'); } });
+document.getElementById('a_file').addEventListener('change', async e=>{ if(e.target.files[0]){ base64Anun=await comprimirImagen(e.target.files[0], 600); mostrarPreview(base64Anun,'previewAnun'); } });
 window.openTab=(id)=>{ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); event.currentTarget.classList.add('active'); }
-
 async function cargarTodo(){
   try{ const snapTokens=await getDocs(collection(db,"fcm_tokens")); document.getElementById('totalClientes').innerText=snapTokens.size; }catch(e){ document.getElementById('totalClientes').innerText="0"; }
   try{ const s=await getDoc(doc(db,"stats","visitas")); if(s.exists()){ document.getElementById('totalVisitas').innerText=s.data().total||0; document.getElementById('hoyVisitas').innerText=s.data().hoy||0; } const c=await getDoc(doc(db,"stats","banner_clicks")); if(c.exists()) document.getElementById('totalClicks').innerText=c.data().total||0; const p=await getDoc(doc(db,"config","banner")); if(p.exists()) document.getElementById('precio_banner').value=p.data().precio||"200"; }catch(e){}
@@ -86,9 +48,17 @@ async function cargarTodo(){
   const snapAnun=await getDocs(collection(db,"anuncios")); const lanun=document.getElementById('listaAnuncios'); lanun.innerHTML=""; snapAnun.forEach(d=>{ const p=d.data(); const div=document.createElement('div'); div.className='item'; div.innerHTML=`<img src="${p.img}"><div style="flex:1"><b>${p.nombre}</b><br>${p.whatsapp}</div><button class="btn-del" onclick="borrar('anuncios','${d.id}')">X</button>`; lanun.appendChild(div); });
 }
 window.borrar=async(col,id)=>{ if(!confirm("¿Borrar?"))return; await deleteDoc(doc(db,col,id)); location.reload(); }
-document.getElementById('btnAddProd').onclick=async()=>{ const nombre=document.getElementById('p_nombre').value.trim(); const precio=document.getElementById('p_precio').value.trim(); let foto=document.getElementById('p_foto').value.trim(); if(base64Prod) foto=base64Prod; if(!nombre||!precio||!foto){alert("Falta nombre, precio y foto");return;} await addDoc(collection(db,"productos"),{nombre,precio,foto}); alert("✅ Producto guardado"); location.reload(); }
-document.getElementById('btnAddPort').onclick=async()=>{ let foto=document.getElementById('port_foto').value.trim(); if(base64Port) foto=base64Port; if(!foto){alert("Elige foto");return;} await addDoc(collection(db,"portadas"),{foto}); alert("Portada guardada"); location.reload(); }
-document.getElementById('btnAddAnuncio').onclick=async()=>{ const nombre=document.getElementById('a_nombre').value.trim(); const whatsapp=document.getElementById('a_whats').value.trim(); let img=document.getElementById('a_img').value.trim(); if(base64Anun) img=base64Anun; if(!nombre||!whatsapp){alert("Falta nombre/whatsapp");return;} await addDoc(collection(db,"anuncios"),{nombre,whatsapp,img}); alert("Anuncio guardado"); location.reload(); }
+document.getElementById('btnAddProd').onclick=async()=>{ 
+  const nombre=document.getElementById('p_nombre').value.trim(); 
+  const precio=document.getElementById('p_precio').value.trim(); 
+  let foto=document.getElementById('p_foto').value.trim(); 
+  if(base64Prod) foto=base64Prod; 
+  if(!nombre||!precio||!foto){alert("Falta nombre, precio y foto");return;} 
+  const btn=document.getElementById('btnAddProd'); btn.innerText='⏳ GUARDANDO...';
+  try{ await addDoc(collection(db,"productos"),{nombre,precio,foto}); alert("✅ Producto guardado bien"); location.reload(); }catch(e){ alert("Error: "+e.message+" - La foto está muy pesada, elige otra más chica"); btn.innerText='💾 GUARDAR PRODUCTO'; }
+}
+document.getElementById('btnAddPort').onclick=async()=>{ let foto=document.getElementById('port_foto').value.trim(); if(base64Port) foto=base64Port; if(!foto){alert("Elige foto");return;} await addDoc(collection(db,"portadas"),{foto}); alert("Guardado"); location.reload(); }
+document.getElementById('btnAddAnuncio').onclick=async()=>{ const nombre=document.getElementById('a_nombre').value.trim(); const whatsapp=document.getElementById('a_whats').value.trim(); let img=document.getElementById('a_img').value.trim(); if(base64Anun) img=base64Anun; if(!nombre||!whatsapp){alert("Falta nombre/whatsapp");return;} await addDoc(collection(db,"anuncios"),{nombre,whatsapp,img}); alert("Guardado"); location.reload(); }
 document.getElementById('btnPrecio').onclick=async()=>{ const precio=document.getElementById('precio_banner').value.trim(); await setDoc(doc(db,"config","banner"),{precio},{merge:true}); alert("Precio guardado"); }
 if(localStorage.getItem('admin_bazar')==='ok') cargarTodo();
 </script></body></html>
