@@ -1,132 +1,77 @@
 <!DOCTYPE html>
-<html lang="es-MX"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bazar Los Cuates</title><link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#FFD600">
+<html lang="es-MX"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Bazar Los Cuates</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Arial}
-.top-bar{background:#FFD600;color:#000;text-align:center;padding:6px;font-size:12px;font-weight:900}
-.slider-top{background:#111;overflow:hidden;height:285px;border-bottom:3px solid #FFD600} 
-.top-track{display:flex;transition:transform 0.6s ease;width:100%} 
-.top-slide{min-width:100%;display:flex;align-items:center;gap:18px;padding:20px;cursor:pointer;box-sizing:border-box;flex-shrink:0}
-.top-slide img{width:135px;height:135px;object-fit:cover;border-radius:16px;border:3px solid #FFD600;flex-shrink:0}
-.top-slide .txt b{display:block;font-size:26px;color:#FFD600;line-height:1.1}
-.top-slide .txt span{font-size:16px;color:#fff;display:block;margin-top:4px}
-.top-slide .txt i{font-size:12px;color:#888;font-style:normal;background:#1a1a1a;padding:4px 8px;border-radius:20px;margin-top:8px;display:inline-block}
-.portada{position:relative;height:190px;overflow:hidden;background:#111} .slide-track{display:flex;transition:transform 0.6s ease;height:100%;width:100%} .slide{min-width:100%;height:100%;flex-shrink:0} .slide img{width:100%;height:100%;object-fit:cover}
-.buscador{padding:12px;background:#111} .buscador input{width:100%;padding:12px;border-radius:8px;border:2px solid #333;background:#1a1a1a;color:#fff}
-.contador{padding:8px 12px;background:#0a0a0a;color:#888;font-size:11px;display:flex;gap:15px;justify-content:center;border-bottom:1px solid #1a1a1a} .contador span{color:#FFD600;font-weight:900}
-.catalogo{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px} 
-.card{background:#1a1a1a;border-radius:10px;overflow:hidden;border:1px solid #222} 
-.card .img-wrap{position:relative;overflow:hidden;height:160px;background:#0a0a0a}
-.card .img-track{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
-.card .img-track::-webkit-scrollbar{display:none}
-.card .img-track img{min-width:100%;height:100%;object-fit:cover;scroll-snap-align:center}
-.card .badge-fotos{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.8);color:#fff;padding:3px 7px;border-radius:20px;font-size:10px;border:1px solid #333}
-.card .dots{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);display:flex;gap:4px}
-.card .dot{width:5px;height:5px;border-radius:50%;background:#ffffff55} .card .dot.active{background:#FFD600}
-.card .info{padding:10px} .card b{font-size:13px;display:block} .card .btn{display:block;background:#FFD600;color:#000;text-align:center;padding:10px;border-radius:6px;text-decoration:none;font-weight:900;margin-top:6px;font-size:12px}
-.acciones{padding:12px;display:flex;flex-direction:column;gap:8px} .btn-app{padding:14px;border-radius:10px;border:0;font-weight:900;width:100%;display:block;text-align:center;text-decoration:none} .btn-instalar{background:#FFD600;color:#000}
-#appModal{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;align-items:flex-end;justify-content:center;z-index:9999;padding:0;animation:fadeIn .3s}
-#appModal.show{display:flex}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal-box{background:#1a1a1a;border-top:3px solid #FFD600;border-left:2px solid #FFD600;border-right:2px solid #FFD600;border-radius:20px 20px 0 0;padding:26px 22px;width:100%;max-width:480px;text-align:center;animation:slideUp .4s ease}
-.modal-box h2{color:#FFD600;font-size:24px;margin-bottom:6px} .modal-box p{color:#ccc;font-size:14px;margin-bottom:18px;line-height:1.4}
-.modal-box .btn{padding:14px;border-radius:12px;display:block;text-decoration:none;font-weight:900;margin-bottom:10px;font-size:15px}
-.btn-si{background:#FFD600;color:#000} .btn-no{background:#222;color:#888;border:1px solid #333}
-.footer-apps{background:#111;border-top:3px solid #FFD600;padding:24px 18px;text-align:center;margin-top:24px}
-.footer-apps h3{color:#FFD600;font-size:19px;margin-bottom:6px} .footer-apps p{color:#999;font-size:13px;margin:8px 0 16px;line-height:1.4}
-.footer-apps .btn-cotizar{background:#FFD600;color:#000;padding:14px 22px;border-radius:12px;text-decoration:none;font-weight:900;display:inline-block;font-size:15px}
-.footer-apps .sub{margin-top:18px;color:#444;font-size:11px}
+header{background:#FFD600;color:#000;padding:14px;text-align:center;font-weight:900;letter-spacing:1px}
+.tabs{display:flex;overflow-x:auto;background:#0f0f0f;border-bottom:2px solid #1a1a1a} .tab{padding:14px 18px;white-space:nowrap;cursor:pointer;color:#888;font-weight:700;font-size:13px;border-bottom:3px solid transparent} .tab.active{color:#FFD600;border-bottom-color:#FFD600;background:#1a1a1a}
+.panel{display:none;padding:14px} .panel.active{display:block}
+.card{background:#151515;padding:16px;border-radius:14px;border:1px solid #222;margin-bottom:14px}
+input,textarea{width:100%;padding:12px;border-radius:10px;border:1px solid #2a2a2a;background:#0a0a0a;color:#fff;margin-bottom:10px;font-size:14px;outline:none}
+input:focus{border-color:#FFD600}
+input[type=file]{background:#1a1a1a;border:1px dashed #444}
+button{padding:13px;border-radius:10px;border:0;font-weight:900;cursor:pointer} .btn-yellow{background:#FFD600;color:#000;width:100%;transition:0.2s} .btn-yellow:active{transform:scale(0.98)}
+.item{display:flex;gap:12px;align-items:center;background:#0f0f0f;padding:10px;border-radius:12px;margin-bottom:8px;border:1px solid #1e1e1e}
+.item img{width:65px;height:65px;object-fit:cover;border-radius:10px} .btn-del{background:#1a1a1a;color:#ff4444;border:1px solid #333;padding:8px 12px;border-radius:8px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px} .stat{background:#111;padding:14px;border-radius:12px;text-align:center;border:1px solid #222} .stat b{color:#FFD600;font-size:22px;display:block}
+.preview{width:100%;max-height:200px;object-fit:contain;display:none;margin-bottom:10px;border-radius:12px;border:1px solid #222}
+.previews{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px} .previews img{width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #333}
+#login{position:fixed;inset:0;background:#000;display:flex;align-items:center;justify-content:center;z-index:9999} #loginBox{background:#151515;padding:28px;border-radius:20px;border:1px solid #2a2a2a;width:90%;max-width:360px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.8)}
 </style></head><body>
-<div class="top-bar">BAZAR LOS CUATES - JESÚS MARÍA, AGS</div>
-<div class="slider-top"><div id="topTrack" class="top-track"></div></div>
-<div class="portada"><div id="slideTrack" class="slide-track"></div></div>
-<div class="buscador"><input id="buscador" placeholder="Buscar pieza..."></div>
-<div class="contador"><div>Hoy: <span id="visitasHoy">0</span></div><div>Total: <span id="visitasTotal">0</span></div></div>
-<div id="catalogo" class="catalogo"><p style="grid-column:1/3;text-align:center;padding:30px;color:#888">Cargando...</p></div>
-<div class="acciones">
-<a href="./BLC.apk" download class="btn-app btn-instalar">📥 DESCARGAR APLICACIÓN</a>
-<a href="./admin.html" style="text-align:center;color:#555;font-size:11px;text-decoration:none;margin-top:14px;display:block">Admin</a>
+<div id="login"><div id="loginBox"><h2 style="color:#FFD600">🔒 ADMIN</h2><p style="color:#888;font-size:13px;margin:8px 0">Contraseña:</p><input id="passInput" type="password" placeholder="" value="" autocomplete="new-password" autocorrect="off" spellcheck="false"><button onclick="checkPass()" class="btn-yellow" style="margin-top:12px">ENTRAR</button><p style="color:#333;font-size:10px;margin-top:12px">Bazar Los Cuates</p></div></div>
+<header>BAZAR LOS CUATES - ADMIN</header>
+<div class="stats" style="padding:12px 14px 0"><div class="stat"><span>Clientes</span><b id="totalClientes">0</b></div><div class="stat"><span>Total Visitas</span><b id="totalVisitas">0</b></div><div class="stat"><span>Hoy</span><b id="hoyVisitas">0</b></div><div class="stat"><span>Clicks</span><b id="totalClicks">0</b></div></div>
+<div class="tabs"><div class="tab active" onclick="openTab('prod')">📦 Productos</div><div class="tab" onclick="openTab('port')">🖼️ Portadas</div><div class="tab" onclick="openTab('anun')">📣 Anuncios</div><div class="tab" onclick="openTab('conf')">⚙️ Config</div></div>
+<div id="prod" class="panel active">
+<div class="card"><h3>➕ Nuevo Producto (varias fotos)</h3><input id="p_nombre" placeholder="Nombre ej: Bicicleta 26"><input id="p_precio" placeholder="Precio ej: 1500"><label style="font-size:11px;color:#FFD600">Selecciona 1 a 5 fotos de tu galería:</label><input id="p_files" type="file" accept="image/*" multiple><div id="previewsProd" class="previews"></div><button id="btnAddProd" class="btn-yellow">💾 GUARDAR PRODUCTO</button><p id="statusProd" style="font-size:11px;color:#888;margin-top:6px"></p></div>
+<div class="card"><h3>Productos (<span id="countProd">0</span>)</h3><div id="listaProd"></div></div>
 </div>
-<div class="footer-apps">
-<h3>¿Quieres una app o página web como esta?</h3>
-<p>Nosotros te hacemos tu aplicación o página para tu negocio. Tu propio bazar, tienda o catálogo online.<br>Desde $<span id="precioAppTxt">500</span> pesos. Entrega rápida.</p>
-<a class="btn-cotizar" href="https://wa.me/524491883244?text=Hola%20vi%20la%20pagina%20del%20Bazar%20Los%20Cuates%20y%20me%20interesa%20que%20me%20hagan%20una%20app%20o%20pagina%20web%20para%20mi%20negocio" target="_blank">📲 COTIZAR MI APP / WEB</a>
-<div class="sub">Bazar Los Cuates • Jesús María, Ags • Hecho en Ags</div>
+<div id="port" class="panel"><div class="card"><h3>Nueva Portada</h3><input id="port_file" type="file" accept="image/*"><img id="previewPort" class="preview"><button id="btnAddPort" class="btn-yellow">AGREGAR PORTADA</button></div><div class="card"><div id="listaPort"></div></div></div>
+<div id="anun" class="panel"><div class="card"><h3>Nuevo Anuncio</h3><input id="a_nombre" placeholder="Nombre negocio"><input id="a_whats" placeholder="WhatsApp"><input id="a_file" type="file" accept="image/*"><img id="previewAnun" class="preview"><button id="btnAddAnuncio" class="btn-yellow">AGREGAR ANUNCIO</button></div><div class="card"><div id="listaAnuncios"></div></div></div>
+<div id="conf" class="panel">
+<div class="card"><h3>Precio Anúnciate Aquí</h3><input id="precio_banner" placeholder="200"><button id="btnPrecio" class="btn-yellow">GUARDAR PRECIO ANUNCIO</button></div>
+<div class="card"><h3>Precio App / Página Web (footer)</h3><p style="font-size:11px;color:#888;margin-bottom:8px">Este es el que sale en "Desde $500 pesos"</p><input id="precio_app" placeholder="500"><button id="btnPrecioApp" class="btn-yellow">GUARDAR PRECIO APP</button></div>
 </div>
-<div id="appModal">
-<div class="modal-box">
-<h2>📲 ¡Lleva el Bazar en tu cel!</h2>
-<p>Descarga nuestra aplicación oficial y ve todas las piezas más rápido, sin entrar al navegador.</p>
-<a href="./BLC.apk" download class="btn btn-si" onclick="cerrarModal()">📥 DESCARGAR APP AHORA</a>
-<a href="#" class="btn btn-no" onclick="cerrarModal();return false;">Seguir viendo la página</a>
-</div>
-</div>
+<a href="./index.html" style="color:#333;font-size:12px;display:block;text-align:center;margin:20px;text-decoration:none">← Volver a tienda</a>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4", authDomain: "bazar-los-cuates.firebaseapp.com", projectId: "bazar-los-cuates", storageBucket: "bazar-los-cuates.firebasestorage.app", messagingSenderId: "908351301550", appId: "1:908351301550:web:3ae25892920ce8dda24a3f" };
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
-let productosNube=[]; let filtro="";
-function cerrarModal(){document.getElementById('appModal').classList.remove('show'); localStorage.setItem('appModalVisto','1');}
-window.cerrarModal=cerrarModal;
-setTimeout(()=>{ if(!localStorage.getItem('appModalVisto')){document.getElementById('appModal').classList.add('show');} },2200);
-async function registrarClickBanner(id,nombre){ try{ const ref=doc(db,"stats","banner_clicks"); const snap=await getDoc(ref); let data=snap.exists()?snap.data():{}; data[nombre]=(data[nombre]||0)+1; data.total=(data.total||0)+1; data.ultimo=new Date().toLocaleString(); await setDoc(ref,data,{merge:true}); if(id){ await updateDoc(doc(db,"anuncios",id),{clicks: increment(1)}).catch(()=>{});} }catch(e){} }
-async function cargarProductos(){ const snap=await getDocs(collection(db,"productos")); productosNube=[]; snap.forEach(d=>productosNube.push({id:d.id,...d.data()})); productosNube.sort(()=>Math.random()-0.5); renderCatalogo(); }
-function renderCatalogo(){ 
-  const cont=document.getElementById('catalogo'); 
-  const lista=productosNube.filter(x=>(x.nombre+" "+x.precio).toLowerCase().includes(filtro.toLowerCase())); 
-  cont.innerHTML=""; 
-  if(lista.length==0){cont.innerHTML="<p style='grid-column:1/3;text-align:center;padding:30px;color:#666'>No hay piezas</p>";return;} 
-  lista.forEach(prod=>{ 
-    const fotos = prod.fotos && prod.fotos.length ? prod.fotos : [prod.foto];
-    const wa=`https://wa.me/524491883244?text=${encodeURIComponent('Hola me interesa '+prod.nombre+' $'+prod.precio)}`; 
-    const d=document.createElement('div'); d.className='card'; 
-    let imgsHtml = fotos.map(f=>`<img src="${f}" loading="lazy">`).join('');
-    let dotsHtml = fotos.length>1 ? fotos.map((_,i)=>`<div class="dot ${i==0?'active':''}"></div>`).join('') : '';
-    let badge = fotos.length>1 ? `<div class="badge-fotos">📷 ${fotos.length}</div>` : '';
-    d.innerHTML=`
-      <div class="img-wrap">
-        <div class="img-track" onscroll="actualizarDots(this)">
-          ${imgsHtml}
-        </div>
-        ${badge}
-        <div class="dots">${dotsHtml}</div>
-      </div>
-      <div class="info"><b>${prod.nombre}</b><span style="color:#FFD600;font-weight:900">$${prod.precio}</span><a class="btn" href="${wa}" target="_blank">📲 ¡ME INTERESA!</a></div>`; 
-    cont.appendChild(d); 
-  }); 
+localStorage.removeItem('admin_bazar');
+const passInput = document.getElementById('passInput');
+passInput.value = '';
+passInput.setAttribute('autocomplete','new-password');
+setTimeout(()=>{ passInput.value=''; }, 100);
+window.checkPass=()=>{ const p=document.getElementById('passInput').value; if(p==='cuates123'){ document.getElementById('login').style.display='none'; cargarTodo(); }else{ alert('Contraseña incorrecta'); document.getElementById('passInput').value='';} }
+async function comprimirImagen(file, maxWidth=800){ return new Promise((resolve)=>{ const reader=new FileReader(); reader.onload=(e)=>{ const img=new Image(); img.onload=()=>{ const canvas=document.createElement('canvas'); let w=img.width, h=img.height; if(w>maxWidth){ h=(maxWidth/w)*h; w=maxWidth; } canvas.width=w; canvas.height=h; const ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0,w,h); resolve(canvas.toDataURL('image/jpeg',0.65)); }; img.src=e.target.result; }; reader.readAsDataURL(file); }); }
+let fotosProd = [];
+document.getElementById('p_files').addEventListener('change', async e=>{
+  fotosProd=[]; const cont=document.getElementById('previewsProd'); cont.innerHTML=""; document.getElementById('statusProd').innerText='⏳ Comprimiendo...';
+  const files = Array.from(e.target.files).slice(0,5);
+  for(let f of files){ let b64=await comprimirImagen(f, 800); fotosProd.push(b64); let img=document.createElement('img'); img.src=b64; cont.appendChild(img); }
+  document.getElementById('statusProd').innerText=`✅ ${fotosProd.length} fotos listas`;
+});
+let base64Port=null, base64Anun=null;
+document.getElementById('port_file').addEventListener('change', async e=>{ if(e.target.files[0]){ base64Port=await comprimirImagen(e.target.files[0], 1200); document.getElementById('previewPort').src=base64Port; document.getElementById('previewPort').style.display='block'; } });
+document.getElementById('a_file').addEventListener('change', async e=>{ if(e.target.files[0]){ base64Anun=await comprimirImagen(e.target.files[0], 600); document.getElementById('previewAnun').src=base64Anun; document.getElementById('previewAnun').style.display='block'; } });
+window.openTab=(id)=>{ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); document.getElementById(id).classList.add('active'); event.currentTarget.classList.add('active'); }
+async function cargarTodo(){
+  try{ const snapTokens=await getDocs(collection(db,"fcm_tokens")); document.getElementById('totalClientes').innerText=snapTokens.size; }catch(e){ document.getElementById('totalClientes').innerText="0"; }
+  try{ const s=await getDoc(doc(db,"stats","visitas")); if(s.exists()){ document.getElementById('totalVisitas').innerText=s.data().total||0; document.getElementById('hoyVisitas').innerText=s.data().hoy||0; } const c=await getDoc(doc(db,"stats","banner_clicks")); if(c.exists()) document.getElementById('totalClicks').innerText=c.data().total||0; const p=await getDoc(doc(db,"config","banner")); if(p.exists()){ document.getElementById('precio_banner').value=p.data().precio||"200"; document.getElementById('precio_app').value=p.data().precioApp||"500"; } }catch(e){}
+  const snapProd=await getDocs(collection(db,"productos")); const lp=document.getElementById('listaProd'); lp.innerHTML=""; let cp=0; snapProd.forEach(d=>{ cp++; const p=d.data(); const countFotos = p.fotos ? p.fotos.length : 1; const div=document.createElement('div'); div.className='item'; div.innerHTML=`<img src="${p.foto || p.fotos[0]}"><div style="flex:1"><b>${p.nombre}</b><br><span style="color:#FFD600">$${p.precio}</span> <span style="font-size:10px;background:#222;padding:2px 6px;border-radius:10px">📷 ${countFotos}</span></div><button class="btn-del" onclick="borrar('productos','${d.id}')">Borrar</button>`; lp.appendChild(div); }); document.getElementById('countProd').innerText=cp;
+  const snapPort=await getDocs(collection(db,"portadas")); const lport=document.getElementById('listaPort'); lport.innerHTML=""; snapPort.forEach(d=>{ const p=d.data(); const div=document.createElement('div'); div.className='item'; div.innerHTML=`<img src="${p.foto}"><div style="flex:1">Portada</div><button class="btn-del" onclick="borrar('portadas','${d.id}')">X</button>`; lport.appendChild(div); });
+  const snapAnun=await getDocs(collection(db,"anuncios")); const lanun=document.getElementById('listaAnuncios'); lanun.innerHTML=""; snapAnun.forEach(d=>{ const p=d.data(); const div=document.createElement('div'); div.className='item'; div.innerHTML=`<img src="${p.img}"><div style="flex:1"><b>${p.nombre}</b><br>${p.whatsapp}</div><button class="btn-del" onclick="borrar('anuncios','${d.id}')">X</button>`; lanun.appendChild(div); });
 }
-window.actualizarDots=(track)=>{
-  const idx = Math.round(track.scrollLeft / track.clientWidth);
-  const dots = track.parentElement.querySelectorAll('.dot');
-  dots.forEach((dot,i)=>dot.classList.toggle('active', i===idx));
+window.borrar=async(col,id)=>{ if(!confirm("¿Borrar?"))return; await deleteDoc(doc(db,col,id)); location.reload(); }
+document.getElementById('btnAddProd').onclick=async()=>{ 
+  const nombre=document.getElementById('p_nombre').value.trim(); 
+  const precio=document.getElementById('p_precio').value.trim(); 
+  if(!nombre||!precio||fotosProd.length==0){alert("Falta nombre, precio y al menos 1 foto");return;} 
+  const btn=document.getElementById('btnAddProd'); btn.innerText='⏳ GUARDANDO...';
+  try{ await addDoc(collection(db,"productos"),{nombre,precio,foto:fotosProd[0],fotos:fotosProd}); alert(`✅ Producto guardado con ${fotosProd.length} fotos`); location.reload(); }catch(e){ alert("Error: "+e.message); btn.innerText='💾 GUARDAR PRODUCTO'; }
 }
-async function cargarPortadas(){ const snap=await getDocs(collection(db,"portadas")); let imgs=[]; snap.forEach(d=>imgs.push(d.data().foto)); if(imgs.length==0) imgs=["https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800"]; const track=document.getElementById('slideTrack'); track.innerHTML=""; imgs.forEach(src=>{const div=document.createElement('div'); div.className='slide'; div.innerHTML=`<img src="${src}">`; track.appendChild(div);}); let idx=0; if(imgs.length>1){setInterval(()=>{idx=(idx+1)%imgs.length; track.style.transform=`translateX(-${idx*100}%)`;},3500);} }
-async function cargarAnuncios(){ 
-  const snapA=await getDocs(collection(db,"anuncios")); 
-  const snapC=await getDoc(doc(db,"config","banner")); 
-  const snapV=await getDoc(doc(db,"stats","visitas"));
-  let precio="200"; let precioApp="500";
-  if(snapC.exists()){ precio=snapC.data().precio||"200"; precioApp=snapC.data().precioApp||"500"; }
-  document.getElementById('precioAppTxt').innerText=precioApp;
-  let totalV="0"; if(snapV.exists()) totalV=snapV.data().total||"0";
-  let anuncios=[]; snapA.forEach(d=>anuncios.push({id:d.id,...d.data()})); 
-  let lista=[...anuncios,{nombre:`ANUNCIATE AQUI $${precio} AL MES`,esAnunciate:true,id:null,visitas:totalV,precio:precio}]; 
-  const track=document.getElementById('topTrack'); track.innerHTML=""; 
-  lista.forEach(an=>{ 
-    const div=document.createElement('div'); div.className='top-slide'; 
-    if(an.esAnunciate){ 
-      div.onclick=async()=>{ await registrarClickBanner(null,`ANUNCIATE AQUI`); window.open(`https://wa.me/524491883244?text=${encodeURIComponent('Hola vi que puedo anunciarme por $'+precio+' y tienen '+totalV+' visitas')}`,'_blank'); }; 
-      div.innerHTML=`<div class="txt"><b>ANUNCIATE AQUI $${an.precio} AL MES</b><span>👀 Te ven ${an.visitas} personas</span><i>📲 Toca aqui - WhatsApp</i></div>`; 
-    } else { 
-      div.onclick=async()=>{ await registrarClickBanner(an.id,an.nombre); window.open(`https://wa.me/${String(an.whatsapp).replace(/[^-0-9]/g,'')}?text=${encodeURIComponent('Hola vi tu anuncio de '+an.nombre+' en Bazar Los Cuates')}`,'_blank'); }; 
-      div.innerHTML=`${an.img?`<img src="${an.img}">`:''}<div class="txt"><b>${an.nombre}</b><span>Toca para WhatsApp</span><i>Anuncio patrocinado</i></div>`; 
-    } 
-    track.appendChild(div); 
-  }); 
-  let idxTop=0; if(lista.length>1){setInterval(()=>{idxTop=(idxTop+1)%lista.length; track.style.transform=`translateX(-${idxTop*100}%)`;},3500);} 
-}
-async function contador(){ const hoyStr=new Date().toISOString().split('T')[0]; const ref=doc(db,"stats","visitas"); const snap=await getDoc(ref); let data=snap.exists()?snap.data():{total:0,hoy:0,fecha:""}; if(data.fecha!==hoyStr){data.hoy=0;data.fecha=hoyStr;} data.total=(data.total||0)+1; data.hoy=(data.hoy||0)+1; await setDoc(ref,data); document.getElementById('visitasTotal').innerText=data.total; document.getElementById('visitasHoy').innerText=data.hoy; }
-document.getElementById('buscador').addEventListener('input',e=>{filtro=e.target.value;renderCatalogo();});
-cargarProductos(); cargarPortadas(); cargarAnuncios(); contador();
+document.getElementById('btnAddPort').onclick=async()=>{ let foto=base64Port; if(!foto){alert("Elige foto");return;} await addDoc(collection(db,"portadas"),{foto}); alert("Guardado"); location.reload(); }
+document.getElementById('btnAddAnuncio').onclick=async()=>{ const nombre=document.getElementById('a_nombre').value.trim(); const whatsapp=document.getElementById('a_whats').value.trim(); let img=base64Anun; if(!nombre||!whatsapp||!img){alert("Falta nombre/whatsapp/foto");return;} await addDoc(collection(db,"anuncios"),{nombre,whatsapp,img}); alert("Guardado"); location.reload(); }
+document.getElementById('btnPrecio').onclick=async()=>{ const precio=document.getElementById('precio_banner').value.trim(); await setDoc(doc(db,"config","banner"),{precio},{merge:true}); alert("Precio anuncio guardado"); }
+document.getElementById('btnPrecioApp').onclick=async()=>{ const precioApp=document.getElementById('precio_app').value.trim(); await setDoc(doc(db,"config","banner"),{precioApp},{merge:true}); alert("Precio App guardado"); }
 </script></body></html>
