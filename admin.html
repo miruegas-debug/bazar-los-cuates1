@@ -13,14 +13,25 @@ button{background:#FFD600;color:#000;font-weight:900;border:0;cursor:pointer}
 .item{background:#111;padding:8px;border-radius:8px;text-align:center}
 .item img{width:100%;height:100px;object-fit:cover;border-radius:6px}
 .preview{width:100%;max-height:180px;object-fit:contain;margin-top:8px;display:none;border-radius:8px}
+#login{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:999999;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:20px}
 </style></head><body>
+
+<div id="login">
+<h2 style="color:#FFD600">ACCESO ADMIN</h2>
+<p style="font-size:12px;color:#888;margin:10px 0">Bazar Los Cuates - Solo tú</p>
+<input id="pass" type="password" placeholder="Contraseña">
+<button onclick="entrar()">ENTRAR</button>
+<p id="error" style="color:#ef4444;font-size:12px;margin-top:10px;display:none">Contraseña incorrecta</p>
+<p style="font-size:10px;color:#444;margin-top:20px">Inicial: cuates123</p>
+</div>
+
 <h2 style="color:#FFD600">ADMIN BAZAR - TODO</h2>
-<p style="font-size:11px;color:#22c55e">✅ Todo en la nube: se ve igual en Brave y Chrome</p>
+<p style="font-size:11px;color:#22c55e">✅ Todo en la nube</p>
 <div class="tabs">
 <div class="tab activo" onclick="verTab('piezas')">📦 PIEZAS</div>
 <div class="tab" onclick="verTab('anuncios')">📢 ANUNCIOS</div>
 <div class="tab" onclick="verTab('portadas')">🖼️ PORTADA</div>
-<div class="tab" onclick="verTab('config')">⚙️ PRECIO</div>
+<div class="tab" onclick="verTab('config')">⚙️ CONFIG</div>
 </div>
 
 <div id="tab-piezas" class="card activa">
@@ -32,7 +43,7 @@ button{background:#FFD600;color:#000;font-weight:900;border:0;cursor:pointer}
 </div>
 
 <div id="tab-anuncios" class="card">
-<b>Anuncios de arriba (banner amarillo)</b>
+<b>Anuncios de arriba</b>
 <input id="a_nombre" placeholder="Tortas El Güero">
 <input id="a_whats" placeholder="449...">
 <input id="a_foto" type="file" accept="image/*"><img id="a_preview" class="preview">
@@ -41,7 +52,7 @@ button{background:#FFD600;color:#000;font-weight:900;border:0;cursor:pointer}
 </div>
 
 <div id="tab-portadas" class="card">
-<b>Foto de portada grande</b>
+<b>Foto de portada</b>
 <input id="po_foto" type="file" accept="image/*"><img id="po_preview" class="preview">
 <button id="btnPo">GUARDAR PORTADA</button><p id="po_status" style="font-size:12px;color:#22c55e"></p>
 <div id="lista_portadas" class="lista"></div>
@@ -51,6 +62,13 @@ button{background:#FFD600;color:#000;font-weight:900;border:0;cursor:pointer}
 <b>Precio Anúnciate Aquí</b>
 <input id="c_precio" type="number" placeholder="200"><button id="btnC">GUARDAR PRECIO</button>
 <p id="c_status" style="font-size:12px;color:#22c55e"></p>
+<hr style="margin:20px 0;border-color:#333">
+<b>🔒 Cambiar Contraseña de Admin</b>
+<p style="font-size:11px;color:#888">Actual: <span id="pass_actual_txt">cuates123</span></p>
+<input id="c_pass_nueva" type="text" placeholder="Nueva contraseña Ej: misCuates2026">
+<button id="btnPass" style="background:#22c55e;color:#fff">CAMBIAR CONTRASEÑA</button>
+<p id="pass_status" style="font-size:12px;color:#22c55e"></p>
+<button onclick="cerrarSesion()" style="background:#111;color:#888;margin-top:20px;border:1px solid #333">Cerrar Sesión</button>
 </div>
 
 <a href="./index.html" style="color:#FFD600">← Volver a tienda</a>
@@ -68,6 +86,39 @@ const firebaseConfig = {
     measurementId: "G-XT51JZ4H5L"
   };
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
+
+let passwordActual="cuates123";
+
+async function cargarPassword(){
+  const snap=await getDoc(doc(db,"config","password"));
+  if(snap.exists() && snap.data().valor){
+    passwordActual=snap.data().valor;
+  }else{
+    await setDoc(doc(db,"config","password"),{valor:"cuates123"});
+    passwordActual="cuates123";
+  }
+  document.getElementById('pass_actual_txt').innerText=passwordActual;
+  if(localStorage.getItem('admin_log')===passwordActual){
+    document.getElementById('login').style.display='none';
+  }
+}
+cargarPassword();
+
+window.entrar=function(){
+  const p=document.getElementById('pass').value;
+  if(p===passwordActual){
+    document.getElementById('login').style.display='none';
+    localStorage.setItem('admin_log',passwordActual);
+    document.getElementById('error').style.display='none';
+  }else{
+    document.getElementById('error').style.display='block';
+  }
+}
+window.cerrarSesion=function(){
+  localStorage.removeItem('admin_log');
+  location.reload();
+}
+
 window.verTab=function(t){
   document.querySelectorAll('.card').forEach(c=>c.classList.remove('activa'));
   document.querySelectorAll('.tab').forEach(c=>c.classList.remove('activo'));
@@ -120,7 +171,6 @@ document.getElementById('btnP').onclick=async()=>{
   document.getElementById('p_nombre').value="";document.getElementById('p_precio').value="";document.getElementById('p_foto').value="";b64_p="";document.getElementById('p_preview').style.display='none';
   cargarPiezas();
 };
-
 async function cargarAnuncios(){
   const snap=await getDocs(collection(db,"anuncios"));
   const cont=document.getElementById('lista_anuncios'); cont.innerHTML="";
@@ -142,7 +192,6 @@ document.getElementById('btnA').onclick=async()=>{
   document.getElementById('a_nombre').value="";document.getElementById('a_whats').value="";document.getElementById('a_foto').value="";b64_a="";document.getElementById('a_preview').style.display='none';
   cargarAnuncios();
 };
-
 async function cargarPortadas(){
   const snap=await getDocs(collection(db,"portadas"));
   const cont=document.getElementById('lista_portadas'); cont.innerHTML="";
@@ -162,7 +211,6 @@ document.getElementById('btnPo').onclick=async()=>{
   document.getElementById('po_foto').value="";b64_po="";document.getElementById('po_preview').style.display='none';
   cargarPortadas();
 };
-
 async function cargarConfig(){
   const snap=await getDoc(doc(db,"config","banner"));
   if(snap.exists()) document.getElementById('c_precio').value=snap.data().precio||200;
@@ -173,8 +221,17 @@ document.getElementById('btnC').onclick=async()=>{
   await setDoc(doc(db,"config","banner"),{precio:p});
   document.getElementById('c_status').innerText="✅ Precio guardado: $"+p;
 };
-
+document.getElementById('btnPass').onclick=async()=>{
+  const nueva=document.getElementById('c_pass_nueva').value.trim();
+  if(nueva.length<4){alert("Mínimo 4 letras");return;}
+  if(!confirm("¿Cambiar contraseña a: "+nueva+" ?")) return;
+  await setDoc(doc(db,"config","password"),{valor:nueva});
+  passwordActual=nueva;
+  document.getElementById('pass_actual_txt').innerText=nueva;
+  localStorage.setItem('admin_log',nueva);
+  document.getElementById('pass_status').innerText="✅ Contraseña cambiada a: "+nueva+" - Ya quedó en la nube";
+  document.getElementById('c_pass_nueva').value="";
+};
 window.borrar=async(col,id)=>{ if(!confirm("¿Borrar?")) return; await deleteDoc(doc(db,col,id)); if(col=='productos') cargarPiezas(); if(col=='anuncios') cargarAnuncios(); if(col=='portadas') cargarPortadas(); };
-
 cargarPiezas(); cargarAnuncios(); cargarPortadas(); cargarConfig();
 </script></body></html>
