@@ -1,67 +1,100 @@
 <!DOCTYPE html>
 <html lang="es-MX">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ADMIN BAZAR</title>
-<style>body{background:#111;color:#fff;padding:15px;font-family:Arial}h1{background:#FFD600;color:#000;padding:12px;text-align:center} .box{background:#1a1a1a;border:2px solid #333;padding:12px;margin:12px 0;border-radius:8px} input{width:100%;padding:12px;margin:6px 0;background:#222;border:2px solid #333;color:#fff} button{padding:12px;border:0;border-radius:6px;font-weight:900;margin:4px;cursor:pointer} .y{background:#FFD600;color:#000} .r{background:#ff4444;color:#fff} .g{display:flex;gap:8px;flex-wrap:wrap} .g img{width:80px;height:80px;object-fit:cover;border:2px solid #333}</style>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Bazar Los Cuates</title>
+<style>
+body{background:#000;color:#fff;font-family:Arial;padding:12px}
+.card{background:#1a1a1a;border-radius:10px;padding:15px;margin-bottom:15px;border:1px solid #222}
+input,button{width:100%;padding:12px;border-radius:8px;border:1px solid #333;background:#222;color:#fff;margin-top:8px}
+button{background:#FFD600;color:#000;font-weight:900;border:0;cursor:pointer}
+.lista{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.item{background:#111;padding:8px;border-radius:8px;text-align:center}
+.item img{width:100%;height:100px;object-fit:cover;border-radius:6px}
+#preview{width:100%;max-height:200px;object-fit:contain;margin-top:10px;display:none;border-radius:8px}
+</style>
 </head>
 <body>
-<h1>ADMIN BAZAR LOS CUATES</h1>
-<div class="box">
-<h3 style="color:#FFD600">1. FOTO DE PORTADA - SE QUEDA HASTA QUE TU LA CAMBIES</h3>
-<p style="font-size:12px;color:#888">Sube 1 a 5 fotos, se quedarán fijas hasta que tú les des a BORRAR o CAMBIAR.</p>
-<input type="file" id="filePortada" accept="image/*" multiple>
-<div id="prevP" class="g"></div>
-<button class="y" id="btnGP">💾 GUARDAR PORTADA FIJA</button>
-<button class="r" id="btnBP">🗑️ BORRAR PORTADA</button>
-<p id="msgP" style="color:#22c55e"></p>
-<div style="margin-top:10px;color:#888;font-size:11px">Guardada en: <span id="statusP"></span></div>
+<h2 style="color:#FFD600">ADMIN BAZAR - NUBE</h2>
+<p style="font-size:11px;color:#22c55e">✅ Conectado a bazar-los-cuates</p>
+<div class="card">
+<b>Agregar Pieza</b>
+<input id="nombre" placeholder="Ej: Cuna dorada">
+<input id="precio" type="number" placeholder="Ej: 750">
+<input id="foto" type="file" accept="image/*">
+<img id="preview">
+<button id="btnGuardar">GUARDAR EN LA NUBE DE GOOGLE</button>
+<p id="status" style="font-size:12px;color:#22c55e;margin-top:8px">Listo</p>
 </div>
-<div class="box">
-<h3 style="color:#FFD600">2. PRODUCTOS</h3>
-<input id="nP" placeholder="Nombre">
-<input id="pP" placeholder="Precio">
-<input type="file" id="fP" accept="image/*" multiple>
-<div id="prevPr" class="g"></div>
-<button class="y" id="btnGPr">GUARDAR PRODUCTO</button>
-<p id="msgPr" style="color:#22c55e"></p>
+<div class="card">
+<b>Piezas en la nube</b>
+<div id="lista" class="lista">Cargando...</div>
 </div>
-<div class="box">
-<h3>Guardados (<span id="cPr">0</span>)</h3>
-<div id="lista"></div>
-<a href="./index.html" style="color:#FFD600">← Ver página</a> | <a href="./admin_anuncios.html" style="color:#FFD600">Anuncios</a>
-</div>
-<script>
-let portadas=[]; 
-document.getElementById('filePortada').addEventListener('change',e=>{
-  portadas=[];let prev=document.getElementById('prevP');prev.innerHTML="";
-  for(let f of e.target.files){let r=new FileReader();r.onload=ev=>{portadas.push(ev.target.result);let im=document.createElement('img');im.src=ev.target.result;prev.appendChild(im);document.getElementById('statusP').innerText=portadas.length+" fotos listas para guardar";};r.readAsDataURL(f);}
+<div class="card"><a href="./index.html" style="color:#FFD600">← Volver a tienda</a></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4",
+    authDomain: "bazar-los-cuates.firebaseapp.com",
+    projectId: "bazar-los-cuates",
+    storageBucket: "bazar-los-cuates.firebasestorage.app",
+    messagingSenderId: "908351301550",
+    appId: "1:908351301550:web:3ae25892920ce8dda24a3f",
+    measurementId: "G-XT51JZ4H5L"
+  };
+
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+let fotoBase64="";
+document.getElementById('foto').addEventListener('change', (e)=>{
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      const maxW=600; let w=img.width, h=img.height;
+      if(w>maxW){h=(maxW/w)*h; w=maxW;}
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      fotoBase64=canvas.toDataURL('image/jpeg',0.6);
+      document.getElementById('preview').src=fotoBase64;
+      document.getElementById('preview').style.display='block';
+      document.getElementById('status').innerText=`Foto lista: ${Math.round(fotoBase64.length/1024)} KB`;
+    };
+    img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
 });
-document.getElementById('btnGP').addEventListener('click',()=>{
-  if(portadas.length==0){alert('Primero selecciona fotos');return;}
-  localStorage.setItem('bazar_portadas',JSON.stringify(portadas));
-  document.getElementById('msgP').innerText='✅ PORTADA GUARDADA FIJA - Ya no se cambia sola. Ve a tu index y refresca.';
-  document.getElementById('statusP').innerText='Guardado: '+new Date().toLocaleString();
-});
-document.getElementById('btnBP').addEventListener('click',()=>{
-  if(!confirm('¿Borrar tu portada fija? Volverá la default'))return;
-  localStorage.removeItem('bazar_portadas');portadas=[];document.getElementById('prevP').innerHTML="";document.getElementById('msgP').innerText='Borrada';
-});
-let prods=[];document.getElementById('fP').addEventListener('change',e=>{
-  prods=[];let prev=document.getElementById('prevPr');prev.innerHTML="";
-  for(let f of e.target.files){let r=new FileReader();r.onload=ev=>{prods.push(ev.target.result);let im=document.createElement('img');im.src=ev.target.result;prev.appendChild(im);};r.readAsDataURL(f);}
-});
-function getPr(){try{return JSON.parse(localStorage.getItem('bazar_productos'))||[]}catch{return[]}}
-function savePr(a){localStorage.setItem('bazar_productos',JSON.stringify(a))}
-function render(){let l=document.getElementById('lista');let ps=getPr();document.getElementById('cPr').innerText=ps.length;l.innerHTML="";ps.forEach(p=>{let d=document.createElement('div');d.style.cssText='display:flex;gap:10px;background:#222;padding:8px;margin:6px 0';d.innerHTML=`<img src="${p.fotos?p.fotos[0]:p.img}" style="width:60px;height:60px;object-fit:cover"><div style="flex:1"><b>${p.nombre}</b><br>$${p.precio}<br><button class="r" onclick="borrar(${p.id})">Borrar</button></div>`;l.appendChild(d);});}
-function borrar(id){if(!confirm('¿Borrar?'))return;savePr(getPr().filter(x=>x.id!==id));render();}
-document.getElementById('btnGPr').addEventListener('click',()=>{
-  let n=document.getElementById('nP').value.trim();let p=document.getElementById('pP').value.trim();
-  if(!n||!p||prods.length==0){alert('Pon nombre, precio y foto');return;}
-  let pr=getPr();pr.unshift({id:Date.now(),nombre:n,precio:p,fotos:prods,img:prods[0]});savePr(pr);
-  document.getElementById('nP').value='';document.getElementById('pP').value='';document.getElementById('fP').value='';document.getElementById('prevPr').innerHTML="";prods=[];render();
-});
-let guardadas=JSON.parse(localStorage.getItem('bazar_portadas')||'[]');
-document.getElementById('statusP').innerText=guardadas.length>0?'Ya tienes '+guardadas.length+' portadas fijas guardadas desde antes':'No tienes portada fija, sale la default';
-render();
+async function cargar(){
+  const lista=document.getElementById('lista');
+  const snap=await getDocs(collection(db,"productos"));
+  lista.innerHTML="";
+  if(snap.empty){lista.innerHTML="<p style='color:#666'>No hay piezas</p>"; return;}
+  snap.forEach(d=>{
+    const p=d.data();
+    const div=document.createElement('div'); div.className='item';
+    div.innerHTML=`<img src="${p.foto}"><br><b>${p.nombre}</b><br>$${p.precio}<br><button onclick="borrar('${d.id}')" style="background:#ef4444;color:#fff;margin-top:6px">Borrar</button>`;
+    lista.appendChild(div);
+  });
+}
+window.borrar=async(id)=>{
+  if(!confirm("¿Borrar?")) return;
+  await deleteDoc(doc(db,"productos",id));
+  cargar();
+}
+document.getElementById('btnGuardar').onclick=async()=>{
+  const nombre=document.getElementById('nombre').value.trim();
+  const precio=document.getElementById('precio').value.trim();
+  const status=document.getElementById('status');
+  if(!nombre||!precio||!fotoBase64){alert("Pon nombre, precio y foto");return;}
+  status.innerText="Guardando en Google...";
+  await addDoc(collection(db,"productos"),{nombre,precio,foto:fotoBase64,fecha:Date.now()});
+  status.innerText="✅ ¡Guardado! Ya se ve en Brave y Chrome igual";
+  document.getElementById('nombre').value=""; document.getElementById('precio').value=""; document.getElementById('foto').value=""; document.getElementById('preview').style.display='none'; fotoBase64="";
+  cargar();
+}
+cargar();
 </script>
-</body>
-</html>
+</body></html>
