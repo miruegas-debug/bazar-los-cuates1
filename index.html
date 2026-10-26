@@ -14,9 +14,17 @@
 .portada{position:relative;height:190px;overflow:hidden;background:#111} .slide-track{display:flex;transition:transform 0.6s ease;height:100%;width:100%} .slide{min-width:100%;height:100%;flex-shrink:0} .slide img{width:100%;height:100%;object-fit:cover}
 .buscador{padding:12px;background:#111} .buscador input{width:100%;padding:12px;border-radius:8px;border:2px solid #333;background:#1a1a1a;color:#fff}
 .contador{padding:8px 12px;background:#0a0a0a;color:#888;font-size:11px;display:flex;gap:15px;justify-content:center;border-bottom:1px solid #1a1a1a} .contador span{color:#FFD600;font-weight:900}
-.catalogo{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px} .card{background:#1a1a1a;border-radius:10px;overflow:hidden;border:1px solid #222} .card img{width:100%;height:160px;object-fit:cover} .card .info{padding:10px} .card b{font-size:13px;display:block} .card .btn{display:block;background:#FFD600;color:#000;text-align:center;padding:10px;border-radius:6px;text-decoration:none;font-weight:900;margin-top:6px;font-size:12px}
+.catalogo{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
+.card{background:#1a1a1a;border-radius:10px;overflow:hidden;border:1px solid #222}
+.card .img-wrap{position:relative;height:160px;background:#0a0a0a;overflow:hidden}
+.card .img-track{display:flex;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.card .img-track::-webkit-scrollbar{display:none}
+.card .img-track img{min-width:100%;height:100%;object-fit:cover;scroll-snap-align:center}
+.card .badge-fotos{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.85);color:#fff;padding:3px 8px;border-radius:20px;font-size:10px;border:1px solid #333}
+.card .dots{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);display:flex;gap:4px}
+.card .dot{width:5px;height:5px;border-radius:50%;background:#fff5} .dot.active{background:#FFD600}
+.card .info{padding:10px} .card b{font-size:13px;display:block} .card .btn{display:block;background:#FFD600;color:#000;text-align:center;padding:10px;border-radius:6px;text-decoration:none;font-weight:900;margin-top:6px;font-size:12px}
 .acciones{padding:12px;display:flex;flex-direction:column;gap:8px} .btn-app{padding:14px;border-radius:10px;border:0;font-weight:900;width:100%;display:block;text-align:center;text-decoration:none} .btn-instalar{background:#FFD600;color:#000}
-/* POP UP APP - PULL UP */
 #appModal{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;align-items:flex-end;justify-content:center;z-index:9999;padding:0;animation:fadeIn .3s}
 #appModal.show{display:flex}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -25,7 +33,6 @@
 .modal-box h2{color:#FFD600;font-size:24px;margin-bottom:6px} .modal-box p{color:#ccc;font-size:14px;margin-bottom:18px;line-height:1.4}
 .modal-box .btn{padding:14px;border-radius:12px;display:block;text-decoration:none;font-weight:900;margin-bottom:10px;font-size:15px}
 .btn-si{background:#FFD600;color:#000} .btn-no{background:#222;color:#888;border:1px solid #333}
-/* FOOTER APPS */
 .footer-apps{background:#111;border-top:3px solid #FFD600;padding:24px 18px;text-align:center;margin-top:24px}
 .footer-apps h3{color:#FFD600;font-size:19px;margin-bottom:6px} .footer-apps p{color:#999;font-size:13px;margin:8px 0 16px;line-height:1.4}
 .footer-apps .btn-cotizar{background:#FFD600;color:#000;padding:14px 22px;border-radius:12px;text-decoration:none;font-weight:900;display:inline-block;font-size:15px}
@@ -41,16 +48,12 @@
 <a href="./BLC.apk" download class="btn-app btn-instalar">📥 DESCARGAR APLICACIÓN</a>
 <a href="./admin.html" style="text-align:center;color:#555;font-size:11px;text-decoration:none;margin-top:14px;display:block">Admin</a>
 </div>
-
-<!-- FOOTER QUIERES UNA APP? -->
 <div class="footer-apps">
 <h3>¿Quieres una app o página web como esta?</h3>
-<p>Nosotros te hacemos tu aplicación o página para tu negocio. Tu propio bazar, tienda o catálogo online.<br>Desde $500 pesos. Entrega rápida.</p>
+<p>Nosotros te hacemos tu aplicación o página para tu negocio. Tu propio bazar, tienda o catálogo online.<br>Desde $<span id="precioAppTxt">500</span> pesos. Entrega rápida.</p>
 <a class="btn-cotizar" href="https://wa.me/524491883244?text=Hola%20vi%20la%20pagina%20del%20Bazar%20Los%20Cuates%20y%20me%20interesa%20que%20me%20hagan%20una%20app%20o%20pagina%20web%20para%20mi%20negocio" target="_blank">📲 COTIZAR MI APP / WEB</a>
 <div class="sub">Bazar Los Cuates • Jesús María, Ags • Hecho en Ags</div>
 </div>
-
-<!-- POP UP / PULL UP APP -->
 <div id="appModal">
 <div class="modal-box">
 <h2>📲 ¡Lleva el Bazar en tu cel!</h2>
@@ -59,7 +62,6 @@
 <a href="#" class="btn btn-no" onclick="cerrarModal();return false;">Seguir viendo la página</a>
 </div>
 </div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -71,13 +73,35 @@ window.cerrarModal=cerrarModal;
 setTimeout(()=>{ if(!localStorage.getItem('appModalVisto')){document.getElementById('appModal').classList.add('show');} },2200);
 async function registrarClickBanner(id,nombre){ try{ const ref=doc(db,"stats","banner_clicks"); const snap=await getDoc(ref); let data=snap.exists()?snap.data():{}; data[nombre]=(data[nombre]||0)+1; data.total=(data.total||0)+1; data.ultimo=new Date().toLocaleString(); await setDoc(ref,data,{merge:true}); if(id){ await updateDoc(doc(db,"anuncios",id),{clicks: increment(1)}).catch(()=>{});} }catch(e){} }
 async function cargarProductos(){ const snap=await getDocs(collection(db,"productos")); productosNube=[]; snap.forEach(d=>productosNube.push({id:d.id,...d.data()})); productosNube.sort(()=>Math.random()-0.5); renderCatalogo(); }
-function renderCatalogo(){ const cont=document.getElementById('catalogo'); const lista=productosNube.filter(x=>(x.nombre+" "+x.precio).toLowerCase().includes(filtro.toLowerCase())); cont.innerHTML=""; if(lista.length==0){cont.innerHTML="<p style='grid-column:1/3;text-align:center;padding:30px;color:#666'>No hay piezas</p>";return;} lista.forEach(prod=>{ const wa=`https://wa.me/524491883244?text=${encodeURIComponent('Hola me interesa '+prod.nombre+' $'+prod.precio)}`; const d=document.createElement('div'); d.className='card'; d.innerHTML=`<img src="${prod.foto}"><div class="info"><b>${prod.nombre}</b><span style="color:#FFD600;font-weight:900">$${prod.precio}</span><a class="btn" href="${wa}" target="_blank">📲 ¡ME INTERESA!</a></div>`; cont.appendChild(d); }); }
+function renderCatalogo(){
+  const cont=document.getElementById('catalogo');
+  const lista=productosNube.filter(x=>(x.nombre+" "+x.precio).toLowerCase().includes(filtro.toLowerCase()));
+  cont.innerHTML="";
+  if(lista.length==0){cont.innerHTML="<p style='grid-column:1/3;text-align:center;padding:30px;color:#666'>No hay piezas</p>";return;}
+  lista.forEach(prod=>{
+    const fotos = prod.fotos && prod.fotos.length ? prod.fotos : [prod.foto];
+    const wa=`https://wa.me/524491883244?text=${encodeURIComponent('Hola me interesa '+prod.nombre+' $'+prod.precio)}`;
+    const d=document.createElement('div'); d.className='card';
+    const imgs = fotos.map(f=>`<img src="${f}">`).join('');
+    const dots = fotos.length>1 ? fotos.map((_,i)=>`<div class="dot ${i==0?'active':''}"></div>`).join('') : '';
+    const badge = fotos.length>1 ? `<div class="badge-fotos">📷 ${fotos.length}</div>` : '';
+    d.innerHTML=`<div class="img-wrap"><div class="img-track" onscroll="actualizarDots(this)">${imgs}</div>${badge}<div class="dots">${dots}</div></div><div class="info"><b>${prod.nombre}</b><span style="color:#FFD600;font-weight:900">$${prod.precio}</span><a class="btn" href="${wa}" target="_blank">📲 ¡ME INTERESA!</a></div>`;
+    cont.appendChild(d);
+  });
+}
+window.actualizarDots=(track)=>{
+  const idx=Math.round(track.scrollLeft/track.clientWidth);
+  const dots=track.parentElement.querySelectorAll('.dot');
+  dots.forEach((dot,i)=>dot.classList.toggle('active',i===idx));
+}
 async function cargarPortadas(){ const snap=await getDocs(collection(db,"portadas")); let imgs=[]; snap.forEach(d=>imgs.push(d.data().foto)); if(imgs.length==0) imgs=["https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800"]; const track=document.getElementById('slideTrack'); track.innerHTML=""; imgs.forEach(src=>{const div=document.createElement('div'); div.className='slide'; div.innerHTML=`<img src="${src}">`; track.appendChild(div);}); let idx=0; if(imgs.length>1){setInterval(()=>{idx=(idx+1)%imgs.length; track.style.transform=`translateX(-${idx*100}%)`;},3500);} }
 async function cargarAnuncios(){ 
   const snapA=await getDocs(collection(db,"anuncios")); 
   const snapC=await getDoc(doc(db,"config","banner")); 
   const snapV=await getDoc(doc(db,"stats","visitas"));
-  let precio="200"; if(snapC.exists()) precio=snapC.data().precio||"200"; 
+  let precio="200"; let precioApp="500";
+  if(snapC.exists()){ precio=snapC.data().precio||"200"; precioApp=snapC.data().precioApp||"500"; }
+  document.getElementById('precioAppTxt').innerText=precioApp;
   let totalV="0"; if(snapV.exists()) totalV=snapV.data().total||"0";
   let anuncios=[]; snapA.forEach(d=>anuncios.push({id:d.id,...d.data()})); 
   let lista=[...anuncios,{nombre:`ANUNCIATE AQUI $${precio} AL MES`,esAnunciate:true,id:null,visitas:totalV,precio:precio}]; 
