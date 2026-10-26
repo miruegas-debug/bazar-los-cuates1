@@ -1,33 +1,36 @@
 <!DOCTYPE html>
-<html lang="es-MX">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bazar Los Cuates</title>
-<link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#FFD600">
+<html lang="es-MX"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bazar Los Cuates</title><link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#FFD600">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Arial}
 .top-bar{background:#FFD600;color:#000;text-align:center;padding:6px;font-size:12px;font-weight:900}
-.catalogo{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px}
-.card{background:#1a1a1a;border-radius:10px;overflow:hidden;border:1px solid #222}
-.card img{width:100%;height:160px;object-fit:cover}
-.card .info{padding:10px}
-.card b{font-size:13px;display:block;margin-bottom:4px}
-.card .btn{display:block;background:#FFD600;color:#000;text-align:center;padding:8px;border-radius:6px;text-decoration:none;font-weight:900;margin-top:6px;font-size:12px}
-.buscador{padding:12px;background:#111}
-.buscador input{width:100%;padding:12px;border-radius:8px;border:2px solid #333;background:#1a1a1a;color:#fff}
-.contador{padding:8px 12px;background:#0a0a0a;color:#888;font-size:11px;display:flex;gap:15px;justify-content:center;border-bottom:1px solid #1a1a1a}
-.contador span{color:#FFD600;font-weight:900}
-</style></head>
-<body>
-<div style="background:#FFD600;color:#000;text-align:center;padding:6px;font-size:12px;font-weight:900">BAZAR LOS CUATES - JESÚS MARÍA, AGS</div>
+.slider-top{background:#111;overflow:hidden;height:70px;border-bottom:2px solid #222} .top-track{display:flex;transition:transform 0.5s;width:100%} .top-slide{min-width:100%;display:flex;align-items:center;gap:10px;padding:10px;cursor:pointer} .top-slide img{width:50px;height:50px;object-fit:cover;border-radius:8px} .top-slide .txt b{display:block;font-size:14px;color:#FFD600}
+.portada{position:relative;height:260px;overflow:hidden;background:#111} .slide-track{display:flex;transition:transform 0.5s;height:100%} .slide{min-width:100%;height:100%} .slide img{width:100%;height:100%;object-fit:cover}
+.buscador{padding:12px;background:#111} .buscador input{width:100%;padding:12px;border-radius:8px;border:2px solid #333;background:#1a1a1a;color:#fff}
+.contador{padding:8px 12px;background:#0a0a0a;color:#888;font-size:11px;display:flex;gap:15px;justify-content:center;border-bottom:1px solid #1a1a1a} .contador span{color:#FFD600;font-weight:900}
+.catalogo{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px} .card{background:#1a1a1a;border-radius:10px;overflow:hidden;border:1px solid #222} .card img{width:100%;height:160px;object-fit:cover} .card .info{padding:10px} .card b{font-size:13px;display:block} .card .btn{display:block;background:#FFD600;color:#000;text-align:center;padding:8px;border-radius:6px;text-decoration:none;font-weight:900;margin-top:6px;font-size:12px}
+.acciones{padding:12px;display:flex;flex-direction:column;gap:8px} .btn-app{padding:14px;border-radius:10px;border:0;font-weight:900;width:100%} .btn-instalar{background:#FFD600;color:#000} .btn-noti{background:#222;color:#fff;border:1px solid #333}
+.up-banner{background:#1a1a1a;border:2px dashed #FFD600;margin:12px;border-radius:10px;padding:12px;text-align:center} .up-banner a{display:inline-block;margin-top:8px;background:#22c55e;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:900}
+#popup-apps{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:99999;display:none;align-items:center;justify-content:center} #popup-apps.activo{display:flex} .popup-box{background:#111;border:3px solid #FFD600;border-radius:16px;padding:24px;width:90%;max-width:360px;text-align:center;color:#fff;position:relative} .popup-box h2{color:#FFD600;font-size:22px;margin-bottom:10px;font-weight:900} .popup-box p{font-size:14px;margin-bottom:12px;color:#ccc} .popup-box .btn-wha{display:block;background:#22c55e;color:#fff;padding:14px;border-radius:10px;text-decoration:none;font-weight:900;margin-top:12px} .popup-box .btn-cerrar{position:absolute;top:8px;right:12px;background:none;border:0;color:#fff;font-size:26px;cursor:pointer} .popup-box .no-mostrar{margin-top:12px;font-size:12px;color:#777;cursor:pointer;text-decoration:underline}
+</style></head><body>
+<div class="top-bar">BAZAR LOS CUATES - JESÚS MARÍA, AGS</div>
+<div class="slider-top"><div id="topTrack" class="top-track">Cargando...</div></div>
+<div class="portada"><div id="slideTrack" class="slide-track"></div></div>
 <div class="buscador"><input id="buscador" placeholder="Buscar pieza..."></div>
 <div class="contador"><div>Hoy: <span id="visitasHoy">0</span></div><div>Total: <span id="visitasTotal">0</span></div></div>
 <div id="catalogo" class="catalogo"><p style="grid-column:1/3;text-align:center;padding:30px;color:#888">Cargando desde la nube...</p></div>
-<a href="./admin.html" style="display:block;text-align:center;color:#555;font-size:11px;text-decoration:none;margin:20px">Admin</a>
+<div class="up-banner"><b>¿QUIERES UNA APP COMO ESTA?</b><br><a href="https://wa.me/524491883244?text=Hola%20me%20interesa%20una%20app" target="_blank">YO QUIERO MI APP - WHATSAPP</a></div>
+<div class="acciones">
+<button id="btn-instalar-app" class="btn-app btn-instalar">📲 INSTALAR APLICACIÓN</button>
+<button id="btn-noti" class="btn-app btn-noti">🔔 ACTIVAR NOTIFICACIONES</button>
+<a href="./admin.html" style="text-align:center;color:#555;font-size:11px;text-decoration:none;margin-top:10px">Admin</a>
+</div>
+
+<div id="popup-apps"><div class="popup-box"><button class="btn-cerrar" onclick="cerrarPopup()">×</button><h2>¿TE INTERESA UNA APP COMO ESTA?</h2><p>Yo te hago tu aplicación para tu negocio, como Bazar Los Cuates. Se instala como app con tu logo.</p><p style="color:#FFD600;font-weight:900;font-size:16px">¡Desde $500!</p><a class="btn-wha" href="https://wa.me/524491883244?text=Hola%20vi%20tu%20pop-up" target="_blank">💬 SÍ, ME INTERESA</a><div class="no-mostrar" onclick="cerrarPopup(true)">No volver a mostrar hoy</div></div></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
 const firebaseConfig = {
     apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4",
     authDomain: "bazar-los-cuates.firebaseapp.com",
@@ -37,10 +40,7 @@ const firebaseConfig = {
     appId: "1:908351301550:web:3ae25892920ce8dda24a3f",
     measurementId: "G-XT51JZ4H5L"
   };
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
+const app=initializeApp(firebaseConfig); const db=getFirestore(app);
 let productosNube=[]; let filtro="";
 async function cargarProductos(){
   const snap=await getDocs(collection(db,"productos"));
@@ -51,8 +51,7 @@ async function cargarProductos(){
 function renderCatalogo(){
   const cont=document.getElementById('catalogo');
   const lista=productosNube.filter(x=>(x.nombre+" "+x.precio).toLowerCase().includes(filtro.toLowerCase()));
-  cont.innerHTML=""; 
-  if(lista.length==0){cont.innerHTML="<p style='grid-column:1/3;text-align:center;padding:30px;color:#666'>No hay piezas. Agrégalas en Admin</p>";return;}
+  cont.innerHTML=""; if(lista.length==0){cont.innerHTML="<p style='grid-column:1/3;text-align:center;padding:30px;color:#666'>No hay piezas. Agrégalas en Admin</p>";return;}
   lista.forEach(prod=>{
     const wa=`https://wa.me/524491883244?text=${encodeURIComponent('Hola me interesa '+prod.nombre+' $'+prod.precio)}`;
     const d=document.createElement('div'); d.className='card';
@@ -60,18 +59,44 @@ function renderCatalogo(){
     cont.appendChild(d);
   });
 }
+async function cargarPortadas(){
+  const snap=await getDocs(collection(db,"portadas"));
+  let imgs=[]; snap.forEach(d=>imgs.push(d.data().foto));
+  if(imgs.length==0) imgs=["https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800"];
+  const track=document.getElementById('slideTrack'); track.innerHTML="";
+  imgs.forEach(src=>{const div=document.createElement('div'); div.className='slide'; div.innerHTML=`<img src="${src}">`; track.appendChild(div);});
+  let idx=0; if(imgs.length>1) setInterval(()=>{idx=(idx+1)%imgs.length; track.style.transform=`translateX(-${idx*100}%)`;},3500);
+}
+async function cargarAnuncios(){
+  const snapA=await getDocs(collection(db,"anuncios"));
+  const snapC=await getDoc(doc(db,"config","banner"));
+  let precio="200"; if(snapC.exists()) precio=snapC.data().precio||"200";
+  let anuncios=[]; snapA.forEach(d=>anuncios.push(d.data()));
+  let lista=[...anuncios,{nombre:`ANUNCIATE AQUI $${precio} AL MES`,esAnunciate:true}];
+  const track=document.getElementById('topTrack'); track.innerHTML="";
+  lista.forEach(an=>{
+    const div=document.createElement('div'); div.className='top-slide';
+    if(an.esAnunciate){div.onclick=()=>window.open(`https://wa.me/524491883244?text=${encodeURIComponent('Hola vi ANUNCIATE AQUI $'+precio)}`,'_blank'); div.innerHTML=`<div class="txt"><b>ANUNCIATE AQUI $${precio} AL MES</b><span>Toca aqui</span></div>`;}
+    else{const wa=`https://wa.me/${String(an.whatsapp).replace(/[^0-9]/g,'')}?text=${encodeURIComponent('Hola vi tu anuncio '+an.nombre)}`; div.onclick=()=>window.open(wa,'_blank'); div.innerHTML=`${an.img?`<img src="${an.img}">`:''}<div class="txt"><b>${an.nombre}</b><span>WhatsApp</span></div>`;}
+    track.appendChild(div);
+  });
+}
 async function contador(){
   const hoyStr=new Date().toISOString().split('T')[0];
-  const ref=doc(db,"stats","visitas");
-  const snap=await getDoc(ref);
+  const ref=doc(db,"stats","visitas"); const snap=await getDoc(ref);
   let data=snap.exists()?snap.data():{total:0,hoy:0,fecha:""};
   if(data.fecha!==hoyStr){data.hoy=0;data.fecha=hoyStr;}
   data.total=(data.total||0)+1; data.hoy=(data.hoy||0)+1;
   await setDoc(ref,data);
-  document.getElementById('visitasTotal').innerText=data.total;
-  document.getElementById('visitasHoy').innerText=data.hoy;
+  document.getElementById('visitasTotal').innerText=data.total; document.getElementById('visitasHoy').innerText=data.hoy;
 }
+window.cerrarPopup=function(hoy=false){document.getElementById('popup-apps').classList.remove('activo');if(hoy)localStorage.setItem('popup_apps_fecha',new Date().toDateString());}
+window.addEventListener('load',()=>{let u=localStorage.getItem('popup_apps_fecha');let h=new Date().toDateString();if(u!==h)setTimeout(()=>document.getElementById('popup-apps').classList.add('activo'),4000);});
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredPrompt=e;});
+document.getElementById('btn-instalar-app').addEventListener('click',async()=>{if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null;}else alert('Para instalar: 3 puntitos arriba > Instalar app / Agregar a pantalla de inicio');});
+document.getElementById('btn-noti').addEventListener('click',async()=>{if(!('Notification' in window))return;let p=await Notification.requestPermission();if(p==='granted')alert('✅ Notificaciones activadas');});
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
 document.getElementById('buscador').addEventListener('input',e=>{filtro=e.target.value;renderCatalogo();});
-cargarProductos(); contador();
-</script>
-</body></html>
+cargarProductos(); cargarPortadas(); cargarAnuncios(); contador();
+</script></body></html>
