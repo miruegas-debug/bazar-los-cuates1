@@ -37,16 +37,21 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, increment, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
+
 const firebaseConfig = {
     apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4",
     authDomain: "bazar-los-cuates.firebaseapp.com",
     projectId: "bazar-los-cuates",
     storageBucket: "bazar-los-cuates.firebasestorage.app",
     messagingSenderId: "908351301550",
-    appId: "1:908351301550:web:3ae25892920ce8dda24a3f",
-    measurementId: "G-XT51JZ4H5L"
+    appId: "1:908351301550:web:3ae25892920ce8dda24a3f"
   };
-const app=initializeApp(firebaseConfig); const db=getFirestore(app);
+const VAPID_KEY = "[STRIPPED 87 bytes]";
+const app=initializeApp(firebaseConfig); 
+const db=getFirestore(app);
+const messaging = getMessaging(app);
+
 let productosNube=[]; let filtro="";
 
 async function registrarClickBanner(id, nombre){
@@ -70,7 +75,6 @@ async function cargarProductos(){
   productosNube=[]; snap.forEach(d=>productosNube.push({id:d.id,...d.data()}));
   productosNube.sort(() => Math.random() - 0.5);
   renderCatalogo();
-  escucharNuevosProductos();
 }
 
 function renderCatalogo(){
@@ -82,26 +86,6 @@ function renderCatalogo(){
     const d=document.createElement('div'); d.className='card';
     d.innerHTML=`<img src="${prod.foto}"><div class="info"><b>${prod.nombre}</b><span style="color:#FFD600;font-weight:900">$${prod.precio}</span><a class="btn" href="${wa}" target="_blank">WHATSAPP</a></div>`;
     cont.appendChild(d);
-  });
-}
-
-let primerCarga = true;
-function escucharNuevosProductos(){
-  if(window._escuchando) return;
-  window._escuchando = true;
-  onSnapshot(collection(db,"productos"), (snap)=>{
-    if(primerCarga){ primerCarga = false; return; }
-    snap.docChanges().forEach(change=>{
-      if(change.type === 'added'){
-        const prod = change.doc.data();
-        if(Notification && Notification.permission === 'granted'){
-          new Notification('🔔 Bazar Los Cuates - Nueva pieza!', {
-            body: `${prod.nombre} - $${prod.precio}`,
-            icon: './icon-192.png'
-          });
-        }
-      }
-    });
   });
 }
 
@@ -132,7 +116,7 @@ async function cargarAnuncios(){
     } else {
       div.onclick=async()=>{
         await registrarClickBanner(an.id, an.nombre);
-        const wa=`https://wa.me/${String(an.whatsapp).replace(/[^0-9]/g,'')}?text=${encodeURIComponent('Hola, vi en la aplicacion / pagina de Bazar Los Cuates tu anuncio de '+an.nombre+'. Me interesa, vi que te anunciaste en Bazar Los Cuates')}`;
+        const wa=`https://wa.me/${String(an.whatsapp).replace(/[^-0-9]/g,'')}?text=${encodeURIComponent('Hola, vi en la aplicacion / pagina de Bazar Los Cuates tu anuncio de '+an.nombre+'. Me interesa, vi que te anunciaste en Bazar Los Cuates')}`;
         window.open(wa,'_blank');
       };
       div.innerHTML=`${an.img?`<img src="${an.img}">`:''}<div class="txt"><b>${an.nombre}</b><span>WhatsApp - Toca aqui</span></div>`;
@@ -154,34 +138,48 @@ async function contador(){
 window.cerrarPopup=function(hoy=false){document.getElementById('popup-apps').classList.remove('activo');if(hoy)localStorage.setItem('popup_apps_fecha',new Date().toDateString());}
 window.addEventListener('load',()=>{let u=localStorage.getItem('popup_apps_fecha');let h=new Date().toDateString();if(u!==h)setTimeout(()=>document.getElementById('popup-apps').classList.add('activo'),4000);});
 
-document.getElementById('btn-noti').addEventListener('click',async()=>{
-  if(!('Notification' in window)){
-    alert('Tu celular no soporta notificaciones');
-    return;
+// --- NUEVO SISTEMA DE NOTIFICACIONES REALES ---
+async function activarNotificaciones(){
+  try{
+    const permiso = await Notification.requestPermission();
+    if(permiso !== 'granted'){ alert('❌ Dale a Permitir'); return; }
+    
+    const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+    if(token){
+      await setDoc(doc(db, "fcm_tokens", token), {
+        token: token,
+        fecha: Date.now(),
+        userAgent: navigator.userAgent
+      });
+      localStorage.setItem('fcm_token', token);
+      localStorage.setItem('notificaciones_activas','si');
+      document.getElementById('btn-noti').innerHTML = '✅ NOTIFICACIONES ACTIVADAS';
+      document.getElementById('btn-noti').style.background = '#22c55e';
+      alert('✅ ¡Listo! Ahora sí te van a llegar aunque cierres la app. Ya estás registrado.');
+      console.log("TOKEN:", token);
+    }
+  }catch(e){
+    console.error(e);
+    alert('Error: ' + e.message);
   }
-  let permiso = Notification.permission;
-  if(permiso !== 'granted'){
-    permiso = await Notification.requestPermission();
-  }
-  if(permiso==='granted'){
-    try{
-      await addDoc(collection(db,"suscriptores"),{fecha:Date.now(), permiso: 'granted', userAgent: navigator.userAgent});
-    }catch(e){}
-    localStorage.setItem('notificaciones_activas','si');
-    document.getElementById('btn-noti').innerHTML = '✅ NOTIFICACIONES ACTIVADAS';
-    document.getElementById('btn-noti').style.background = '#22c55e';
-    new Notification('🔔 Bazar Los Cuates', {body: '¡Listo! Te avisaré cada que suba una pieza nueva', icon: './icon-192.png'});
-    alert('✅ Notificaciones activadas. Ahora te avisaré cada que suba algo nuevo.');
-  } else {
-    alert('❌ Necesitas darle Permitir para que te avise');
+}
+
+onMessage(messaging, (payload) => {
+  console.log("Mensaje en primer plano", payload);
+  const title = payload.notification.title;
+  const body = payload.notification.body;
+  if(Notification.permission === 'granted'){
+    new Notification(title, { body: body, icon: './icon-192.png' });
   }
 });
 
-if(Notification && Notification.permission === 'granted'){
+document.getElementById('btn-noti').addEventListener('click', activarNotificaciones);
+
+if(localStorage.getItem('notificaciones_activas') === 'si'){
   document.getElementById('btn-noti').innerHTML = '✅ NOTIFICACIONES ACTIVADAS';
+  document.getElementById('btn-noti').style.background = '#22c55e';
 }
 
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
 document.getElementById('buscador').addEventListener('input',e=>{filtro=e.target.value;renderCatalogo();});
 cargarProductos(); cargarPortadas(); cargarAnuncios(); contador();
 </script></body></html>
