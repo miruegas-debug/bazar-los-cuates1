@@ -1,39 +1,63 @@
 <!DOCTYPE html>
-<html lang="es-MX">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin - Bazar Los Cuates</title>
+<html lang="es-MX"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Admin - Bazar Los Cuates</title>
 <style>
 body{background:#000;color:#fff;font-family:Arial;padding:12px}
-.card{background:#1a1a1a;border-radius:10px;padding:15px;margin-bottom:15px;border:1px solid #222}
+.tabs{display:flex;gap:6px;margin-bottom:12px;overflow:auto}
+.tab{padding:10px 14px;border-radius:8px;background:#222;border:1px solid #333;cursor:pointer;font-size:12px;font-weight:900;white-space:nowrap}
+.tab.activo{background:#FFD600;color:#000}
+.card{background:#1a1a1a;border-radius:10px;padding:15px;margin-bottom:15px;border:1px solid #222;display:none}
+.card.activa{display:block}
 input,button{width:100%;padding:12px;border-radius:8px;border:1px solid #333;background:#222;color:#fff;margin-top:8px}
 button{background:#FFD600;color:#000;font-weight:900;border:0;cursor:pointer}
 .lista{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .item{background:#111;padding:8px;border-radius:8px;text-align:center}
 .item img{width:100%;height:100px;object-fit:cover;border-radius:6px}
-#preview{width:100%;max-height:200px;object-fit:contain;margin-top:10px;display:none;border-radius:8px}
-</style>
-</head>
-<body>
-<h2 style="color:#FFD600">ADMIN BAZAR - NUBE</h2>
-<p style="font-size:11px;color:#22c55e">✅ Conectado a bazar-los-cuates</p>
-<div class="card">
-<b>Agregar Pieza</b>
-<input id="nombre" placeholder="Ej: Cuna dorada">
-<input id="precio" type="number" placeholder="Ej: 750">
-<input id="foto" type="file" accept="image/*">
-<img id="preview">
-<button id="btnGuardar">GUARDAR EN LA NUBE DE GOOGLE</button>
-<p id="status" style="font-size:12px;color:#22c55e;margin-top:8px">Listo</p>
+.preview{width:100%;max-height:180px;object-fit:contain;margin-top:8px;display:none;border-radius:8px}
+</style></head><body>
+<h2 style="color:#FFD600">ADMIN BAZAR - TODO</h2>
+<p style="font-size:11px;color:#22c55e">✅ Todo en la nube: se ve igual en Brave y Chrome</p>
+<div class="tabs">
+<div class="tab activo" onclick="verTab('piezas')">📦 PIEZAS</div>
+<div class="tab" onclick="verTab('anuncios')">📢 ANUNCIOS</div>
+<div class="tab" onclick="verTab('portadas')">🖼️ PORTADA</div>
+<div class="tab" onclick="verTab('config')">⚙️ PRECIO</div>
 </div>
-<div class="card">
-<b>Piezas en la nube</b>
-<div id="lista" class="lista">Cargando...</div>
+
+<div id="tab-piezas" class="card activa">
+<b>Piezas</b>
+<input id="p_nombre" placeholder="Cuna dorada"><input id="p_precio" type="number" placeholder="750">
+<input id="p_foto" type="file" accept="image/*"><img id="p_preview" class="preview">
+<button id="btnP">GUARDAR PIEZA</button><p id="p_status" style="font-size:12px;color:#22c55e"></p>
+<div id="lista_piezas" class="lista"></div>
 </div>
-<div class="card"><a href="./index.html" style="color:#FFD600">← Volver a tienda</a></div>
+
+<div id="tab-anuncios" class="card">
+<b>Anuncios de arriba (banner amarillo)</b>
+<input id="a_nombre" placeholder="Tortas El Güero">
+<input id="a_whats" placeholder="449...">
+<input id="a_foto" type="file" accept="image/*"><img id="a_preview" class="preview">
+<button id="btnA">GUARDAR ANUNCIO</button><p id="a_status" style="font-size:12px;color:#22c55e"></p>
+<div id="lista_anuncios" class="lista"></div>
+</div>
+
+<div id="tab-portadas" class="card">
+<b>Foto de portada grande</b>
+<input id="po_foto" type="file" accept="image/*"><img id="po_preview" class="preview">
+<button id="btnPo">GUARDAR PORTADA</button><p id="po_status" style="font-size:12px;color:#22c55e"></p>
+<div id="lista_portadas" class="lista"></div>
+</div>
+
+<div id="tab-config" class="card">
+<b>Precio Anúnciate Aquí</b>
+<input id="c_precio" type="number" placeholder="200"><button id="btnC">GUARDAR PRECIO</button>
+<p id="c_status" style="font-size:12px;color:#22c55e"></p>
+</div>
+
+<a href="./index.html" style="color:#FFD600">← Volver a tienda</a>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {
     apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4",
     authDomain: "bazar-los-cuates.firebaseapp.com",
@@ -43,12 +67,15 @@ const firebaseConfig = {
     appId: "1:908351301550:web:3ae25892920ce8dda24a3f",
     measurementId: "G-XT51JZ4H5L"
   };
-
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
-let fotoBase64="";
-document.getElementById('foto').addEventListener('change', (e)=>{
-  const file=e.target.files[0]; if(!file) return;
+const app=initializeApp(firebaseConfig); const db=getFirestore(app);
+window.verTab=function(t){
+  document.querySelectorAll('.card').forEach(c=>c.classList.remove('activa'));
+  document.querySelectorAll('.tab').forEach(c=>c.classList.remove('activo'));
+  document.getElementById('tab-'+t).classList.add('activa');
+  event.target.classList.add('activo');
+}
+function comprimir(input, previewId, callback){
+  const file=input.files[0]; if(!file) return;
   const reader=new FileReader();
   reader.onload=()=>{
     const img=new Image();
@@ -58,43 +85,96 @@ document.getElementById('foto').addEventListener('change', (e)=>{
       if(w>maxW){h=(maxW/w)*h; w=maxW;}
       canvas.width=w; canvas.height=h;
       canvas.getContext('2d').drawImage(img,0,0,w,h);
-      fotoBase64=canvas.toDataURL('image/jpeg',0.6);
-      document.getElementById('preview').src=fotoBase64;
-      document.getElementById('preview').style.display='block';
-      document.getElementById('status').innerText=`Foto lista: ${Math.round(fotoBase64.length/1024)} KB`;
+      const b64=canvas.toDataURL('image/jpeg',0.6);
+      document.getElementById(previewId).src=b64;
+      document.getElementById(previewId).style.display='block';
+      callback(b64);
     };
     img.src=reader.result;
   };
   reader.readAsDataURL(file);
-});
-async function cargar(){
-  const lista=document.getElementById('lista');
+}
+let b64_p="", b64_a="", b64_po="";
+document.getElementById('p_foto').addEventListener('change', e=>comprimir(e.target,'p_preview',b=>b64_p=b));
+document.getElementById('a_foto').addEventListener('change', e=>comprimir(e.target,'a_preview',b=>b64_a=b));
+document.getElementById('po_foto').addEventListener('change', e=>comprimir(e.target,'po_preview',b=>b64_po=b));
+
+async function cargarPiezas(){
   const snap=await getDocs(collection(db,"productos"));
-  lista.innerHTML="";
-  if(snap.empty){lista.innerHTML="<p style='color:#666'>No hay piezas</p>"; return;}
+  const cont=document.getElementById('lista_piezas'); cont.innerHTML="";
+  if(snap.empty){cont.innerHTML="<p style='color:#666'>No hay piezas</p>";return;}
   snap.forEach(d=>{
     const p=d.data();
     const div=document.createElement('div'); div.className='item';
-    div.innerHTML=`<img src="${p.foto}"><br><b>${p.nombre}</b><br>$${p.precio}<br><button onclick="borrar('${d.id}')" style="background:#ef4444;color:#fff;margin-top:6px">Borrar</button>`;
-    lista.appendChild(div);
+    div.innerHTML=`<img src="${p.foto}"><br><b>${p.nombre}</b><br>$${p.precio}<br><button onclick="borrar('productos','${d.id}')" style="background:#ef4444;color:#fff;margin-top:6px">Borrar</button>`;
+    cont.appendChild(div);
   });
 }
-window.borrar=async(id)=>{
-  if(!confirm("¿Borrar?")) return;
-  await deleteDoc(doc(db,"productos",id));
-  cargar();
+document.getElementById('btnP').onclick=async()=>{
+  const n=document.getElementById('p_nombre').value.trim();
+  const pr=document.getElementById('p_precio').value.trim();
+  if(!n||!pr||!b64_p){alert("Nombre, precio y foto");return;}
+  document.getElementById('p_status').innerText="Guardando...";
+  await addDoc(collection(db,"productos"),{nombre:n,precio:pr,foto:b64_p,fecha:Date.now()});
+  document.getElementById('p_status').innerText="✅ Guardado";
+  document.getElementById('p_nombre').value="";document.getElementById('p_precio').value="";document.getElementById('p_foto').value="";b64_p="";document.getElementById('p_preview').style.display='none';
+  cargarPiezas();
+};
+
+async function cargarAnuncios(){
+  const snap=await getDocs(collection(db,"anuncios"));
+  const cont=document.getElementById('lista_anuncios'); cont.innerHTML="";
+  if(snap.empty){cont.innerHTML="<p style='color:#666'>No hay anuncios</p>";return;}
+  snap.forEach(d=>{
+    const p=d.data();
+    const div=document.createElement('div'); div.className='item';
+    div.innerHTML=`<img src="${p.img}"><br><b>${p.nombre}</b><br>${p.whatsapp}<br><button onclick="borrar('anuncios','${d.id}')" style="background:#ef4444;color:#fff;margin-top:6px">Borrar</button>`;
+    cont.appendChild(div);
+  });
 }
-document.getElementById('btnGuardar').onclick=async()=>{
-  const nombre=document.getElementById('nombre').value.trim();
-  const precio=document.getElementById('precio').value.trim();
-  const status=document.getElementById('status');
-  if(!nombre||!precio||!fotoBase64){alert("Pon nombre, precio y foto");return;}
-  status.innerText="Guardando en Google...";
-  await addDoc(collection(db,"productos"),{nombre,precio,foto:fotoBase64,fecha:Date.now()});
-  status.innerText="✅ ¡Guardado! Ya se ve en Brave y Chrome igual";
-  document.getElementById('nombre').value=""; document.getElementById('precio').value=""; document.getElementById('foto').value=""; document.getElementById('preview').style.display='none'; fotoBase64="";
-  cargar();
+document.getElementById('btnA').onclick=async()=>{
+  const n=document.getElementById('a_nombre').value.trim();
+  const w=document.getElementById('a_whats').value.trim();
+  if(!n||!w||!b64_a){alert("Nombre, whatsapp y foto");return;}
+  document.getElementById('a_status').innerText="Guardando...";
+  await addDoc(collection(db,"anuncios"),{nombre:n,whatsapp:w,img:b64_a,fecha:Date.now()});
+  document.getElementById('a_status').innerText="✅ Anuncio guardado";
+  document.getElementById('a_nombre').value="";document.getElementById('a_whats').value="";document.getElementById('a_foto').value="";b64_a="";document.getElementById('a_preview').style.display='none';
+  cargarAnuncios();
+};
+
+async function cargarPortadas(){
+  const snap=await getDocs(collection(db,"portadas"));
+  const cont=document.getElementById('lista_portadas'); cont.innerHTML="";
+  if(snap.empty){cont.innerHTML="<p style='color:#666'>No hay portadas</p>";return;}
+  snap.forEach(d=>{
+    const p=d.data();
+    const div=document.createElement('div'); div.className='item';
+    div.innerHTML=`<img src="${p.foto}"><br><button onclick="borrar('portadas','${d.id}')" style="background:#ef4444;color:#fff;margin-top:6px">Borrar</button>`;
+    cont.appendChild(div);
+  });
 }
-cargar();
-</script>
-</body></html>
+document.getElementById('btnPo').onclick=async()=>{
+  if(!b64_po){alert("Elige foto");return;}
+  document.getElementById('po_status').innerText="Guardando...";
+  await addDoc(collection(db,"portadas"),{foto:b64_po,fecha:Date.now()});
+  document.getElementById('po_status').innerText="✅ Portada guardada";
+  document.getElementById('po_foto').value="";b64_po="";document.getElementById('po_preview').style.display='none';
+  cargarPortadas();
+};
+
+async function cargarConfig(){
+  const snap=await getDoc(doc(db,"config","banner"));
+  if(snap.exists()) document.getElementById('c_precio').value=snap.data().precio||200;
+}
+document.getElementById('btnC').onclick=async()=>{
+  const p=document.getElementById('c_precio').value.trim();
+  if(!p){alert("Pon precio");return;}
+  await setDoc(doc(db,"config","banner"),{precio:p});
+  document.getElementById('c_status').innerText="✅ Precio guardado: $"+p;
+};
+
+window.borrar=async(col,id)=>{ if(!confirm("¿Borrar?")) return; await deleteDoc(doc(db,col,id)); if(col=='productos') cargarPiezas(); if(col=='anuncios') cargarAnuncios(); if(col=='portadas') cargarPortadas(); };
+
+cargarPiezas(); cargarAnuncios(); cargarPortadas(); cargarConfig();
+</script></body></html>
