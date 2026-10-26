@@ -2,7 +2,8 @@
   "name": "Bazar Los Cuates",
   "short_name": "BLC",
   "description": "Piezas buenas, precio claro - Jesús María",
-  "start_url": "./index.html",
+  "start_url": "./?v=21",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#FFD600",
@@ -10,12 +11,8 @@
     {
       "src": "./869268815_1422434703341051_8980595446836735717_n.jpg",
       "sizes": "192x192",
-      "type": "image/jpeg"
-    },
-    {
-      "src": "./869571887_1545214670744097_5139767720367970231_n.jpg",
-      "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "any"
     },
     {
       "src": "./869571887_1545214670744097_5139767720367970231_n.jpg",
