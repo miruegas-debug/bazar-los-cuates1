@@ -4,8 +4,13 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Arial}
 .top-bar{background:#FFD600;color:#000;text-align:center;padding:6px;font-size:12px;font-weight:900}
-.slider-top{background:#111;overflow:hidden;height:70px;border-bottom:2px solid #222} .top-track{display:flex;transition:transform 0.5s;width:100%} .top-slide{min-width:100%;display:flex;align-items:center;gap:10px;padding:10px;cursor:pointer} .top-slide img{width:50px;height:50px;object-fit:cover;border-radius:8px} .top-slide .txt b{display:block;font-size:14px;color:#FFD600}
-.portada{position:relative;height:260px;overflow:hidden;background:#111} .slide-track{display:flex;transition:transform 0.5s;height:100%} .slide{min-width:100%;height:100%} .slide img{width:100%;height:100%;object-fit:cover}
+.slider-top{background:#111;overflow:hidden;height:175px;border-bottom:3px solid #222} 
+.top-track{display:flex;transition:transform 0.6s ease;width:100%} 
+.top-slide{min-width:100%;display:flex;align-items:center;gap:15px;padding:15px;cursor:pointer;box-sizing:border-box;flex-shrink:0}
+.top-slide img{width:110px;height:110px;object-fit:cover;border-radius:12px;border:2px solid #FFD600}
+.top-slide .txt b{display:block;font-size:22px;color:#FFD600;line-height:1.1}
+.top-slide .txt span{font-size:16px;color:#fff}
+.portada{position:relative;height:260px;overflow:hidden;background:#111} .slide-track{display:flex;transition:transform 0.6s ease;height:100%;width:100%} .slide{min-width:100%;height:100%;flex-shrink:0} .slide img{width:100%;height:100%;object-fit:cover}
 .buscador{padding:12px;background:#111} .buscador input{width:100%;padding:12px;border-radius:8px;border:2px solid #333;background:#1a1a1a;color:#fff}
 .contador{padding:8px 12px;background:#0a0a0a;color:#888;font-size:11px;display:flex;gap:15px;justify-content:center;border-bottom:1px solid #1a1a1a} .contador span{color:#FFD600;font-weight:900}
 .catalogo{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px} .card{background:#1a1a1a;border-radius:10px;overflow:hidden;border:1px solid #222} .card img{width:100%;height:160px;object-fit:cover} .card .info{padding:10px} .card b{font-size:13px;display:block} .card .btn{display:block;background:#FFD600;color:#000;text-align:center;padding:8px;border-radius:6px;text-decoration:none;font-weight:900;margin-top:6px;font-size:12px}
@@ -19,23 +24,19 @@
 <div class="buscador"><input id="buscador" placeholder="Buscar pieza..."></div>
 <div class="contador"><div>Hoy: <span id="visitasHoy">0</span></div><div>Total: <span id="visitasTotal">0</span></div></div>
 <div id="catalogo" class="catalogo"><p style="grid-column:1/3;text-align:center;padding:30px;color:#888">Cargando desde la nube...</p></div>
-
 <div class="up-banner">
 <b>¿QUIERES UNA APP COMO ESTA?</b>
 <a href="https://wa.me/524491883244?text=Hola%20me%20interesa%20una%20app%20como%20la%20de%20Bazar%20Los%20Cuates" target="_blank">YO QUIERO MI APP - WHATSAPP</a>
 </div>
-
 <div class="acciones">
 <button id="btn-instalar-app" class="btn-app btn-instalar">📲 INSTALAR APLICACIÓN</button>
 <button id="btn-noti" class="btn-app btn-noti">🔔 ACTIVAR NOTIFICACIONES</button>
 <a href="./admin.html" style="text-align:center;color:#555;font-size:11px;text-decoration:none;margin-top:14px;display:block">Admin</a>
 </div>
-
 <div id="popup-apps"><div class="popup-box"><button class="btn-cerrar" onclick="cerrarPopup()">×</button><h2>¿TE INTERESA UNA APP COMO ESTA?</h2><p>Yo te hago tu aplicación para tu negocio, como Bazar Los Cuates. Se instala como app con tu logo.</p><p style="color:#FFD600;font-weight:900;font-size:16px">¡Desde $500!</p><a class="btn-wha" href="https://wa.me/524491883244?text=Hola%20vi%20tu%20pop-up%20de%20apps" target="_blank">💬 SÍ, ME INTERESA</a><div class="no-mostrar" onclick="cerrarPopup(true)">No volver a mostrar hoy</div></div></div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {
     apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4",
     authDomain: "bazar-los-cuates.firebaseapp.com",
@@ -47,6 +48,25 @@ const firebaseConfig = {
   };
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
 let productosNube=[]; let filtro="";
+
+// REGISTRA CLIC DEL BANNER
+async function registrarClickBanner(id, nombre){
+  try{
+    const ref = doc(db,"stats","banner_clicks");
+    const snap = await getDoc(ref);
+    let data = snap.exists() ? snap.data() : {};
+    data[nombre] = (data[nombre] || 0) + 1;
+    data.total = (data.total || 0) + 1;
+    data.ultimo = new Date().toLocaleString();
+    await setDoc(ref, data, {merge:true});
+    // Tambien incrementa en el documento del anuncio
+    if(id){
+      const refAnuncio = doc(db,"anuncios",id);
+      await updateDoc(refAnuncio,{clicks: increment(1)}).catch(()=>{});
+    }
+  }catch(e){console.log("Error conteo",e)}
+}
+
 async function cargarProductos(){
   const snap=await getDocs(collection(db,"productos"));
   productosNube=[]; snap.forEach(d=>productosNube.push({id:d.id,...d.data()}));
@@ -70,21 +90,36 @@ async function cargarPortadas(){
   if(imgs.length==0) imgs=["https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800"];
   const track=document.getElementById('slideTrack'); track.innerHTML="";
   imgs.forEach(src=>{const div=document.createElement('div'); div.className='slide'; div.innerHTML=`<img src="${src}">`; track.appendChild(div);});
-  let idx=0; if(imgs.length>1) setInterval(()=>{idx=(idx+1)%imgs.length; track.style.transform=`translateX(-${idx*100}%)`;},3500);
+  let idx=0; if(window.intervalPortada) clearInterval(window.intervalPortada);
+  if(imgs.length>1){window.intervalPortada=setInterval(()=>{idx=(idx+1)%imgs.length; track.style.transform=`translateX(-${idx*100}%)`;},3500);} else {track.style.transform=`translateX(0%)`;}
 }
 async function cargarAnuncios(){
   const snapA=await getDocs(collection(db,"anuncios"));
   const snapC=await getDoc(doc(db,"config","banner"));
   let precio="200"; if(snapC.exists()) precio=snapC.data().precio||"200";
-  let anuncios=[]; snapA.forEach(d=>anuncios.push(d.data()));
-  let lista=[...anuncios,{nombre:`ANUNCIATE AQUI $${precio} AL MES`,esAnunciate:true}];
+  let anuncios=[]; snapA.forEach(d=>anuncios.push({id:d.id,...d.data()}));
+  let lista=[...anuncios,{nombre:`ANUNCIATE AQUI $${precio} AL MES`,esAnunciate:true,id:null}];
   const track=document.getElementById('topTrack'); track.innerHTML="";
   lista.forEach(an=>{
     const div=document.createElement('div'); div.className='top-slide';
-    if(an.esAnunciate){div.onclick=()=>window.open(`https://wa.me/524491883244?text=${encodeURIComponent('Hola vi ANUNCIATE AQUI $'+precio)}`,'_blank'); div.innerHTML=`<div class="txt"><b>ANUNCIATE AQUI $${precio} AL MES</b><span>Toca aqui</span></div>`;}
-    else{const wa=`https://wa.me/${String(an.whatsapp).replace(/[^0-9]/g,'')}?text=${encodeURIComponent('Hola vi tu anuncio '+an.nombre)}`; div.onclick=()=>window.open(wa,'_blank'); div.innerHTML=`${an.img?`<img src="${an.img}">`:''}<div class="txt"><b>${an.nombre}</b><span>WhatsApp</span></div>`;}
+    if(an.esAnunciate){
+      div.onclick=async()=>{
+        await registrarClickBanner(null, `ANUNCIATE AQUI`);
+        window.open(`https://wa.me/524491883244?text=${encodeURIComponent('Hola vi en la aplicacion de Bazar Los Cuates que puedo anunciarme aqui por $'+precio+' al mes. Me interesa')}`,'_blank');
+      };
+      div.innerHTML=`<div class="txt"><b>ANUNCIATE AQUI $${precio} AL MES</b><span>Toca aqui para anunciarte</span></div>`;
+    } else {
+      div.onclick=async()=>{
+        await registrarClickBanner(an.id, an.nombre);
+        const wa=`https://wa.me/${String(an.whatsapp).replace(/[^0-9]/g,'')}?text=${encodeURIComponent('Hola, vi en la aplicacion / pagina de Bazar Los Cuates tu anuncio de '+an.nombre+'. Me interesa, vi que te anunciaste en Bazar Los Cuates')}`;
+        window.open(wa,'_blank');
+      };
+      div.innerHTML=`${an.img?`<img src="${an.img}">`:''}<div class="txt"><b>${an.nombre}</b><span>WhatsApp - Toca aqui</span></div>`;
+    }
     track.appendChild(div);
   });
+  let idxTop=0; if(window.intervalTop) clearInterval(window.intervalTop);
+  if(lista.length>1){window.intervalTop=setInterval(()=>{idxTop=(idxTop+1)%lista.length; track.style.transform=`translateX(-${idxTop*100}%)`;},3000);} else {track.style.transform=`translateX(0%)`;}
 }
 async function contador(){
   const hoyStr=new Date().toISOString().split('T')[0];
