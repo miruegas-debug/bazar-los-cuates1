@@ -37,12 +37,15 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = { apiKey: "AIzaSyClr4Ij1fzQ7-5zgPtzkQkhB1VsfD5zBm4", authDomain: "bazar-los-cuates.firebaseapp.com", projectId: "bazar-los-cuates", storageBucket: "bazar-los-cuates.firebasestorage.app", messagingSenderId: "908351301550", appId: "1:908351301550:web:3ae25892920ce8dda24a3f" };
 const app=initializeApp(firebaseConfig); const db=getFirestore(app);
+
+// ARREGLO: Sesion, solo pide pass 1 vez
+const SESION_KEY='admin_bazar_sesion_ok';
 localStorage.removeItem('admin_bazar');
-const passInput = document.getElementById('passInput');
-passInput.value = '';
-passInput.setAttribute('autocomplete','new-password');
-setTimeout(()=>{ passInput.value=''; }, 100);
-window.checkPass=()=>{ const p=document.getElementById('passInput').value; if(p==='cuates123'){ document.getElementById('login').style.display='none'; cargarTodo(); }else{ alert('Contraseña incorrecta'); document.getElementById('passInput').value='';} }
+const passInput=document.getElementById('passInput');
+passInput.value=''; passInput.setAttribute('autocomplete','new-password');
+if(sessionStorage.getItem(SESION_KEY)==='ok'){document.getElementById('login').style.display='none'; cargarTodo();}
+window.checkPass=()=>{const p=passInput.value; if(p==='cuates123'){sessionStorage.setItem(SESION_KEY,'ok'); document.getElementById('login').style.display='none'; cargarTodo();}else{alert('Contraseña incorrecta'); passInput.value='';}}
+
 async function comprimirImagen(file, maxWidth=800){ return new Promise((resolve)=>{ const reader=new FileReader(); reader.onload=(e)=>{ const img=new Image(); img.onload=()=>{ const canvas=document.createElement('canvas'); let w=img.width, h=img.height; if(w>maxWidth){ h=(maxWidth/w)*h; w=maxWidth; } canvas.width=w; canvas.height=h; const ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0,w,h); resolve(canvas.toDataURL('image/jpeg',0.65)); }; img.src=e.target.result; }; reader.readAsDataURL(file); }); }
 let fotosProd = [];
 document.getElementById('p_files').addEventListener('change', async e=>{
@@ -62,16 +65,16 @@ async function cargarTodo(){
   const snapPort=await getDocs(collection(db,"portadas")); const lport=document.getElementById('listaPort'); lport.innerHTML=""; snapPort.forEach(d=>{ const p=d.data(); const div=document.createElement('div'); div.className='item'; div.innerHTML=`<img src="${p.foto}"><div style="flex:1">Portada</div><button class="btn-del" onclick="borrar('portadas','${d.id}')">X</button>`; lport.appendChild(div); });
   const snapAnun=await getDocs(collection(db,"anuncios")); const lanun=document.getElementById('listaAnuncios'); lanun.innerHTML=""; snapAnun.forEach(d=>{ const p=d.data(); const div=document.createElement('div'); div.className='item'; div.innerHTML=`<img src="${p.img}"><div style="flex:1"><b>${p.nombre}</b><br>${p.whatsapp}</div><button class="btn-del" onclick="borrar('anuncios','${d.id}')">X</button>`; lanun.appendChild(div); });
 }
-window.borrar=async(col,id)=>{ if(!confirm("¿Borrar?"))return; await deleteDoc(doc(db,col,id)); location.reload(); }
+window.borrar=async(col,id)=>{ if(!confirm("¿Borrar?"))return; await deleteDoc(doc(db,col,id)); await cargarTodo(); }
 document.getElementById('btnAddProd').onclick=async()=>{ 
   const nombre=document.getElementById('p_nombre').value.trim(); 
   const precio=document.getElementById('p_precio').value.trim(); 
   if(!nombre||!precio||fotosProd.length==0){alert("Falta nombre, precio y al menos 1 foto");return;} 
   const btn=document.getElementById('btnAddProd'); btn.innerText='⏳ GUARDANDO...';
-  try{ await addDoc(collection(db,"productos"),{nombre,precio,foto:fotosProd[0],fotos:fotosProd}); alert(`✅ Producto guardado con ${fotosProd.length} fotos`); location.reload(); }catch(e){ alert("Error: "+e.message); btn.innerText='💾 GUARDAR PRODUCTO'; }
+  try{ await addDoc(collection(db,"productos"),{nombre,precio,foto:fotosProd[0],fotos:fotosProd}); alert(`✅ Guardado con ${fotosProd.length} fotos`); document.getElementById('p_nombre').value=''; document.getElementById('p_precio').value=''; document.getElementById('p_files').value=''; document.getElementById('previewsProd').innerHTML=''; fotosProd=[]; document.getElementById('statusProd').innerText=''; btn.innerText='💾 GUARDAR PRODUCTO'; await cargarTodo(); }catch(e){ alert("Error: "+e.message); btn.innerText='💾 GUARDAR PRODUCTO'; }
 }
-document.getElementById('btnAddPort').onclick=async()=>{ let foto=base64Port; if(!foto){alert("Elige foto");return;} await addDoc(collection(db,"portadas"),{foto}); alert("Guardado"); location.reload(); }
-document.getElementById('btnAddAnuncio').onclick=async()=>{ const nombre=document.getElementById('a_nombre').value.trim(); const whatsapp=document.getElementById('a_whats').value.trim(); let img=base64Anun; if(!nombre||!whatsapp||!img){alert("Falta nombre/whatsapp/foto");return;} await addDoc(collection(db,"anuncios"),{nombre,whatsapp,img}); alert("Guardado"); location.reload(); }
+document.getElementById('btnAddPort').onclick=async()=>{ let foto=base64Port; if(!foto){alert("Elige foto");return;} await addDoc(collection(db,"portadas"),{foto}); alert("Guardado"); base64Port=null; document.getElementById('port_file').value=''; document.getElementById('previewPort').style.display='none'; await cargarTodo(); }
+document.getElementById('btnAddAnuncio').onclick=async()=>{ const nombre=document.getElementById('a_nombre').value.trim(); const whatsapp=document.getElementById('a_whats').value.trim(); let img=base64Anun; if(!nombre||!whatsapp||!img){alert("Falta nombre/whatsapp/foto");return;} await addDoc(collection(db,"anuncios"),{nombre,whatsapp,img}); alert("Guardado"); base64Anun=null; document.getElementById('a_nombre').value=''; document.getElementById('a_whats').value=''; document.getElementById('a_file').value=''; document.getElementById('previewAnun').style.display='none'; await cargarTodo(); }
 document.getElementById('btnPrecio').onclick=async()=>{ const precio=document.getElementById('precio_banner').value.trim(); await setDoc(doc(db,"config","banner"),{precio},{merge:true}); alert("Precio anuncio guardado"); }
 document.getElementById('btnPrecioApp').onclick=async()=>{ const precioApp=document.getElementById('precio_app').value.trim(); await setDoc(doc(db,"config","banner"),{precioApp},{merge:true}); alert("Precio App guardado"); }
 </script></body></html>
